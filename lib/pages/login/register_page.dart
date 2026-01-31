@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '/routes/app_routes.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -51,8 +52,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         children: [
                           Row(
                             children: const [
-                              Icon(
-                                Icons.person_outline,
+                              HugeIcon(
+                                icon: HugeIcons.strokeRoundedUser,
                                 size: 18,
                                 color: Color(0xFFD8A7D9),
                               ),
@@ -105,8 +106,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         children: [
                           Row(
                             children: const [
-                              Icon(
-                                Icons.lock_outline,
+                              HugeIcon(
+                                icon: HugeIcons.strokeRoundedLockPassword,
                                 size: 18,
                                 color: Color(0xFFD8A7D9),
                               ),
@@ -128,7 +129,13 @@ class _RegisterPageState extends State<RegisterPage> {
                               hintText: 'Enter your password',
 
                               suffixIcon: IconButton(
-                                icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility,),
+                                icon: HugeIcon(
+                                  icon: _obscure
+                                      ? HugeIcons.strokeRoundedViewOffSlash
+                                      : HugeIcons.strokeRoundedView,
+                                  size: 18,
+                                  strokeWidth: 2,
+                                ),
                                 color: Color(0xFF8B7A99),
                                 onPressed: () {
                                   setState(() {
@@ -170,8 +177,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         children: [
                           Row(
                             children: const [
-                              Icon(
-                                Icons.lock_outline,
+                              HugeIcon(
+                                icon: HugeIcons.strokeRoundedLockPassword,
                                 size: 18,
                                 color: Color(0xFFD8A7D9),
                               ),
@@ -240,7 +247,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text('Already have an account?'),
-                          SizedBox(width: 3),
+                          SizedBox(width: 1),
                           TextButton(
                             onPressed: () {
                               Navigator.pushNamed(context, AppRoutes.login);
