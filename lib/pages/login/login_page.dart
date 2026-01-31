@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '/routes/app_routes.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:fe/widgets/mainButton.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -175,20 +176,12 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: 32),
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
-                        onPressed: () {
-                          // Navigator.pushNamed(context, AppRoutes.home);
-                        },
-                        child: Text('Log in', 
-                                  style: TextStyle(
-                                    color: Color( 0xFFFFFFFF),
-                                    fontSize: 14,
-                                    )
-                                  ),
-                        style: ButtonStyle(
-                                backgroundColor: WidgetStatePropertyAll(Color(0xFFD8A7D9)),
-                              ),
-                      ),
+                        child: MainButton(
+                          text: 'Log in', 
+                          onPressed: () {
+                            Navigator.pushNamed(context, AppRoutes.home);
+                          }
+                        ),
                       ),
                       SizedBox(height: 32),
                       Row(
