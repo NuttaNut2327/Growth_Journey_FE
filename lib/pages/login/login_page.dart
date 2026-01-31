@@ -27,6 +27,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(height: 40),
             Card(
+              elevation: 5,
               color: Colors.white,
               margin: EdgeInsets.symmetric(
                 horizontal: 24,

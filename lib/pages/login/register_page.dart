@@ -28,6 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             SizedBox(height: 40),
             Card(
+              elevation: 5,
               color: Colors.white,
               margin: EdgeInsets.symmetric(
                 horizontal: 24,
