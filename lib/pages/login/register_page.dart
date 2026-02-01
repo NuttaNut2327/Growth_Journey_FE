@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '/routes/app_routes.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/widgets/mainButton.dart';
+import 'package:fe/widgets/customTextField.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -11,257 +12,352 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  bool _obscure = true;
-  bool _obscureConfirm = true;
+  final _formKey = GlobalKey<FormState>();
+
+  final usernameController = TextEditingController();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final emailController = TextEditingController();
+  final birthdayController = TextEditingController();
+  final phoneNumberController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  bool _isPasswordVisible = false;
+
+  String? selectedGender;
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+    emailController.dispose();
+    birthdayController.dispose();
+    phoneNumberController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  String formatBirthdate(String value) {
+    // value = DD/MM/YYYY
+    final parts = value.split('/');
+    return '${parts[2]}-${parts[1]}-${parts[0]}';
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Start your Growth Journey', 
-            style: TextStyle(
-              fontSize: 24, 
-              fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 40),
-            Card(
-              elevation: 5,
-              color: Colors.white,
-              margin: EdgeInsets.symmetric(
-                horizontal: 24,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 32,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Center(
+            child: Column(
+              children: [
+                const Text(
+                  'Start your Growth Journey',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text( 'Create your account', 
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        )
-                      ),
-                      SizedBox(height: 24),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 40),
+
+                Card(
+                  elevation: 5,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 32),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
                         children: [
-                          Row(
-                            children: const [
-                              HugeIcon(
-                                icon: HugeIcons.strokeRoundedUser,
-                                size: 18,
-                                color: Color(0xFFD8A7D9),
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Username',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
+                          const Text(
+                            'Create your account',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
                           ),
-
-                          const SizedBox(height: 8),
-
-                          TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Enter your username',
-
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFEBD3EC),
-                                ),
-                              ),
-
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFD8A7D9),
-                                  width: 2,
-                                ),
-                              ),
-
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                            ),
+                          const SizedBox(height: 24),
+                          AppTextField(
+                            label: 'Username',
+                            hintText: 'Enter username',
+                            controller: usernameController,
+                            isRequired: true,
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: const [
-                              HugeIcon(
-                                icon: HugeIcons.strokeRoundedLockPassword,
-                                size: 18,
-                                color: Color(0xFFD8A7D9),
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Password',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
+                          const SizedBox(height: 16),
+                          AppTextField(
+                            label: 'First name',
+                            hintText: 'Enter first name',
+                            controller: firstNameController,
+                            isRequired: true,
                           ),
-
-                          const SizedBox(height: 8),
-
-                          TextField(
-                            obscureText: _obscure,
-                            decoration: InputDecoration(
-                              hintText: 'Enter your password',
-
-                              suffixIcon: IconButton(
-                                icon: HugeIcon(
-                                  icon: _obscure
-                                      ? HugeIcons.strokeRoundedViewOffSlash
-                                      : HugeIcons.strokeRoundedView,
-                                  size: 18,
-                                  strokeWidth: 2,
+                          const SizedBox(height: 16),
+                          AppTextField(
+                            label: 'Last name',
+                            hintText: 'Enter last name',
+                            controller: lastNameController,
+                            isRequired: true,
+                          ),
+                          const SizedBox(height: 16),
+                          AppTextField(
+                            label: 'Email',
+                            hintText: 'Enter email',
+                            controller: emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            isRequired: true,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'This field is required';
+                              }
+                              final emailRegex = RegExp(
+                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                              if (!emailRegex.hasMatch(value)) {
+                                return 'Please enter a valid email address';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: const [
+                                  Text('* ', style: TextStyle(color: Colors.red, fontSize: 16)),
+                                  Text('Gender', style: TextStyle(fontSize: 16)),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              DropdownButtonFormField<String>(
+                                value: selectedGender,
+                                hint: const Text(
+                                  'Select gender',
+                                  style: TextStyle(
+                                    color: Color(0x8009101D), 
+                                    fontWeight: FontWeight.w400
+                                  ),
                                 ),
-                                color: Color(0xFF8B7A99),
-                                onPressed: () {
+                                items: ['Male', 'Female', 'Other']
+                                    .map(
+                                      (g) => DropdownMenuItem(
+                                        value: g,
+                                        child: Text(g, style: const TextStyle(
+                                          fontWeight: FontWeight.w400
+                                        ),),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (value) {
                                   setState(() {
-                                    _obscure = !_obscure;
+                                    selectedGender = value;
                                   });
                                 },
-                              ),
-
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFEBD3EC),
-                                ),
-                              ),
-
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFD8A7D9),
-                                  width: 2,
-                                ),
-                              ),
-
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: const [
-                              HugeIcon(
-                                icon: HugeIcons.strokeRoundedLockPassword,
-                                size: 18,
-                                color: Color(0xFFD8A7D9),
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Confirm Password',
-                                style: TextStyle(
-                                  fontSize: 16,
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'This field is required';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Color(0xFFEBD3EC)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide:
+                                        const BorderSide(color: Color(0xFFD8A7D9), width: 2),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Colors.red, width: 1.5),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Colors.red, width: 2),
+                                  ),
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                 ),
                               ),
                             ],
                           ),
-
-                          const SizedBox(height: 8),
-
-                          TextField(
-                            obscureText: _obscureConfirm,
-                            decoration: InputDecoration(
-                              hintText: 'Enter your password',
-
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                          const SizedBox(height: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: const [
+                                  Text('* ', style: TextStyle(color: Colors.red, fontSize: 16)),
+                                  Text('Birthday', style: TextStyle(fontSize: 16)),
+                                ],
                               ),
-
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFEBD3EC),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                controller: birthdayController,
+                                readOnly: true,
+                                decoration: InputDecoration(
+                                  hintText: 'DD/MM/YY',
+                                  hintStyle: TextStyle(
+                                    color: Color(0x8009101D),
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  prefixIcon: Padding(
+                                    padding: const EdgeInsets.only(left: 12, right: 8),
+                                    child: HugeIcon(
+                                      icon: HugeIcons.strokeRoundedCalendar04,
+                                      color: Color(0xFFD8A7D9),
+                                      size: 18,
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                  prefixIconConstraints: const BoxConstraints(
+                                    minWidth: 0,
+                                    minHeight: 0,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Color(0xFFEBD3EC)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide:
+                                        const BorderSide(color: Color(0xFFD8A7D9), width: 2),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Colors.red, width: 1.5),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(color: Colors.red, width: 2),
+                                  ),
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                 ),
-                              ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'This field is required';
+                                  }
+                                  return null;
+                                },
+                                onTap: () async {
+                                  final DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime(2000),
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime.now(),
+                                  );
 
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFD8A7D9),
-                                  width: 2,
-                                ),
+                                  if (pickedDate != null) {
+                                    birthdayController.text =
+                                        '${pickedDate.day.toString().padLeft(2, '0')}/'
+                                        '${pickedDate.month.toString().padLeft(2, '0')}/'
+                                        '${pickedDate.year}';
+                                  }
+                                },
                               ),
-
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          AppTextField(
+                            label: 'Phone Number',
+                            hintText: 'Enter phone number',
+                            controller: phoneNumberController,
+                            isRequired: true,
+                          ),
+                          const SizedBox(height: 16),
+                          AppTextField(
+                            label: 'Password',
+                            hintText: 'Enter password',
+                            controller: passwordController,
+                            obscureText: !_isPasswordVisible,
+                            isRequired: true,
+                            suffixIcon: IconButton(
+                              icon: HugeIcon(
+                                icon: _isPasswordVisible
+                                    ? HugeIcons
+                                        .strokeRoundedView
+                                    : HugeIcons.strokeRoundedViewOffSlash,
+                                size: 18,
+                                strokeWidth: 2,
                               ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
                             ),
+                          ),                         
+                          const SizedBox(height: 16),
+                          AppTextField(
+                            label: 'Confirm password',
+                            hintText: 'Enter confirm password',
+                            controller: confirmPasswordController,
+                            obscureText: true,
+                            isRequired: true,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'This field is required';
+                              }
+                              if (value != passwordController.text) {
+                                return 'Password does not match';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 32),
+                          SizedBox(
+                            width: double.infinity,
+                            child: MainButton(
+                              text: 'Create account',
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  final body = {
+                                    "username": usernameController.text.trim(),
+                                    "first_name": firstNameController.text.trim(),
+                                    "last_name": lastNameController.text.trim(),
+                                    "email": emailController.text.trim(),
+                                    "gender": selectedGender?.toLowerCase(),
+                                    "birthdate": formatBirthdate(birthdayController.text),
+                                    "phone": phoneNumberController.text.trim(),
+                                    "image_url": "https://example.com/avatar.png",
+                                    "password": passwordController.text,
+                                  };
+                                  print(body);
+                                  // Navigator.pushNamed(context, AppRoutes.home);
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Already have an account?'),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.pushNamed(context, AppRoutes.login),
+                                child: const Text(
+                                  'Log in',
+                                  style: TextStyle(color: Color(0xFFD8A7D9)),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      SizedBox(height: 32),
-                      SizedBox(
-                        width: double.infinity,
-                        child: MainButton(
-                          text: 'Create Account',
-                          onPressed: () {
-                            Navigator.pushNamed(context, AppRoutes.home);
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 32),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Already have an account?'),
-                          SizedBox(width: 1),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, AppRoutes.login);
-                            },
-                            child: Text('Log in', 
-                                      style: TextStyle(
-                                        color: Color(0xFFD8A7D9),
-                                      ),
-                                    ),
-                          ),
-                        ]
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
