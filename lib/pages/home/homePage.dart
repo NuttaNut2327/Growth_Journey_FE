@@ -8,7 +8,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Text(
-          'Welcome to the Home Page',
+          'Home Page',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,

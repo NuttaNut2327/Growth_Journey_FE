@@ -3,16 +3,15 @@ import '/routes/app_routes.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/widgets/mainButton.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _LoginPageState extends State<LoginPage> {
   bool _obscure = true;
-  bool _obscureConfirm = true;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text( 'Create your account', 
+                      Text( 'Log in', 
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -53,11 +52,12 @@ class _RegisterPageState extends State<RegisterPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            children: const [
+                            children: [
                               HugeIcon(
                                 icon: HugeIcons.strokeRoundedUser,
                                 size: 18,
                                 color: Color(0xFFD8A7D9),
+                                strokeWidth: 2,
                               ),
                               SizedBox(width: 8),
                               Text(
@@ -107,11 +107,12 @@ class _RegisterPageState extends State<RegisterPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            children: const [
+                            children: [
                               HugeIcon(
                                 icon: HugeIcons.strokeRoundedLockPassword,
                                 size: 18,
                                 color: Color(0xFFD8A7D9),
+                                strokeWidth: 2,
                               ),
                               SizedBox(width: 8),
                               Text(
@@ -173,82 +174,27 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: const [
-                              HugeIcon(
-                                icon: HugeIcons.strokeRoundedLockPassword,
-                                size: 18,
-                                color: Color(0xFFD8A7D9),
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Confirm Password',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 8),
-
-                          TextField(
-                            obscureText: _obscureConfirm,
-                            decoration: InputDecoration(
-                              hintText: 'Enter your password',
-
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFEBD3EC),
-                                ),
-                              ),
-
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFD8A7D9),
-                                  width: 2,
-                                ),
-                              ),
-
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                       SizedBox(height: 32),
                       SizedBox(
                         width: double.infinity,
                         child: MainButton(
-                          text: 'Create Account',
+                          text: 'Log in', 
                           onPressed: () {
-                            Navigator.pushNamed(context, AppRoutes.home);
-                          },
+                            Navigator.pushReplacementNamed(context, AppRoutes.bottonnavbar);
+                          }
                         ),
                       ),
                       SizedBox(height: 32),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Already have an account?'),
+                          Text('Don\'t have an account yet?'),
                           SizedBox(width: 1),
                           TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, AppRoutes.login);
+                              Navigator.pushNamed(context, AppRoutes.register);
                             },
-                            child: Text('Log in', 
+                            child: Text('Create Account', 
                                       style: TextStyle(
                                         color: Color(0xFFD8A7D9),
                                       ),

@@ -3,15 +3,16 @@ import '/routes/app_routes.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/widgets/mainButton.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   bool _obscure = true;
+  bool _obscureConfirm = true;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text( 'Log in', 
+                      Text( 'Create your account', 
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -52,12 +53,11 @@ class _LoginPageState extends State<LoginPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            children: [
+                            children: const [
                               HugeIcon(
                                 icon: HugeIcons.strokeRoundedUser,
                                 size: 18,
                                 color: Color(0xFFD8A7D9),
-                                strokeWidth: 2,
                               ),
                               SizedBox(width: 8),
                               Text(
@@ -107,12 +107,11 @@ class _LoginPageState extends State<LoginPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            children: [
+                            children: const [
                               HugeIcon(
                                 icon: HugeIcons.strokeRoundedLockPassword,
                                 size: 18,
                                 color: Color(0xFFD8A7D9),
-                                strokeWidth: 2,
                               ),
                               SizedBox(width: 8),
                               Text(
@@ -174,27 +173,82 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
+                      SizedBox(height: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: const [
+                              HugeIcon(
+                                icon: HugeIcons.strokeRoundedLockPassword,
+                                size: 18,
+                                color: Color(0xFFD8A7D9),
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Confirm Password',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          TextField(
+                            obscureText: _obscureConfirm,
+                            decoration: InputDecoration(
+                              hintText: 'Enter your password',
+
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFEBD3EC),
+                                ),
+                              ),
+
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD8A7D9),
+                                  width: 2,
+                                ),
+                              ),
+
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       SizedBox(height: 32),
                       SizedBox(
                         width: double.infinity,
                         child: MainButton(
-                          text: 'Log in', 
+                          text: 'Create Account',
                           onPressed: () {
-                            Navigator.pushNamed(context, AppRoutes.home);
-                          }
+                            Navigator.pushReplacementNamed(context, AppRoutes.bottonnavbar);
+                          },
                         ),
                       ),
                       SizedBox(height: 32),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Don\'t have an account yet?'),
+                          Text('Already have an account?'),
                           SizedBox(width: 1),
                           TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, AppRoutes.register);
+                              Navigator.pushNamed(context, AppRoutes.login);
                             },
-                            child: Text('Create Account', 
+                            child: Text('Log in', 
                                       style: TextStyle(
                                         color: Color(0xFFD8A7D9),
                                       ),
