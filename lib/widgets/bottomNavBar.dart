@@ -6,14 +6,14 @@ import 'package:fe/pages/group/groupPage.dart';
 import 'package:fe/pages/map/mapPage.dart';
 import 'package:fe/pages/heal/healPage.dart';
 
-class Bottonnavbar extends StatefulWidget {
-  const Bottonnavbar({super.key});
+class Bottomnavbar extends StatefulWidget {
+  const Bottomnavbar({super.key});
 
   @override
-  State<Bottonnavbar> createState() => _BottonnavbarState();
+  State<Bottomnavbar> createState() => _BottomnavbarState();
 }
 
-class _BottonnavbarState extends State<Bottonnavbar> {
+class _BottomnavbarState extends State<Bottomnavbar> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [

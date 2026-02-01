@@ -6,5 +6,5 @@ class AppRoutes {
   static const group = '/group';
   static const map = '/map';
   static const heal = '/heal';
-  static const bottonnavbar = '/bottonnavbar';
+  static const bottomnavbar = '/bottomnavbar';
 }

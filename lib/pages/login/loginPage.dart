@@ -211,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
                                   'username': usernameController.text,
                                   'password': passwordController.text,
                                 });
-                                Navigator.pushNamed(context, AppRoutes.home);
+                                Navigator.pushNamed(context, AppRoutes.bottomnavbar);
                               }
                             },
                           ),
@@ -223,8 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                             const Text('Don\'t have an account yet?'),
                             TextButton(
                               onPressed: () {
-                                Navigator.pushNamed(
-                                    context, AppRoutes.register);
+                                Navigator.pushNamed(context, AppRoutes.register);
                               },
                               child: const Text(
                                 'Create account',
