@@ -7,4 +7,5 @@ class AppRoutes {
   static const map = '/map';
   static const heal = '/heal';
   static const bottomnavbar = '/bottomnavbar';
+  static const assessment = '/assessment';
 }
