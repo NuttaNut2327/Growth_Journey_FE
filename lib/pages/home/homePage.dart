@@ -94,7 +94,7 @@ class HomePage extends StatelessWidget {
                           ), 
                           SizedBox(width: 8),
                           Text(
-                            'Stress Assessment',
+                            'Stress Test Questionnaire (ST5)',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -104,7 +104,7 @@ class HomePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        'Complete a stress assessment to evaluate your stress level.',
+                        'Complete a stress test questionnaire to evaluate your stress level.',
                         style: TextStyle(color: Colors.grey),
                       ),
                       const SizedBox(height: 20),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fe/widgets/assessmentCard.dart';
 import 'package:fe/routes/app_routes.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class AssessmentPage extends StatefulWidget {
   const AssessmentPage({super.key});
@@ -100,41 +101,23 @@ class _AssessmentPageState extends State<AssessmentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Stress assessment'),
+        title: Text('Stress Test Questionnaire'),
+        centerTitle: true,
+        leading: IconButton(
+          icon: HugeIcon(icon:  HugeIcons.strokeRoundedArrowLeft01,
+            size: 24,
+            strokeWidth: 2,
+            ),
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.bottomnavbar);
+            },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Text('Think about the past 6 months.',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500
-              ),
-              textAlign: TextAlign.center,
-            ),
-            Text('For each situation below,',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500
-              ),
-              textAlign: TextAlign.center,
-            ),
-            Text('choose how stressful it felt to you.',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500
-              ),
-              textAlign: TextAlign.center,
-            ),
-            Text('If it didn\’t happen, you can skip it.',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 8),
             AssessmentCard(
               questionNumber: currentIndex + 1,
               question: questions[currentIndex],
