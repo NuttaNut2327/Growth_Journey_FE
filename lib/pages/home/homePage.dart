@@ -75,7 +75,7 @@ class HomePage extends StatelessWidget {
                     ),
                     boxShadow: const [
                       BoxShadow(
-                        color: Color(0x1A000000), // ดำ 10%
+                        color: Color(0x1A000000),
                         blurRadius: 12,
                         offset: Offset(0, 6),
                       ),
