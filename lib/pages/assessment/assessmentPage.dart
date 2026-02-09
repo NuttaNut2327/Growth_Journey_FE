@@ -75,7 +75,7 @@ class _AssessmentPageState extends State<AssessmentPage> {
             strokeWidth: 2,
           ),
           onPressed: () {
-            Navigator.pushNamed(context, AppRoutes.bottomnavbar);
+            Navigator.pop(context);
           },
         ),
       ),

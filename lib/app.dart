@@ -9,6 +9,7 @@ import 'package:fe/pages/map/mapPage.dart';
 import 'package:fe/pages/heal/healPage.dart';
 import 'package:fe/widgets/bottomNavBar.dart';
 import 'package:fe/pages/assessment/assessmentPage.dart';
+import 'package:fe/pages/group/createGroupPage.dart';
 // import 'pages/profile/profile_page.dart';
 
 class MyApp extends StatelessWidget {
@@ -23,16 +24,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: const Color(0xFFFEF8FC),
       ),
-      initialRoute: AppRoutes.login,
+      initialRoute: AppRoutes.bottomnavbar,
       routes: {
         AppRoutes.login: (context) => const LoginPage(),
         AppRoutes.register: (context) => const RegisterPage(),
-        AppRoutes.home: (context) => const HomePage(),
-        AppRoutes.blog: (context) => const BlogPage(),
-        AppRoutes.group: (context) => const GroupPage(),
-        AppRoutes.map: (context) => const MapPage(),
-        AppRoutes.heal: (context) => const HealPage(),
+
         AppRoutes.bottomnavbar: (context) => const Bottomnavbar(),
+
+        AppRoutes.createGroup: (context) => const CreateGroupPage(),   
         AppRoutes.assessment: (context) => const AssessmentPage(),
         // AppRoutes.profile: (context) => const ProfilePage(),
       },
