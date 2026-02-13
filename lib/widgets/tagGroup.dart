@@ -15,7 +15,7 @@ class TagGroup extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: const Color(0xFFEEDFF1),
+          color: const Color(0x80D8A7D9),
           width: 1,
         ),
       ),

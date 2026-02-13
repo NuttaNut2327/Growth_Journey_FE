@@ -63,6 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 40),
 
                 Card(
+                  color:  Colors.white,
                   elevation: 5,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(

@@ -39,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 40),
               Card(
+                color: Colors.white,
                 elevation: 5,
                 child: Padding(
                   padding:

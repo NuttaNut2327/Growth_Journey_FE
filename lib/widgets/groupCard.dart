@@ -48,7 +48,7 @@ class GroupCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFFEEDFF1),
+          color: const Color(0xFFF7EDF7),
           width: 2,
         ),
         boxShadow: const [
@@ -86,7 +86,9 @@ class GroupCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            description, 
+            description,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis, 
             style: TextStyle(
               fontSize: 12, 
               color: Color(0xFF8B7A99)
