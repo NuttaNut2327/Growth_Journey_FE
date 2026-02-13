@@ -14,7 +14,7 @@ class MainUpperNavBar extends StatelessWidget {
         borderRadius: BorderRadius.zero,
       ),
       child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
       child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
