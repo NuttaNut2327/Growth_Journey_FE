@@ -263,7 +263,6 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
             print("Max Participants: ${maxParticipantsController.text}");
             print("Tags: $selectedTags");
             print("Image Path: $imagePath");
-
           }
         },
       ),
