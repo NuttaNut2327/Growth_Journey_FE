@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fe/widgets/assessmentCard.dart';
-import 'package:fe/routes/app_routes.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/pages/assessment/resultPage.dart';
 
@@ -75,7 +74,7 @@ class _AssessmentPageState extends State<AssessmentPage> {
             strokeWidth: 2,
           ),
           onPressed: () {
-            Navigator.pushNamed(context, AppRoutes.bottomnavbar);
+            Navigator.pop(context);
           },
         ),
       ),

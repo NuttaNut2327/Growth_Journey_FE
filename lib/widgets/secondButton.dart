@@ -21,7 +21,7 @@ class SecondButton extends StatelessWidget {
         ),
         backgroundColor: Color(0xFFFEF8FC),
         foregroundColor: Color(0xFFF6E8F5),
-        side: const BorderSide(color: Color(0xFFF6E8F5), width: 1.5),
+        side: const BorderSide(color: Color(0xFFF7EDF7), width: 1.5),
       ),
       child: Text(
         text,

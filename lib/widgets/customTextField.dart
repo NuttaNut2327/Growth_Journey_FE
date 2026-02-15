@@ -9,6 +9,9 @@ class AppTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
   final Widget? suffixIcon;
+  final Widget? prefixIcon;
+  final VoidCallback? onTap;
+  final bool readOnly;
 
   const AppTextField({
     super.key,
@@ -20,6 +23,9 @@ class AppTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.validator,
     this.suffixIcon,
+    this.prefixIcon,
+    this.onTap,
+    this.readOnly = false,
   });
 
   @override
@@ -49,8 +55,17 @@ class AppTextField extends StatelessWidget {
                       return null;
                     }
                   : null),
+          readOnly: readOnly,
+          onTap: onTap,
           decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
             suffixIcon: suffixIcon,
+            prefixIcon: prefixIcon,
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 16,
+              minHeight: 16,
+            ),
             hintText: hintText,
             hintStyle: TextStyle(
               color: Color(0x8009101D),

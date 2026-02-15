@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 
-class MainUpperNavBar extends StatelessWidget {
+class BackNavbar extends StatelessWidget {
 
-  const MainUpperNavBar({super.key});
+  const BackNavbar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,19 +18,15 @@ class MainUpperNavBar extends StatelessWidget {
       child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Growth Journey',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Your growth journey',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Color(0xFF8B7A99)),
-                ),
-              ],
+            IconButton(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedArrowLeft01,
+                size: 24,
+                strokeWidth: 2,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
             Spacer(),
             IconButton(
