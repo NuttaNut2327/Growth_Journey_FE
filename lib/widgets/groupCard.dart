@@ -62,7 +62,7 @@ class GroupCard extends StatelessWidget {
           const SizedBox(height: 16),
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.asset(
+            child: Image.network(
               group.imagePath,
               width: double.infinity,
               height: 120,

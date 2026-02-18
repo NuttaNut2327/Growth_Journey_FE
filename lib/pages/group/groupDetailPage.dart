@@ -38,7 +38,7 @@ class GroupDetailPage extends StatelessWidget {
                 bottomLeft: Radius.circular(16),
                 bottomRight: Radius.circular(16),
               ),
-              child: Image.asset(
+              child: Image.network(
                 group.imagePath,
                 width: double.infinity,
                 height: 180,
