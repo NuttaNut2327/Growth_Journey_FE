@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:fe/pages/heal/models/user_level_model.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class UserLevelCard extends StatelessWidget {
   final UserLevel user;
+  final bool showEditIcon;   
 
   const UserLevelCard({
     super.key,
     required this.user,
+    this.showEditIcon = false,
   });
 
   @override
@@ -34,6 +37,7 @@ class UserLevelCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     width: 75,
@@ -63,9 +67,9 @@ class UserLevelCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 4),
                         decoration: BoxDecoration(
-                          color: Color(0xFFF5D7E3),
+                          color: Color(0x80D8A7D9),
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
@@ -85,7 +89,17 @@ class UserLevelCard extends StatelessWidget {
                         )
                       )
                     ],
-                  )
+                  ),
+                  const Spacer(),
+                  if (showEditIcon)
+                    IconButton(
+                      onPressed: () {},
+                      icon: HugeIcon(
+                        icon: HugeIcons.strokeRoundedPencilEdit02,
+                        strokeWidth: 2,
+                        size: 24,
+                      ),
+                    )
                 ],
               ),
               SizedBox(height: 16),

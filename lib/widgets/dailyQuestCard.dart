@@ -121,7 +121,6 @@ class DailyQuestCard extends StatelessWidget {
                 showModalBottomSheet(
                   context: context,
                   backgroundColor: Colors.transparent,
-                  isScrollControlled: true,
                   builder: (_) {
 
                     String? imagePath;
@@ -143,16 +142,8 @@ class DailyQuestCard extends StatelessWidget {
                               ),
                               child: ListView(
                                 controller: controller,
-                                padding: EdgeInsets.all(24),
+                                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 36),
                                 children: [
-                                  Center(
-                                    child: Container(
-                                      width: 70,
-                                      height: 7,
-                                      color: Color(0xFFD9D9D9),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
                                   Text(
                                     quest.title,
                                     style: TextStyle(
