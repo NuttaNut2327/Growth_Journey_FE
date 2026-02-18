@@ -54,6 +54,14 @@ class ParticipantRepository {
         role: 'MEMBER'
       ),
     ],
+    '6b2f9d80-1a3c-4e57-b8f4-72d0a9c86e7b': [
+      Participant(
+        userId: '5d7a3b90-e214-4cfa-9b86-41f0d2e9a2c4', 
+        name: 'Rarity', 
+        imagePath: 'https://i.pinimg.com/736x/e7/48/08/e74808d81ad6ed6c730f3d52cb569d0e.jpg', 
+        role: 'CREATOR'
+      ),
+    ],
   };
 
   Future<List<Participant>> getParticipantsByGroup(String activityId) async {
