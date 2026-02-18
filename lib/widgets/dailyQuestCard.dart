@@ -20,9 +20,16 @@ class DailyQuestCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFFEEDFF1),
+          color: const Color(0xFFF7EDF7),
           width: 2,
         ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x1A000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,69 +37,75 @@ class DailyQuestCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // HugeIcon(
-              //   icon: HugeIcons.strokeRoundedMonocle01, 
-              //   size: 24,
-              //   color: Color(0xFFD6A6D8),
-              //   strokeWidth: 2,
-              // ), 
-              // SizedBox(width: 8),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      quest.title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      quest.description,
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 8),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(999),
-                            border: Border.all(
-                              color: const Color(0x808B7A99),
-                              width: 1,
+                        Wrap(
+                          spacing: 8,      
+                          runSpacing: 4,
+                          children: [
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: 180,
+                              ),
+                              child: Text(
+                                quest.title,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
+                            Column(
+                              children: [
+                                const SizedBox(height: 3),
+                                Text(
+                                  '${quest.period} min',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFF8B7A99),
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0x80F6DDE4),
+                            borderRadius: BorderRadius.circular(999),
                           ),
                           child: Row(
                             children: [
                               HugeIcon(
                                 icon: HugeIcons.strokeRoundedFavourite,
                                 size: 10,
-                                strokeWidth: 3,
+                                strokeWidth: 3.5,
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 '${quest.point} pts', 
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
                           )
                         ),
-                        const SizedBox(width: 16),
-                        Text('${quest.period} min', 
-                          style: TextStyle(
-                            fontSize: 12, 
-                            color: Color(0xFF8B7A99),
-                          )
-                        ),
                       ],
-                    )
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      quest.description,
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ],
                 ),
               ),

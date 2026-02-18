@@ -48,7 +48,7 @@ import 'package:fe/pages/heal/models/quest_model.dart';
   }),
   Quest.fromMap({
     'questId':'9d2f6b73-8a41-4cde-a5b0-3e7c2f1a4d98',
-    'title':'Connect with Someone',
+    'title':'Connect with Someoneeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
     'description':'Join one group within the application to complete the activity.',
     'point': 150,
     'period':'60',
