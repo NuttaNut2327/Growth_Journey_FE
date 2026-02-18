@@ -1,3 +1,5 @@
+import 'package:fe/pages/group/enum/group_status.dart';
+
 class Group {
   final String groupId;
   final String title;
@@ -8,7 +10,7 @@ class Group {
   final int joinedMemberCount;
   final int targetMemberCount;
   final List<String> tags;
-  final String status;
+  final GroupStatus status;
 
   Group({
     required this.groupId,

@@ -8,6 +8,7 @@ import 'package:fe/widgets/bottomActionButton.dart';
 import 'package:fe/widgets/secondButton.dart';
 import 'package:fe/pages/group/repository/participant_repository.dart';
 import 'package:fe/widgets/participantCard.dart';
+import 'package:fe/pages/group/enum/group_status.dart';
 
 class GroupDetailPage extends StatelessWidget {
   const GroupDetailPage({super.key});
@@ -71,7 +72,7 @@ class GroupDetailPage extends StatelessWidget {
                           )
                         ),
                       ),
-                      if (group.status.toLowerCase() == 'joined') _joinedBadge(),
+                      if (group.status == GroupStatus.JOINED) _joinedBadge(),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -172,7 +173,7 @@ class GroupDetailPage extends StatelessWidget {
           ],
         )
       ),
-      bottomNavigationBar: group.status.toLowerCase() == 'joined'
+      bottomNavigationBar: group.status == GroupStatus.JOINED
       ? BottomActionButton(
           text: '',
           onPressed: () {},

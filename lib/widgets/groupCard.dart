@@ -5,6 +5,7 @@ import 'package:fe/widgets/mainButton.dart';
 import 'package:fe/widgets/secondButton.dart';
 import 'package:intl/intl.dart';
 import 'package:fe/pages/group/models/group_model.dart';
+import 'package:fe/pages/group/enum/group_status.dart';
 
 
 class GroupCard extends StatelessWidget {
@@ -56,7 +57,7 @@ class GroupCard extends StatelessWidget {
                   fontWeight: FontWeight.w700
                 )
               ),
-              if (group.status.toLowerCase() == 'joined') _joinedBadge(),
+              if (group.status == GroupStatus.JOINED) _joinedBadge(),
             ],
           ),
           const SizedBox(height: 16),
@@ -135,7 +136,7 @@ class GroupCard extends StatelessWidget {
                 .toList(),
           ),
           const SizedBox(height: 16),
-          if (group.status.toLowerCase() == 'joined')
+          if (group.status == GroupStatus.JOINED)
             _joinedButton()
           else
             _joinButton(),
@@ -155,8 +156,8 @@ Widget _joinedBadge() {
       color: const Color(0xFFF6DDE4),
       borderRadius: BorderRadius.circular(999),
     ),
-    child: const Text(
-      'Joined',
+    child: Text(
+      GroupStatus.JOINED.label,
       style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w700,

@@ -1,4 +1,5 @@
 import 'package:fe/pages/group/models/group_model.dart';
+import 'package:fe/pages/group/enum/group_status.dart';
 
 class GroupRepository {
 
@@ -14,7 +15,7 @@ class GroupRepository {
       'joinedMemberCount': 6,
       'targetMemberCount': 8,
       'tags': ['Mental Health', 'Group Talk'],
-      'status': 'joined',
+      'status': GroupStatus.JOINED,
     }),
     Group.fromMap({
       'groupId': 'a7d5e3b1-2c4f-47a8-9d6b-0f12c8e9789d',
@@ -27,7 +28,7 @@ class GroupRepository {
       'joinedMemberCount': 2,
       'targetMemberCount': 15,
       'tags': ['Yoga', 'Wellness'],
-      'status': 'not_joined',
+      'status': GroupStatus.NOT_JOINED,
     }),
     Group.fromMap({
       'groupId': '6b2f9d80-1a3c-4e57-b8f4-72d0a9c86e7b',
@@ -40,7 +41,7 @@ class GroupRepository {
       'joinedMemberCount': 1,
       'targetMemberCount': 8,
       'tags': ['Art', 'Therapy', 'Creative'],
-      'status': 'not_joined',
+      'status': GroupStatus.NOT_JOINED,
     }),
   ];
 

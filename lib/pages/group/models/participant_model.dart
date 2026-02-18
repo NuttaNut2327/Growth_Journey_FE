@@ -1,8 +1,10 @@
+import 'package:fe/pages/group/enum/role_participant.dart';
+
 class Participant {
   final String userId;
   final String name;
   final String? imagePath;
-  final String role;
+  final RoleParticipant role;
 
   Participant({
     required this.userId,

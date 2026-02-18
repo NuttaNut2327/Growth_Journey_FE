@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fe/pages/group/models/participant_model.dart';
+import 'package:fe/pages/group/enum/role_participant.dart';
 
 class ParticipantCard extends StatelessWidget {
   final Participant participant;
@@ -17,7 +18,7 @@ class ParticipantCard extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          participant.role, 
+          participant.role.label, 
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w500
