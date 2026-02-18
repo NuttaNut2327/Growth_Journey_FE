@@ -109,7 +109,7 @@ class HomePage extends StatelessWidget {
                     const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
-                      height: 48,
+                      height: 36,
                       child: MainButton(
                         text: "Start assessment", 
                         onPressed: () {

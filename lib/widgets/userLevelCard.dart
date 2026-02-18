@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:fe/pages/heal/models/user_level_model.dart';
 
 class UserLevelCard extends StatelessWidget {
-  const UserLevelCard({super.key});
+  final UserLevel user;
+
+  const UserLevelCard({
+    super.key,
+    required this.user,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +53,7 @@ class UserLevelCard extends StatelessWidget {
                         ),
                       ],
                       image: DecorationImage(
-                        image: NetworkImage('https://i.pinimg.com/736x/46/6a/9a/466a9a907e24511cebea9893109c0344.jpg'),
+                        image: NetworkImage(user.imagePath),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -59,10 +65,11 @@ class UserLevelCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 4),
                         decoration: BoxDecoration(
-                          color: Color(0xFFEED7ED),
+                          color: Color(0xFFF5D7E3),
                           borderRadius: BorderRadius.circular(999),
                         ),
-                        child: Text('Level 5',
+                        child: Text(
+                          'Level ${user.level}',
                           style: TextStyle(
                             fontSize: 12, 
                             fontWeight: FontWeight.w500
@@ -70,7 +77,8 @@ class UserLevelCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text('Kwantip Kanjanamas', 
+                      Text(
+                        user.userName, 
                         style: TextStyle(
                           fontSize: 18, 
                           fontWeight: FontWeight.w700
@@ -84,13 +92,13 @@ class UserLevelCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Progress to Level 6', 
+                  Text('Progress to Level ${user.level+1}', 
                     style: TextStyle(
                       fontSize: 14,
                       color: Color(0xFF8B7A99)
                     )
                   ),
-                  Text('1250 / 1500 XP', 
+                  Text('${user.userPoint} / ${user.fullPoint} XP', 
                     style: TextStyle(
                       fontSize: 14, 
                       fontWeight: FontWeight.w500
@@ -102,7 +110,7 @@ class UserLevelCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: LinearProgressIndicator(
-                  value: 1250 / 1500,
+                  value: user.userPoint / user.fullPoint,
                   minHeight: 12,
                   backgroundColor: Color(0x33D8A7D9),
                   valueColor: AlwaysStoppedAnimation(Color(0xFFD8A7D9)),

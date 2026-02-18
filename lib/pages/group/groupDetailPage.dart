@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fe/widgets/backNavbar.dart';
 import 'package:fe/widgets/tagGroup.dart';
-import 'package:fe/pages/group/modals/group_model.dart';
+import 'package:fe/pages/group/models/group_model.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:fe/widgets/bottomActionButton.dart';

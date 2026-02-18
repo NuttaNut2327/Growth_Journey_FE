@@ -3,7 +3,7 @@ import 'package:fe/widgets/mainUpperNavBar.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '/routes/app_routes.dart';
 import 'package:fe/widgets/groupCard.dart';
-import 'package:fe/pages/group/modals/group_model.dart';
+import 'package:fe/pages/group/models/group_model.dart';
 
 final List<Group> mockGroups = [
   Group.fromMap({
