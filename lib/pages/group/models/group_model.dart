@@ -1,4 +1,7 @@
+import 'package:fe/pages/group/enum/group_status.dart';
+
 class Group {
+  final String groupId;
   final String title;
   final String imagePath;
   final String description;
@@ -7,9 +10,10 @@ class Group {
   final int joinedMemberCount;
   final int targetMemberCount;
   final List<String> tags;
-  final String status;
+  final GroupStatus status;
 
   Group({
+    required this.groupId,
     required this.title,
     required this.imagePath,
     required this.description,
@@ -23,6 +27,7 @@ class Group {
 
   factory Group.fromMap(Map<String, dynamic> map) {
     return Group(
+      groupId: map['groupId'],
       title: map['title'],
       imagePath: map['imagePath'],
       description: map['description'],

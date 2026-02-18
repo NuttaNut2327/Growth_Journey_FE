@@ -4,36 +4,22 @@ import 'package:fe/widgets/tagGroup.dart';
 import 'package:fe/widgets/mainButton.dart';
 import 'package:fe/widgets/secondButton.dart';
 import 'package:intl/intl.dart';
+import 'package:fe/pages/group/models/group_model.dart';
+import 'package:fe/pages/group/enum/group_status.dart';
 
 
 class GroupCard extends StatelessWidget {
-  final String title;
-  final String imagePath;
-  final String description;
-  final String location;
-  final String eventDate;
-  final int joinedMemberCount;
-  final int targetMemberCount;
-  final List<String> tags;
-  final String status;
+  final Group group;
 
   const GroupCard({
     super.key,
-    required this.title,
-    required this.imagePath,
-    required this.description,
-    required this.location,
-    required this.eventDate,
-    required this.joinedMemberCount,
-    required this.targetMemberCount,
-    required this.tags,
-    required this.status,
+    required this.group
   });
 
   @override
   Widget build(BuildContext context) {
   
-    DateTime dateTime = DateTime.parse(eventDate).toLocal();
+    DateTime dateTime = DateTime.parse(group.eventDate).toLocal();
 
     // Date format
     String formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
@@ -66,19 +52,19 @@ class GroupCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                title, 
+                group.title, 
                 style: TextStyle(
                   fontWeight: FontWeight.w700
                 )
               ),
-              if (status.toLowerCase() == 'joined') _joinedBadge(),
+              if (group.status == GroupStatus.JOINED) _joinedBadge(),
             ],
           ),
           const SizedBox(height: 16),
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.asset(
-              imagePath,
+            child: Image.network(
+              group.imagePath,
               width: double.infinity,
               height: 120,
               fit: BoxFit.cover,
@@ -86,7 +72,7 @@ class GroupCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            description,
+            group.description,
             maxLines: 2,
             overflow: TextOverflow.ellipsis, 
             style: TextStyle(
@@ -100,7 +86,7 @@ class GroupCard extends StatelessWidget {
               HugeIcon(icon: HugeIcons.strokeRoundedLocation01, size: 14, color: Color(0xFFD8A7D9), strokeWidth: 1.5,),
               const SizedBox(width: 8),
               Text(
-                location,
+                group.location,
                 style: TextStyle(
                   fontSize: 12
                 ),
@@ -134,7 +120,7 @@ class GroupCard extends StatelessWidget {
             children: [
               HugeIcon(icon: HugeIcons.strokeRoundedUserMultiple02, size: 14, color: Color(0xFFD8A7D9), strokeWidth: 1.5,),
               const SizedBox(width: 8),
-              Text('$joinedMemberCount/$targetMemberCount participants',
+              Text('${group.joinedMemberCount}/${group.targetMemberCount} participants',
               style: TextStyle(
                 fontSize: 12
                 ),
@@ -145,12 +131,12 @@ class GroupCard extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: tags
+            children: group.tags
                 .map((tag) => TagGroup(label: tag))
                 .toList(),
           ),
           const SizedBox(height: 16),
-          if (status.toLowerCase() == 'joined')
+          if (group.status == GroupStatus.JOINED)
             _joinedButton()
           else
             _joinButton(),
@@ -170,8 +156,8 @@ Widget _joinedBadge() {
       color: const Color(0xFFF6DDE4),
       borderRadius: BorderRadius.circular(999),
     ),
-    child: const Text(
-      'Joined',
+    child: Text(
+      GroupStatus.JOINED.label,
       style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w700,
