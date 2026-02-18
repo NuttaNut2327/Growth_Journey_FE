@@ -6,6 +6,8 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:fe/widgets/bottomActionButton.dart';
 import 'package:fe/widgets/secondButton.dart';
+import 'package:fe/pages/group/repository/participant_repository.dart';
+import 'package:fe/widgets/participantCard.dart';
 
 class GroupDetailPage extends StatelessWidget {
   const GroupDetailPage({super.key});
@@ -13,6 +15,8 @@ class GroupDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final group = ModalRoute.of(context)!.settings.arguments as Group;
+
+    final ParticipantRepository repo = ParticipantRepository();
 
     DateTime dateTime = DateTime.parse(group.eventDate).toLocal();
 
@@ -115,12 +119,53 @@ class GroupDetailPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  Text('${group.joinedMemberCount}/${group.targetMemberCount} participants',
+                  Text(
+                    '${group.joinedMemberCount}/${group.targetMemberCount} participants',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600
                       ),
-                  )
+                  ),
+                  const SizedBox(height: 12),
+                    FutureBuilder(
+                      future: repo.getParticipantsByGroup(group.groupId),
+                      builder: (context, snapshot) {
+
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return SizedBox(
+                              width: double.infinity,
+                              height: 150,
+                              child: Center(
+                                child: Text('No participants yet', 
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Color(0xFFD8A7D9),
+                                  )),
+                              ),
+                            );
+                        }
+
+                        final participants = snapshot.data!;
+
+                        return Column(
+                          children: [
+                            Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.start,
+                            spacing: 36,    
+                            runSpacing: 24,   
+                            children: participants.map((participant) {
+                              return ParticipantCard(participant: participant);
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 16)
+                          ],
+                        );
+                      },
+                    ),
                 ],
               ),
             ),

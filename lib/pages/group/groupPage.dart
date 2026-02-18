@@ -7,6 +7,7 @@ import 'package:fe/pages/group/models/group_model.dart';
 
 final List<Group> mockGroups = [
   Group.fromMap({
+    'groupId': '3f9c2a74-8b1e-4f2d-a6c3-91e5b7d2637a',
     'title': 'Support Circle',
     'imagePath': 'assets/images/support_circle.jpg',
     'description':
@@ -19,6 +20,7 @@ final List<Group> mockGroups = [
     'status': 'joined',
   }),
   Group.fromMap({
+    'groupId': 'a7d5e3b1-2c4f-47a8-9d6b-0f12c8e9789d',
     'title': 'Morning Yoga Flow',
     'imagePath': 'assets/images/yoga_group.jpg',
     'description':
@@ -31,6 +33,7 @@ final List<Group> mockGroups = [
     'status': 'not_joined',
   }),
   Group.fromMap({
+    'groupId': '6b2f9d80-1a3c-4e57-b8f4-72d0a9c86e7b',
     'title': 'Creative Art Therapy',
     'imagePath': 'assets/images/art_therapy.jpg',
     'description':
