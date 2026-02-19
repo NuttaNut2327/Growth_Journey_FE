@@ -1,7 +1,9 @@
+import 'package:fe/interface/auth/loginRequest.dart';
 import 'package:flutter/material.dart';
-import '/routes/app_routes.dart';
 import 'package:hugeicons/hugeicons.dart';
+import '/routes/app_routes.dart';
 import 'package:fe/widgets/mainButton.dart';
+import 'package:fe/api/auth/login.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,6 +14,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _obscure = true;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   final _formKey = GlobalKey<FormState>();
   final usernameController = TextEditingController();
@@ -22,6 +26,38 @@ class _LoginPageState extends State<LoginPage> {
     usernameController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final navigator = Navigator.of(context);
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null; 
+    });
+
+    try {
+      final request = LoginRequest(
+        username: usernameController.text,
+        password: passwordController.text,
+      );
+
+      await login(request);
+
+      if (!mounted) return;
+      navigator.pushReplacementNamed(AppRoutes.bottomnavbar);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = "Invalid username or password";
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -42,8 +78,10 @@ class _LoginPageState extends State<LoginPage> {
                 color: Colors.white,
                 elevation: 5,
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 32,
+                  ),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -52,7 +90,9 @@ class _LoginPageState extends State<LoginPage> {
                         const Text(
                           'Log in',
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 24),
                         Column(
@@ -67,8 +107,13 @@ class _LoginPageState extends State<LoginPage> {
                                   strokeWidth: 2,
                                 ),
                                 SizedBox(width: 8),
-                                Text('Username',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                                Text(
+                                  'Username',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 8),
@@ -105,16 +150,21 @@ class _LoginPageState extends State<LoginPage> {
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                      color: Colors.red, width: 1.5),
+                                    color: Colors.red,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 focusedErrorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                      color: Colors.red, width: 2),
+                                    color: Colors.red,
+                                    width: 2,
+                                  ),
                                 ),
-                                contentPadding:
-                                    const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 16),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
                               ),
                             ),
                           ],
@@ -126,15 +176,19 @@ class _LoginPageState extends State<LoginPage> {
                             Row(
                               children: const [
                                 HugeIcon(
-                                  icon:
-                                      HugeIcons.strokeRoundedLockPassword,
+                                  icon: HugeIcons.strokeRoundedLockPassword,
                                   size: 18,
                                   color: Color(0xFFD8A7D9),
                                   strokeWidth: 2,
                                 ),
                                 SizedBox(width: 8),
-                                Text('Password',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                                Text(
+                                  'Password',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 8),
@@ -150,13 +204,12 @@ class _LoginPageState extends State<LoginPage> {
                               decoration: InputDecoration(
                                 hintText: 'Enter your password',
                                 hintStyle: TextStyle(
-                                  color: const Color(0x8009101D)
+                                  color: const Color(0x8009101D),
                                 ),
                                 suffixIcon: IconButton(
                                   icon: HugeIcon(
                                     icon: _obscure
-                                        ? HugeIcons
-                                            .strokeRoundedViewOffSlash
+                                        ? HugeIcons.strokeRoundedViewOffSlash
                                         : HugeIcons.strokeRoundedView,
                                     size: 18,
                                     strokeWidth: 2,
@@ -187,34 +240,54 @@ class _LoginPageState extends State<LoginPage> {
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                      color: Colors.red, width: 1.5),
+                                    color: Colors.red,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 focusedErrorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                      color: Colors.red, width: 2),
+                                    color: Colors.red,
+                                    width: 2,
+                                  ),
                                 ),
-                                contentPadding:
-                                    const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 16),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 32),
+                        if (_errorMessage != null) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 12,
+                            ),
+                            margin: const EdgeInsets.only(bottom: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.red.shade300),
+                            ),
+                            child: Text(
+                              _errorMessage!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+
                         SizedBox(
                           width: double.infinity,
                           child: MainButton(
-                            text: 'Log in',
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                print({
-                                  'username': usernameController.text,
-                                  'password': passwordController.text,
-                                });
-                                Navigator.pushNamed(context, AppRoutes.bottomnavbar);
-                              }
-                            },
+                            text: _isLoading ? 'Logging in...' : 'Log in',
+                            onPressed: _isLoading ? null : () => _handleLogin(),
                           ),
                         ),
                         const SizedBox(height: 32),
@@ -224,12 +297,14 @@ class _LoginPageState extends State<LoginPage> {
                             const Text('Don\'t have an account yet?'),
                             TextButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, AppRoutes.register);
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.register,
+                                );
                               },
                               child: const Text(
                                 'Create account',
-                                style:
-                                    TextStyle(color: Color(0xFFD8A7D9)),
+                                style: TextStyle(color: Color(0xFFD8A7D9)),
                               ),
                             ),
                           ],

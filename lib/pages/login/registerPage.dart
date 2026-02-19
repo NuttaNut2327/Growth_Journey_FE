@@ -1,3 +1,5 @@
+import 'package:fe/api/auth/register.dart';
+import 'package:fe/interface/auth/registerRequest.dart';
 import 'package:flutter/material.dart';
 import '/routes/app_routes.dart';
 import 'package:fe/widgets/mainButton.dart';
@@ -13,6 +15,8 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+  String? _errorMessage;
 
   final usernameController = TextEditingController();
   final firstNameController = TextEditingController();
@@ -46,7 +50,6 @@ class _RegisterPageState extends State<RegisterPage> {
     return '${parts[2]}-${parts[1]}-${parts[0]}';
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +70,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   elevation: 5,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 32),
+                      horizontal: 24,
+                      vertical: 32,
+                    ),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -75,7 +80,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           const Text(
                             'Create your account',
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 24),
                           AppTextField(
@@ -110,7 +117,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 return 'This field is required';
                               }
                               final emailRegex = RegExp(
-                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              );
                               if (!emailRegex.hasMatch(value)) {
                                 return 'Please enter a valid email address';
                               }
@@ -123,27 +131,39 @@ class _RegisterPageState extends State<RegisterPage> {
                             children: [
                               Row(
                                 children: const [
-                                  Text('* ', style: TextStyle(color: Colors.red, fontSize: 16)),
-                                  Text('Gender', style: TextStyle(fontSize: 16)),
+                                  Text(
+                                    '* ',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Gender',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 8),
                               DropdownButtonFormField<String>(
-                                value: selectedGender,
+                                initialValue: selectedGender,
                                 hint: const Text(
                                   'Select gender',
                                   style: TextStyle(
-                                    color: Color(0x8009101D), 
-                                    fontWeight: FontWeight.w400
+                                    color: Color(0x8009101D),
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
                                 items: ['Male', 'Female', 'Other']
                                     .map(
                                       (g) => DropdownMenuItem(
                                         value: g,
-                                        child: Text(g, style: const TextStyle(
-                                          fontWeight: FontWeight.w400
-                                        ),),
+                                        child: Text(
+                                          g,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
                                       ),
                                     )
                                     .toList(),
@@ -164,23 +184,35 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: Color(0xFFEBD3EC)),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFEBD3EC),
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide:
-                                        const BorderSide(color: Color(0xFFD8A7D9), width: 2),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFD8A7D9),
+                                      width: 2,
+                                    ),
                                   ),
                                   errorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: Colors.red, width: 1.5),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 1.5,
+                                    ),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: Colors.red, width: 2),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 2,
+                                    ),
                                   ),
-                                  contentPadding:
-                                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 16,
+                                  ),
                                 ),
                               ),
                             ],
@@ -191,8 +223,17 @@ class _RegisterPageState extends State<RegisterPage> {
                             children: [
                               Row(
                                 children: const [
-                                  Text('* ', style: TextStyle(color: Colors.red, fontSize: 16)),
-                                  Text('Birthday', style: TextStyle(fontSize: 16)),
+                                  Text(
+                                    '* ',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Birthday',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 8),
@@ -206,7 +247,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                     fontWeight: FontWeight.w400,
                                   ),
                                   prefixIcon: Padding(
-                                    padding: const EdgeInsets.only(left: 12, right: 8),
+                                    padding: const EdgeInsets.only(
+                                      left: 12,
+                                      right: 8,
+                                    ),
                                     child: HugeIcon(
                                       icon: HugeIcons.strokeRoundedCalendar04,
                                       color: Color(0xFFD8A7D9),
@@ -223,23 +267,35 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: Color(0xFFEBD3EC)),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFEBD3EC),
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide:
-                                        const BorderSide(color: Color(0xFFD8A7D9), width: 2),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFD8A7D9),
+                                      width: 2,
+                                    ),
                                   ),
                                   errorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: Colors.red, width: 1.5),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 1.5,
+                                    ),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: Colors.red, width: 2),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 2,
+                                    ),
                                   ),
-                                  contentPadding:
-                                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 16,
+                                  ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -248,12 +304,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                   return null;
                                 },
                                 onTap: () async {
-                                  final DateTime? pickedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime(2000),
-                                    firstDate: DateTime(1900),
-                                    lastDate: DateTime.now(),
-                                  );
+                                  final DateTime? pickedDate =
+                                      await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime(2000),
+                                        firstDate: DateTime(1900),
+                                        lastDate: DateTime.now(),
+                                      );
 
                                   if (pickedDate != null) {
                                     birthdayController.text =
@@ -282,8 +339,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             suffixIcon: IconButton(
                               icon: HugeIcon(
                                 icon: _isPasswordVisible
-                                    ? HugeIcons
-                                        .strokeRoundedView
+                                    ? HugeIcons.strokeRoundedView
                                     : HugeIcons.strokeRoundedViewOffSlash,
                                 size: 18,
                                 strokeWidth: 2,
@@ -294,7 +350,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 });
                               },
                             ),
-                          ),                         
+                          ),
                           const SizedBox(height: 16),
                           AppTextField(
                             label: 'Confirm password',
@@ -313,28 +369,96 @@ class _RegisterPageState extends State<RegisterPage> {
                             },
                           ),
                           const SizedBox(height: 32),
+                          if (_errorMessage != null) ...[
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 12,
+                              ),
+                              margin: const EdgeInsets.only(bottom: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.red.shade300),
+                              ),
+                              child: Text(
+                                _errorMessage!,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ],
+
                           SizedBox(
                             width: double.infinity,
-                            child: MainButton(
-                              text: 'Create account',
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  final body = {
-                                    "username": usernameController.text.trim(),
-                                    "first_name": firstNameController.text.trim(),
-                                    "last_name": lastNameController.text.trim(),
-                                    "email": emailController.text.trim(),
-                                    "gender": selectedGender?.toLowerCase(),
-                                    "birthdate": formatBirthdate(birthdayController.text),
-                                    "phone": phoneNumberController.text.trim(),
-                                    "image_url": "https://example.com/avatar.png",
-                                    "password": passwordController.text,
-                                  };
-                                  print(body);
-                                  // Navigator.pushNamed(context, AppRoutes.home);
-                                }
-                              },
-                            ),
+                            child: _isLoading
+                                ? MainButton(
+                                    text: 'Creating account...',
+                                    onPressed: null,
+                                  )
+                                : MainButton(
+                                    text: 'Create account',
+                                    onPressed: () async {
+                                      setState(() {
+                                        _errorMessage = null;
+                                      });
+                                      if (_formKey.currentState!.validate()) {
+                                        try {
+                                          final request = RegisterRequest(
+                                            username: usernameController.text
+                                                .trim(),
+                                            firstName: firstNameController.text
+                                                .trim(),
+                                            lastName: lastNameController.text
+                                                .trim(),
+                                            email: emailController.text.trim(),
+                                            password: passwordController.text,
+                                            gender: selectedGender!
+                                                .toLowerCase(),
+                                            birthdate: formatBirthdate(
+                                              birthdayController.text,
+                                            ),
+                                            phone: phoneNumberController.text
+                                                .trim(),
+                                          );
+                                          setState(() => _isLoading = true);
+                                          await register(request);
+                                          setState(() => _isLoading = false);
+                                          if (!mounted) return;
+
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                "Account created successfully 🎉",
+                                              ),
+                                              backgroundColor: Colors.green,
+                                              duration: Duration(seconds: 2),
+                                            ),
+                                          );
+
+                                          await Future.delayed(
+                                            const Duration(seconds: 2),
+                                          );
+
+                                          Navigator.pushNamed(
+                                            context,
+                                            AppRoutes.login,
+                                          );
+                                        } catch (e) {
+                                          setState(() {
+                                            _errorMessage =
+                                                "Registration failed: ${e.toString().replaceAll("Exception: ", "")}";
+                                          });
+                                          setState(() => _isLoading = false);
+                                        }
+                                      }
+                                    },
+                                  ),
                           ),
                           const SizedBox(height: 32),
                           Row(
@@ -342,8 +466,10 @@ class _RegisterPageState extends State<RegisterPage> {
                             children: [
                               const Text('Already have an account?'),
                               TextButton(
-                                onPressed: () =>
-                                    Navigator.pushNamed(context, AppRoutes.login),
+                                onPressed: () => Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.login,
+                                ),
                                 child: const Text(
                                   'Log in',
                                   style: TextStyle(color: Color(0xFFD8A7D9)),
