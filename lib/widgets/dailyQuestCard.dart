@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:fe/widgets/mainButton.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -161,9 +164,9 @@ class DailyQuestCard extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 20),
                                   UploadImageButton(
-                                    onImageSelected: (path) {
+                                    onImageSelected: (Uint8List? bytes) {
                                       setState(() {
-                                        imagePath = path;
+                                        imagePath = bytes != null ? base64Encode(bytes) : null;
                                       });
                                     },
                                   ),
