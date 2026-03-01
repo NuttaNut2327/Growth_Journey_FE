@@ -1,7 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:fe/api/group/createGroup.dart';
+import 'package:fe/api/location/getLocations.dart';
 import 'package:fe/interface/group/createGroupRequest.dart';
+import 'package:fe/interface/location/location.dart';
+import 'package:fe/widgets/appDropdownField.dart.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/widgets/customTextField.dart';
@@ -29,6 +32,14 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   final maxParticipantsController = TextEditingController();
   List<String> selectedTags = [];
   Uint8List? imageBytes;
+  String? selectedLocationId;
+  late Future<List<Location>> locationsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    locationsFuture = getLocationsByStatus('approved');
+  }
 
   @override
   void dispose() {
@@ -99,18 +110,44 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                       isRequired: true,
                     ),
                     const SizedBox(height: 16),
-                    AppTextField(
-                      label: 'Location',
-                      hintText: 'Where this happen?',
-                      controller: locationController,
-                      isRequired: true,
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: HugeIcon(
-                          icon: HugeIcons.strokeRoundedLocation01,
-                          color: Color(0xFFD8A7D9),
-                        ),
-                      ),
+                    FutureBuilder<List<Location>>(
+                      future: locationsFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        }
+
+                        final locations = snapshot.data ?? [];
+                        final menuItems = locations.map((loc) {
+                          return DropdownMenuItem<String>(
+                            value: loc.id.toString(),
+                            child: Text(loc.name),
+                          );
+                        }).toList();
+
+                        return AppDropdownField<String>(
+                          label: 'Location',
+                          hintText:
+                              snapshot.connectionState ==
+                                  ConnectionState.waiting
+                              ? 'Loading...'
+                              : 'Where will this happen?',
+                          isRequired: true,
+                          value: selectedLocationId,
+                          prefixIcon: const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Icon(
+                              Icons.location_on,
+                              color: Color(0xFFD8A7D9),
+                            ),
+                          ),
+                          items: menuItems,
+                          controller: locationController,
+                          onChanged: (val) {
+                            setState(() => selectedLocationId = val);
+                          },
+                        );
+                      },
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -306,11 +343,12 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                 description: descriptionController.text,
                 targetMemberCount: int.parse(maxParticipantsController.text),
                 eventDate: formattedDate,
-                location: locationController.text,
+                location: selectedLocationId!,
                 tags: selectedTags,
-                imageBytes: imageBytes, 
+                imageBytes: imageBytes,
               );
               bool _isLoading;
+              print('group.location: ${group.location}');
               setState(() => _isLoading = true);
               await createGroup(group);
               setState(() => _isLoading = false);
@@ -320,7 +358,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                 const SnackBar(
                   content: Text("Group created successfully 🎉"),
                   backgroundColor: Colors.green,
-                  duration: Duration(seconds: 2),
+                  duration: Duration(seconds: 3),
                 ),
               );
 
