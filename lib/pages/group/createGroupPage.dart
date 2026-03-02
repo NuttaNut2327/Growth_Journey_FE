@@ -348,7 +348,6 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                 imageBytes: imageBytes,
               );
               bool _isLoading;
-              print('group.location: ${group.location}');
               setState(() => _isLoading = true);
               await createGroup(group);
               setState(() => _isLoading = false);
