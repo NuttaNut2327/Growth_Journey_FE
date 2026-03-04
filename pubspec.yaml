@@ -89,6 +89,7 @@ flutter:
     - assets/images/angry_level_2.png
     - assets/images/angry_level_3.png
     - .env
+    - assets/markers/garden_marker.png
     
     
 

@@ -6,4 +6,6 @@ class AppRoutes {
   static const createGroup = '/group/create';
   static const groupDetail = '/group/detail';
   static const assessment = '/assessment';
+  static const profile = '/profile';
+  static const createLocation = '/location/create';
 }
