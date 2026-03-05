@@ -9,6 +9,7 @@ import 'package:fe/routes/app_routes.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/widgets/locationDetailCard.dart';
 import 'package:fe/widgets/activityCard.dart';
+import 'package:fe/pages/map/repository/activity_repository.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -26,6 +27,8 @@ class _MapPageState extends State<MapPage> {
   late LocationRepository _repository;
   List<Location> places = [];
   bool isLoading = true;
+  
+  final ActivityRepository repo = ActivityRepository();
 
   Set<Marker> _buildMarkers() {
     final filtered = places.where((place) {
@@ -160,7 +163,7 @@ class _MapPageState extends State<MapPage> {
       return DraggableScrollableSheet(
         initialChildSize: 0.35,   
         minChildSize: 0.35,
-        maxChildSize: 1.0,       
+        maxChildSize: 0.6,       
         expand: false,           
         builder: (context, controller) {
           return SafeArea(     
@@ -174,7 +177,7 @@ class _MapPageState extends State<MapPage> {
               ),
               child: ListView(
                 controller: controller,
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 36),
                 children: [
                   LocationDetailcard(
                     place: place,
@@ -189,14 +192,60 @@ class _MapPageState extends State<MapPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
+                  const SizedBox(height: 4),
+                  const Text(
+                    "Activities at This Location",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF8B7A99)
+                    ),
+                  ),
                   const SizedBox(height: 16),
 
-                  ActivityCard(),
-                  const SizedBox(height: 16),
-                  ActivityCard(),
-                  const SizedBox(height: 16),
-                  ActivityCard(),
+                  FutureBuilder(
+                      future: repo.getActivitiesByLocation(place.id),
+                      builder: (context, snapshot) {
+
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return SizedBox(
+                              width: double.infinity,
+                              height: 150,
+                              child: Center(
+                                child: Text('There are no activities held here.', 
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Color(0xFF8B7A99),
+                                  )),
+                              ),
+                            );
+                        }
+
+                        final activities = snapshot.data!;
+
+                        return Column(
+                          children: activities.map((activity) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(16),
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.groupDetail,
+                                    arguments: activity,
+                                  );
+                                },
+                                child: ActivityCard(activity: activity),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
                 ],
               ),
             ),

@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:fe/pages/group/models/group_model.dart';
+import 'package:intl/intl.dart';
 
 class ActivityCard extends StatelessWidget {
-  // final String title;
-  // final String location;
-  // final String date;
-  // final String participants;
-  // final String imageUrl;
+  final Group activity;
 
   const ActivityCard({
     super.key,
-    // required this.title,
-    // required this.location,
-    // required this.date,
-    // required this.participants,
-    // required this.imageUrl,
+    required this.activity,
   });
 
   @override
   Widget build(BuildContext context) {
+
+    DateTime dateTime = DateTime.parse(activity.eventDate).toLocal();
+
+    // Date format
+    String formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -38,34 +39,82 @@ class ActivityCard extends StatelessWidget {
       child: Row(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             child: Image.network(
-              // imageUrl,
-              "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-              width: 80,
-              height: 80,
+              activity.imagePath,
+              width: 90,
+              height: 90,
               fit: BoxFit.cover,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  // title,
-                  "Morning Meditation",
+                  activity.title,
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 6),
-                // Text(location),
-                // Text(date),
-                // Text(participants),
-                Text("Central Botanical Gardens"),
-                Text("24 Dec 2025"),
-                Text("8 participants"),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const HugeIcon(
+                      icon: HugeIcons.strokeRoundedLocation01, 
+                      size: 14, 
+                      color: Color(0xFFD8A7D9),
+                      strokeWidth: 2,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      activity.location, 
+                      style: const TextStyle(fontSize: 12),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    HugeIcon(
+                      icon: HugeIcons.strokeRoundedCalendar04, 
+                      size: 14, 
+                      color: Color(0xFFD8A7D9),
+                      strokeWidth: 2,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      formattedDate, 
+                      style: const TextStyle(fontSize: 12),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    HugeIcon(
+                      icon: HugeIcons.strokeRoundedUserMultiple02, 
+                      size: 14, 
+                      color: Color(0xFFD8A7D9),
+                      strokeWidth: 2,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      "${activity.joinedMemberCount} participants",
+                      style: const TextStyle(fontSize: 12),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ],
             ),
           )
