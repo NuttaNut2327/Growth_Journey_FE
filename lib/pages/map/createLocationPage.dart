@@ -1,9 +1,10 @@
+import 'package:fe/pages/map/repository/check_location_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/widgets/customTextField.dart';
-import 'package:fe/widgets/tagField.dart';
 import 'package:fe/widgets/bottomActionButton.dart';
-import 'package:fe/pages/map/enum/location_type.dart';
+import 'package:fe/pages/map/models/check_location_model.dart';
+import 'package:fe/pages/map/confirmCreatePage.dart';
 
 class CreateLocationPage extends StatefulWidget {
   const CreateLocationPage({super.key});
@@ -15,39 +16,24 @@ class CreateLocationPage extends StatefulWidget {
 class _CreateLocationPageState extends State<CreateLocationPage> {
 
   final _formKey = GlobalKey<FormState>();
-  final locationNameController = TextEditingController();
-  final locationDescriptionController = TextEditingController();
   final linkController = TextEditingController();
-  late String selectTag;
+  String? selectTag;
+  bool showLocationCard = false;
+
+  final repository = CheckLocationRepository();
+  CheckLocation? location;
 
   @override
   void dispose() {
-    locationNameController.dispose();
-    locationDescriptionController.dispose();
     linkController.dispose();
     super.dispose();
-  }
-
-  final tags = [
-    LocationType.clinic.label, 
-    LocationType.park.label, 
-    LocationType.museum.label, 
-    LocationType.cafe.label, 
-    LocationType.library.label, 
-    LocationType.other.label
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    selectTag = tags.last;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Request to add a pin'),
+        title: const Text('Request to add a location'),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(
@@ -71,21 +57,6 @@ class _CreateLocationPageState extends State<CreateLocationPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     AppTextField(
-                      label: 'Location name',
-                      hintText: 'Enter location name', 
-                      controller: locationNameController,
-                      isRequired: true,
-                    ),
-                    const SizedBox(height: 16),
-                    AppTextField(
-                      label: 'Location description',
-                      hintText: 'Tell people what your location is about...', 
-                      controller: locationDescriptionController,
-                      isRequired: true,
-                      maxLines: 4,
-                    ),
-                    const SizedBox(height: 16),
-                    AppTextField(
                       label: 'Google Maps Link',
                       hintText: 'Enter google maps link of the location', 
                       controller: linkController,
@@ -98,43 +69,6 @@ class _CreateLocationPageState extends State<CreateLocationPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text('*', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.red)),
-                            const SizedBox(width: 4),
-                            HugeIcon(
-                              icon: HugeIcons.strokeRoundedTag01, 
-                              size: 18, 
-                              strokeWidth: 2,
-                            ),
-                            const SizedBox(width: 8),
-                            Text('Categories', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: tags.map((tag) {
-                            final isSelected = selectTag == tag;
-
-                            return TagField(
-                              label: tag,
-                              isSelected: isSelected,
-                              onTap: () {
-                                setState(() {
-                                  selectTag = tag;
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
                   ],
                 )
               )
@@ -145,11 +79,17 @@ class _CreateLocationPageState extends State<CreateLocationPage> {
       bottomNavigationBar: BottomActionButton(
         text: "Submit request",
         onPressed: () {
+
           if (_formKey.currentState!.validate()) {
-            print("Location Name: ${locationNameController.text}");
-            print("Description: ${locationDescriptionController.text}");
-            print("Google Maps Link: ${linkController.text}");
-            print("Tags: $selectTag");
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Confirmcreatepage(
+                  link: linkController.text,
+                ),
+              ),
+            );
           }
         },
       ),

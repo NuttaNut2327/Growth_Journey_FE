@@ -4,8 +4,8 @@ class Location {
   final String id;
   final String name;
   final String description;
-  final String latitude;
-  final String longitude;
+  final double latitude;
+  final double longitude;
   final LocationType type;
 
   Location({
@@ -22,8 +22,8 @@ class Location {
       id: json['ID'],
       name: json['name'],
       description: json['description'],
-      latitude: json['latitude'].toString(),
-      longitude: json['longitude'].toString(),
+      latitude: double.parse(json['latitude'].toString()),
+      longitude: double.parse(json['longitude'].toString()),
       type: LocationType.values.firstWhere(
         (e) => e.name.toLowerCase().trim() ==
             json['type'].toString().toLowerCase().trim(),

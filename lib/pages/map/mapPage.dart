@@ -43,8 +43,8 @@ class _MapPageState extends State<MapPage> {
       return Marker(
         markerId: MarkerId(place.id),
         position: LatLng(
-          double.parse(place.latitude), 
-          double.parse(place.longitude),
+          double.parse(place.latitude.toString()), 
+          double.parse(place.longitude.toString()),
         ),
         icon: BitmapDescriptor.defaultMarkerWithHue(
           _getMarkerColor(place.type),
@@ -163,11 +163,12 @@ class _MapPageState extends State<MapPage> {
       return DraggableScrollableSheet(
         initialChildSize: 0.35,   
         minChildSize: 0.35,
-        maxChildSize: 0.6,       
+        maxChildSize: 0.8,       
         expand: false,           
         builder: (context, controller) {
           return SafeArea(     
             top: false,
+            bottom: false,
             child: Container(
               decoration: const BoxDecoration(
                 color: Color(0xFFF6EEF5),
@@ -203,49 +204,49 @@ class _MapPageState extends State<MapPage> {
                   const SizedBox(height: 16),
 
                   FutureBuilder(
-                      future: repo.getActivitiesByLocation(place.id),
-                      builder: (context, snapshot) {
+                    future: repo.getActivitiesByLocation(place.id),
+                    builder: (context, snapshot) {
 
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
 
-                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return SizedBox(
-                              width: double.infinity,
-                              height: 150,
-                              child: Center(
-                                child: Text('There are no activities held here.', 
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0xFF8B7A99),
-                                  )),
-                              ),
-                            );
-                        }
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return SizedBox(
+                            width: double.infinity,
+                            height: 150,
+                            child: Center(
+                              child: Text('There are no activities held here.', 
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFF8B7A99),
+                                )),
+                            ),
+                          );
+                      }
 
-                        final activities = snapshot.data!;
+                      final activities = snapshot.data!;
 
-                        return Column(
-                          children: activities.map((activity) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(16),
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    AppRoutes.groupDetail,
-                                    arguments: activity,
-                                  );
-                                },
-                                child: ActivityCard(activity: activity),
-                              ),
-                            );
-                          }).toList(),
-                        );
-                      },
-                    ),
+                      return Column(
+                        children: activities.map((activity) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.groupDetail,
+                                  arguments: activity,
+                                );
+                              },
+                              child: ActivityCard(activity: activity),
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
