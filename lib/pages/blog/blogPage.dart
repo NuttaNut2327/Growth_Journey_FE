@@ -5,6 +5,7 @@ import '/routes/app_routes.dart';
 import 'package:fe/widgets/blogCard.dart';
 import 'package:fe/pages/blog/repository/blog_repository.dart';
 import 'package:fe/pages/blog/models/blog_model.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class BlogPage extends StatelessWidget {
   const BlogPage({super.key});
@@ -48,7 +49,7 @@ class BlogPage extends StatelessWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, AppRoutes.createGroup);
+                            Navigator.pushNamed(context, AppRoutes.createBlog);
                           },
                           style: ElevatedButton.styleFrom(
                             shape: const CircleBorder(),
@@ -63,6 +64,36 @@ class BlogPage extends StatelessWidget {
                           )
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0x4DC8E5D8),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                            HugeIcon(
+                              icon: HugeIcons.strokeRoundedFlower, 
+                              size: 20, 
+                              strokeWidth: 2, 
+                              color: Color(0xFF60BA92)
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'This is a safe, judgment-free space. \nBe kind, be respectful, and remember that \neveryone is on their own healing journey.',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            )                      
+                          ],
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     FutureBuilder<List<Blog>>(

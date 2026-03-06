@@ -6,14 +6,20 @@ import 'package:fe/widgets/uploadImageButton.dart';
 import 'package:fe/pages/blog/models/blog_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class BlogCard extends StatelessWidget {
+class BlogCard extends StatefulWidget {
   final Blog blog;
 
   const BlogCard({
     super.key,
     required this.blog
-    });
+  });
 
+  State<BlogCard> createState() => _BlogCardState();
+}
+
+class _BlogCardState extends State<BlogCard> {
+  bool isLiked = false;
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,7 +47,7 @@ class BlogCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundImage: NetworkImage(blog.imagePath ?? 'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg'),
+                backgroundImage: NetworkImage(widget.blog.imagePath ?? 'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg'),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -49,14 +55,14 @@ class BlogCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                     blog.name,
+                     widget.blog.name,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                     timeago.format(DateTime.parse(blog.creatTime)),
+                     timeago.format(DateTime.parse(widget.blog.creatTime)),
                       style: TextStyle(
                         color: Colors.grey, 
                         fontSize: 14
@@ -69,24 +75,28 @@ class BlogCard extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            blog.content,
+            widget.blog.content,
           ),
           const SizedBox(height: 14),
           Row(
             children: [
               IconButton(
-                onPressed: () {},
-                padding: EdgeInsets.zero,          // 👈 เอา padding ออก
-                constraints: const BoxConstraints(), // 👈 เอา min size default ออก
-                icon: const Icon(
-                  Icons.favorite_border,
-                  color: Color(0xFFD8A7D9),
+                onPressed: () {
+                  setState(() {
+                    isLiked = !isLiked;
+                  });
+                },
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: Icon(
+                  isLiked ? Icons.favorite : Icons.favorite_border,
+                  color: const Color(0xFFD8A7D9),
                   size: 16,
                 ),
               ),
               Text(
-                blog.totalLikes.toString(),
-                style: TextStyle(
+                (widget.blog.totalLikes + (isLiked ? 1 : 0)).toString(),
+                style: const TextStyle(
                   color: Colors.grey,
                 ),
               ),
@@ -96,4 +106,4 @@ class BlogCard extends StatelessWidget {
       ),
     );
   }
-} 
+}

@@ -12,6 +12,7 @@ class AppTextField extends StatelessWidget {
   final Widget? prefixIcon;
   final VoidCallback? onTap;
   final bool readOnly;
+  final int? maxLines;
 
   const AppTextField({
     super.key,
@@ -26,6 +27,7 @@ class AppTextField extends StatelessWidget {
     this.prefixIcon,
     this.onTap,
     this.readOnly = false,
+    this.maxLines = 1,
   });
 
   @override
@@ -43,6 +45,7 @@ class AppTextField extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         TextFormField(
+          maxLines: maxLines,
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,
