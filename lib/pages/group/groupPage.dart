@@ -4,6 +4,7 @@ import 'package:fe/widgets/mainUpperNavBar.dart';
 import 'package:hugeicons/hugeicons.dart';
 import '/routes/app_routes.dart';
 import 'package:fe/widgets/groupCard.dart';
+import 'package:fe/pages/group/repository/group_repository.dart';
 
 class GroupPage extends StatefulWidget {
   const GroupPage({super.key});
@@ -14,6 +15,7 @@ class GroupPage extends StatefulWidget {
 
 class _GroupPageState extends State<GroupPage> {
   final service = GroupPageService();
+  final _groupRepository = GroupRepository();
   late Future<GroupPageData> _groupFuture;
 
   @override
@@ -27,6 +29,46 @@ class _GroupPageState extends State<GroupPage> {
       _groupFuture = service.load();
     });
     await _groupFuture;
+  }
+
+  Future<void> _handleJoinGroup(String groupId) async {
+    try {
+      await _groupRepository.joinGroup(groupId);
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Joined group successfully')),
+      );
+      await _handleRefresh();
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to join group: $e')));
+    }
+  }
+
+  Future<void> _handleLeaveGroup(String groupId) async {
+    try {
+      await _groupRepository.leaveGroup(groupId);
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Left group successfully')));
+      await _handleRefresh();
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to leave group: $e')));
+    }
   }
 
   @override
@@ -145,6 +187,8 @@ class _GroupPageState extends State<GroupPage> {
                               group: group,
                               isJoined: isJoined,
                               role: isJoined ? membership.role : null,
+                              onJoin: () => _handleJoinGroup(group.id),
+                              onLeave: () => _handleLeaveGroup(group.id),
                             ),
                           ),
                         );

@@ -12,12 +12,16 @@ class GroupCard extends StatelessWidget {
   final Group group;
   final bool isJoined;
   final RoleParticipant? role;
+  final Future<void> Function()? onJoin;
+  final Future<void> Function()? onLeave;
 
   const GroupCard({
     super.key,
     required this.group,
     required this.isJoined,
     this.role,
+    this.onJoin,
+    this.onLeave,
   });
 
   @override
@@ -127,11 +131,13 @@ class GroupCard extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children:
-                group.tags?.map((tag) => TagGroup(label: tag)).toList() ?? [],
+            children: group.tags.map((tag) => TagGroup(label: tag)).toList(),
           ),
           const SizedBox(height: 16),
-          if (isJoined) _joinedButton(role == RoleParticipant.CREATOR) else if (!isJoined) _joinButton(),
+          if (isJoined)
+            _joinedButton(role == RoleParticipant.CREATOR, onLeave)
+          else if (!isJoined)
+            _joinButton(onJoin),
         ],
       ),
     );
@@ -156,15 +162,19 @@ Widget _joinedBadge(String label) {
   );
 }
 
-Widget _joinedButton(bool isOwner) {
+Widget _joinedButton(bool isOwner, Future<void> Function()? onLeave) {
   return Row(
     children: [
       Expanded(
         child: Opacity(
-          opacity: isOwner ? 0.5 : 1.0, 
+          opacity: isOwner ? 0.5 : 1.0,
           child: SecondButton(
             text: 'Leave group',
-            onPressed: isOwner ? () {} : () {},
+            onPressed: isOwner
+                ? () {}
+                : () {
+                    onLeave?.call();
+                  },
           ),
         ),
       ),
@@ -178,7 +188,7 @@ Widget _joinedButton(bool isOwner) {
             onPressed: isOwner
                 ? null
                 : () {
-                    // Logic 
+                    // Logic
                   },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFD8A7D9),
@@ -199,9 +209,16 @@ Widget _joinedButton(bool isOwner) {
   );
 }
 
-Widget _joinButton() {
+Widget _joinButton(Future<void> Function()? onJoin) {
   return SizedBox(
     width: double.infinity,
-    child: MainButton(text: 'Join group', onPressed: () {}),
+    child: MainButton(
+      text: 'Join group',
+      onPressed: onJoin == null
+          ? null
+          : () async {
+              await onJoin();
+            },
+    ),
   );
 }

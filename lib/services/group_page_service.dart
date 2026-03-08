@@ -12,12 +12,11 @@ class GroupPageData {
 }
 
 class GroupPageService {
-  Future<List<ParticipantGroup>> getGroupByUserId(String groupId) async {
-    final userId = await getUserId();
-    final repo = GroupByUserIDRepository(userId != null ? Future.value(userId) : Future.value(null));
+  Future<List<ParticipantGroup>> getGroupByUserId(String userId) async {
+    final repo = GroupByUserIDRepository();
 
     try {
-      final participants = await repo.getGroupsByUserId(groupId);
+      final participants = await repo.getGroupsByUserId(userId);
       return participants;
     } catch (e) {
       throw Exception("Failed to fetch participants: $e");
@@ -31,16 +30,20 @@ class GroupPageService {
     }
 
     final groupRepo = GroupRepository();
-    final participantRepo = GroupByUserIDRepository(Future.value(userId));
+    final participantRepo = GroupByUserIDRepository();
 
-    final results = await Future.wait([
-      groupRepo.getGroups(),
-      participantRepo.getGroupsByUserId(userId),
-    ]);
+    final allGroups = await groupRepo.getGroups();
+
+    List<ParticipantGroup> joinedGroups = [];
+    try {
+      joinedGroups = await participantRepo.getGroupsByUserId(userId);
+    } catch (_) {
+      joinedGroups = [];
+    }
 
     return GroupPageData(
-      allGroups: results[0] as List<Group>,
-      joinedGroups: results[1] as List<ParticipantGroup>,
+      allGroups: allGroups,
+      joinedGroups: joinedGroups,
     );
   }
 }

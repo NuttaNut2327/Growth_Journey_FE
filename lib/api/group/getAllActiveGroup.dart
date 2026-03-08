@@ -7,6 +7,9 @@ Future<List<Group>> getAllActiveGroup() async {
 
   try {
     final response = await api.dio.get("/groups");
+    if (response.data == null) {
+      return [];
+    }
 
     final List data = response.data;
 

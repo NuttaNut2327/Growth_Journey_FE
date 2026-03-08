@@ -1,5 +1,5 @@
 import 'package:fe/pages/group/repository/participant_repository.dart';
-import 'package:fe/services/group_page_service.dart';
+import 'package:fe/pages/group/repository/group_repository.dart';
 import 'package:fe/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:fe/widgets/backNavbar.dart';
@@ -14,16 +14,17 @@ import 'package:fe/widgets/participantCard.dart';
 
 class GroupDetailPage extends StatelessWidget {
   const GroupDetailPage({super.key});
-  
 
   Future<Map<String, dynamic>> _loadData(String groupId) async {
     final userId = await getUserId();
     final participantRepository = ParticipantRepository();
-    final participants = await participantRepository.getParticipantsByGroup(groupId);
+    final participants = await participantRepository.getParticipantsByGroup(
+      groupId,
+    );
 
     final isJoined =
         userId != null &&
-        participants.any((participant) => participant.userId == userId );
+        participants.any((participant) => participant.userId == userId);
 
     return {
       'participants': participants,
@@ -105,11 +106,9 @@ class GroupDetailPage extends StatelessWidget {
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: group.tags != null
-                            ? group.tags!
-                                  .map((tag) => TagGroup(label: tag))
-                                  .toList()
-                            : [],
+                        children: group.tags
+                            .map((tag) => TagGroup(label: tag))
+                            .toList(),
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -224,8 +223,27 @@ class GroupDetailPage extends StatelessWidget {
                           height: 48,
                           child: SecondButton(
                             text: 'Leave group',
-                            onPressed: () {
-                              print('leave group');
+                            onPressed: () async {
+                              try {
+                                await GroupRepository().leaveGroup(group.id);
+                                if (!context.mounted) {
+                                  return;
+                                }
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Left group successfully'),
+                                  ),
+                                );
+                              } catch (e) {
+                                if (!context.mounted) {
+                                  return;
+                                }
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Failed to leave group: $e'),
+                                  ),
+                                );
+                              }
                             },
                           ),
                         ),
@@ -255,8 +273,25 @@ class GroupDetailPage extends StatelessWidget {
                 )
               : BottomActionButton(
                   text: 'Join group',
-                  onPressed: () {
-                    print('join group');
+                  onPressed: () async {
+                    try {
+                      await GroupRepository().joinGroup(group.id);
+                      if (!context.mounted) {
+                        return;
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Joined group successfully'),
+                        ),
+                      );
+                    } catch (e) {
+                      if (!context.mounted) {
+                        return;
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to join group: $e')),
+                      );
+                    }
                   },
                 ),
         );
