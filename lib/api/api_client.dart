@@ -31,6 +31,7 @@ class ApiClient {
         onError: (DioException e, handler) {
           if (e.response?.statusCode == 401) {
            throw Exception("Unauthorized: Please log in again");
+            print("Token expired or unauthorized");
           }
           return handler.next(e);
         },
