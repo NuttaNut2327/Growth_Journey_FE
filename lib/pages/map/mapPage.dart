@@ -140,7 +140,9 @@ class _MapPageState extends State<MapPage> {
 
     if (permission == LocationPermission.deniedForever) return;
 
-    Position position = await Geolocator.getCurrentPosition();
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
     _controller?.animateCamera(
       CameraUpdate.newCameraPosition(

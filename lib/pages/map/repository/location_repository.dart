@@ -8,8 +8,8 @@ class LocationRepository {
       name: "Thai Commemorative Garden",
       address: "Suan Luang Rama IX, Bangkok",
       description: "A peaceful garden in the heart of Bangkok",
-      latitude: 13.8442608,
-      longitude: 100.571461,
+      latitude: 13.8419357,
+      longitude: 100.5699994,
       type: LocationType.park,
     ),
     Location(
@@ -17,8 +17,8 @@ class LocationRepository {
       name: "KU Happy Place Center",
       address: "Kasetsart University, Bangkok",
       description: "Mental health support center at Kasetsart University",
-      latitude: 13.8463013,
-      longitude: 100.5664825,
+      latitude: 13.8496573,
+      longitude: 100.5688655,
       type: LocationType.clinic,
     ),
     Location(
@@ -35,8 +35,8 @@ class LocationRepository {
       name: "KU Library",
       address: "Kasetsart University, Bangkok",
       description: "University library with extensive resources",
-      latitude: 13.8454238,
-      longitude: 100.5677717,
+      latitude: 13.8476171,
+      longitude: 100.5718701,
       type: LocationType.library,
     ),
     Location(
