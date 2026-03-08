@@ -7,10 +7,24 @@ Future<List<ParticipantGroup>> getGroupByID(String userId) async {
 
   try {
     final response = await api.dio.get('/groups/$userId/groups');
-    
-    final List data = response.data;
+    final responseData = response.data;
+    if (responseData == null) {
+      return [];
+    }
 
-    return data.map((json) => ParticipantGroup.fromJson(json)).toList();
+    if (responseData is List) {
+      return responseData
+          .map((json) => ParticipantGroup.fromJson(json))
+          .toList();
+    }
+
+    if (responseData is Map && responseData['data'] is List) {
+      return (responseData['data'] as List)
+          .map((json) => ParticipantGroup.fromJson(json))
+          .toList();
+    }
+
+    return [];
   } on DioException catch (e) {
     if (e.response != null) {
       final data = e.response?.data;
@@ -26,5 +40,3 @@ Future<List<ParticipantGroup>> getGroupByID(String userId) async {
   }
 }
 
-class $ {
-}

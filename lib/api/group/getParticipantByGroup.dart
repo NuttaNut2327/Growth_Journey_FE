@@ -6,14 +6,19 @@ Future<List<Participant>> getParticipantByGroup(String groupId) async {
   final api = ApiClient();
   try {
     final response = await api.dio.get('/groups/$groupId/participants');
+    if (response.data == null) {
+      return [];
+    }
     final dynamic responseData = response.data;
 
-if (responseData is List) {
+    if (responseData is List) {
       return responseData.map((json) => Participant.fromMap(json)).toList();
     } else if (responseData is Map && responseData['data'] != null) {
-      return (responseData['data'] as List).map((json) => Participant.fromMap(json)).toList();
+      return (responseData['data'] as List)
+          .map((json) => Participant.fromMap(json))
+          .toList();
     }
-    
+
     return [];
   } on DioException catch (e) {
     if (e.response != null) {

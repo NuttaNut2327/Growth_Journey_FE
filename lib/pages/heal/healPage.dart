@@ -133,7 +133,7 @@ class _HealPageState extends State<HealPage> {
                   ...mockQuests.map((quest) => Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: DailyQuestCard(quest: quest),
-                  )).toList(),
+                  )),
                 ],
               ),
             ),

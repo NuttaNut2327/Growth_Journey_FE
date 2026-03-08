@@ -347,10 +347,10 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                 tags: selectedTags,
                 imageBytes: imageBytes,
               );
-              bool _isLoading;
-              setState(() => _isLoading = true);
+              bool isLoading;
+              setState(() => isLoading = true);
               await createGroup(group);
-              setState(() => _isLoading = false);
+              setState(() => isLoading = false);
               if (!mounted) return;
 
               ScaffoldMessenger.of(context).showSnackBar(

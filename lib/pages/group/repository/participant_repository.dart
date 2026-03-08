@@ -1,4 +1,4 @@
-import 'package:fe/api/group/get_participant_by_group.dart';
+import 'package:fe/api/group/getParticipantByGroup.dart';
 import 'package:fe/pages/group/models/participant_model.dart';
 
 class ParticipantRepository {
