@@ -64,9 +64,16 @@ class LocationDetailcard extends StatelessWidget {
               )
             ],
           ),
-          const SizedBox(height: 10),
-          Text(place.description),
+          const SizedBox(height: 4),
+          Text(
+            place.address,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xFF8B7A99),
+            ),
+          ),
           const SizedBox(height: 12),
+          Text(place.description),
         ],
       ),
     );
