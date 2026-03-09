@@ -18,9 +18,9 @@ class MyApp extends StatelessWidget {
       title: 'Flutter FE Project',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: const Color(0xFFFEF8FC),
+        scaffoldBackgroundColor: const Color(0xFFFFFFFF),
       ),
-      initialRoute: AppRoutes.login,
+      initialRoute: AppRoutes.bottomnavbar,
       routes: {
         AppRoutes.login: (context) => const LoginPage(),
         AppRoutes.register: (context) => const RegisterPage(),
