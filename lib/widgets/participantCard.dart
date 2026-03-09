@@ -13,7 +13,14 @@ class ParticipantCard extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 32,
-          backgroundImage: NetworkImage(participant.imagePath ?? 'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg'),
+          backgroundImage: ResizeImage(
+            NetworkImage(
+              participant.imagePath ??
+                  'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg',
+            ),
+            width: 128,
+            height: 128,
+          ),
         ),
         const SizedBox(height: 8),
         Text(

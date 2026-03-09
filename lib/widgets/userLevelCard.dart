@@ -57,7 +57,14 @@ class UserLevelCard extends StatelessWidget {
                         ),
                       ],
                       image: DecorationImage(
-                        image: NetworkImage(user.imageUrl ?? 'https://jkfenner.com/wp-content/uploads/2019/11/default.jpg'),
+                        image: ResizeImage(
+                          NetworkImage(
+                            user.imageUrl ??
+                                'https://jkfenner.com/wp-content/uploads/2019/11/default.jpg',
+                          ),
+                          width: 150,
+                          height: 150,
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),

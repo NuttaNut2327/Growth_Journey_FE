@@ -13,11 +13,8 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    DateTime dateTime = DateTime.parse(activity.eventDate).toLocal();
-
-    // Date format
-    String formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
+    final dateTime = activity.date.toLocal();
+    final formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -41,9 +38,12 @@ class ActivityCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Image.network(
-              activity.imagePath,
+              activity.image ??
+                  'https://jkfenner.com/wp-content/uploads/2019/11/default.jpg',
               width: 90,
               height: 90,
+              cacheWidth: 180,
+              cacheHeight: 180,
               fit: BoxFit.cover,
             ),
           ),

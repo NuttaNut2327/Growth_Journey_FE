@@ -94,6 +94,7 @@ class GroupDetailPage extends StatelessWidget {
                         'https://jkfenner.com/wp-content/uploads/2019/11/default.jpg',
                     width: double.infinity,
                     height: 180,
+                    cacheHeight: 360,
                     fit: BoxFit.cover,
                   ),
                 ),
