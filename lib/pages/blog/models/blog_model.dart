@@ -19,7 +19,7 @@ class Blog {
     this.isLikedByCurrentUser = false,
   });
 
-  factory Blog.fromMap(Map<String, dynamic> map) {
+  factory Blog.fromJson(Map<String, dynamic> map) {
     return Blog(
       blogId: map['blogId'],
       userId: map['userId'],
