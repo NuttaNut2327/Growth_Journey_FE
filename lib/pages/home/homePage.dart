@@ -3,9 +3,54 @@ import 'package:fe/widgets/mainUpperNavBar.dart';
 import 'package:fe/widgets/mainButton.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/routes/app_routes.dart';
+import 'package:fe/widgets/moodLevelModal.dart';
+import 'package:fe/pages/home/enum/emotions.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  Map<Emotions, int> emotionLevels = {
+    Emotions.CALM: 1,
+    Emotions.HAPPY: 1,
+    Emotions.TIRED: 1,
+    Emotions.ANXIOUS: 1,
+    Emotions.SAD: 1,
+    Emotions.ANGRY: 1,
+  };
+
+  Emotions? selectedEmotion;
+  int selectedLevel = 1;
+  bool showRive = false;
+
+  String getRiveAsset() {
+    if (selectedEmotion == null) return '';
+
+    switch (selectedEmotion!) {
+      case Emotions.CALM:
+        return 'assets/animations/calm_level_$selectedLevel.riv';
+
+      case Emotions.HAPPY:
+        return 'assets/animations/happy_level_$selectedLevel.riv';
+
+      case Emotions.TIRED:
+        return 'assets/animations/tired_level_$selectedLevel.riv';
+
+      case Emotions.ANXIOUS:
+        return 'assets/animations/anxious_level_$selectedLevel.riv';
+
+      case Emotions.SAD:
+        return 'assets/animations/sad_level_$selectedLevel.riv';
+
+      case Emotions.ANGRY:
+        return 'assets/animations/angry_level_$selectedLevel.riv';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,125 +97,17 @@ class HomePage extends StatelessWidget {
                       ),
                       SizedBox(height: 24),
                       Wrap(
-                        spacing: 28,
+                        spacing: 16,
                         runSpacing: 24,
                         crossAxisAlignment: WrapCrossAlignment.end,
                         alignment: WrapAlignment.center,
                         children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("calm_level_1");
-                                },
-                                child: Image.asset(
-                                  'assets/images/calm_level_1.png',
-                                  width: 87,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Calm',
-                                style: TextStyle(fontSize: 14, color: Color(0xFF8B7A99), fontWeight: FontWeight.w500),
-                              )
-                            ],
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("happy_level_1");
-                                },
-                                child: Image.asset(
-                                  'assets/images/happy_level_1.png',
-                                  width: 100,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Happy',
-                                style: TextStyle(fontSize: 14, color: Color(0xFF8B7A99), fontWeight: FontWeight.w500),
-                              )
-                            ],
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("tired_level_1");
-                                },
-                                child: Image.asset(
-                                  'assets/images/tired_level_1.png',
-                                  width: 85,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Tired',
-                                style: TextStyle(fontSize: 14, color: Color(0xFF8B7A99), fontWeight: FontWeight.w500),
-                              )
-                            ],
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("anxious_level_1");
-                                },
-                                child: Image.asset(
-                                  'assets/images/anxious_level_1.png',
-                                  width: 89,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Anxious',
-                                style: TextStyle(fontSize: 14, color: Color(0xFF8B7A99), fontWeight: FontWeight.w500),
-                              )
-                            ],
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("sad_level_1");
-                                },
-                                child: Image.asset(
-                                  'assets/images/sad_level_1.png',
-                                  width: 90,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Sad',
-                                style: TextStyle(fontSize: 14, color: Color(0xFF8B7A99), fontWeight: FontWeight.w500),
-                              )
-                            ],
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print("angry_level_1");
-                                },
-                                child: Image.asset(
-                                  'assets/images/angry_level_1.png',
-                                  width: 90,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Angry',
-                                style: TextStyle(fontSize: 14, color: Color(0xFF8B7A99), fontWeight: FontWeight.w500),
-                              ),
-                            ],
-                          ),
+                          emotionButton(Emotions.CALM, 96),
+                          emotionButton(Emotions.HAPPY, 110),
+                          emotionButton(Emotions.TIRED, 95),
+                          emotionButton(Emotions.ANXIOUS, 99),
+                          emotionButton(Emotions.SAD, 100),
+                          emotionButton(Emotions.ANGRY, 100),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -243,4 +180,48 @@ class HomePage extends StatelessWidget {
         )
       );
   }
+
+  Widget emotionButton(Emotions emotion, double size) {
+    final level = emotionLevels[emotion] ?? 1;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: () async {
+            final level = await showDialog<int>(
+              context: context,
+              builder: (context) {
+                return MoodLevelModal(emotion: emotion);
+              },
+            );
+
+            if (level != null) {
+              setState(() {
+                emotionLevels[emotion] = level;
+                selectedEmotion = emotion;
+                selectedLevel = level;
+                showRive = true;
+              });
+            }
+          },
+          child: Image.asset(
+            'assets/images/${emotion.name.toLowerCase()}_level_1.png',
+            width: size,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          emotion.label,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Color(0xFF8B7A99),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
 }
+
+

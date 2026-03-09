@@ -22,7 +22,7 @@ class AssessmentCard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-         'Question $questionNumber of 5',
+              'Question $questionNumber of 5',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -45,11 +45,10 @@ class AssessmentCard extends StatelessWidget {
                 ),
               ),
             ),
-
             SizedBox(height: 32),
             Image.asset(
               imagePath,
-              height: 250,
+              height: 200,
             ),
             SizedBox(height: 32),
             Text('Choose the option that best matches how you have been feeling over the past 2 – 4 weeks.', 
