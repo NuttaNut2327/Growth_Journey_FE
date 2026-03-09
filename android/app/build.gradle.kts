@@ -18,7 +18,7 @@ val googleMapsApiKey = localProperties.getProperty("googleMapsApiKey") ?: ""
 
 
 android {
-    namespace = "com.example.fe"
+    namespace = "com.yuukakawai.growthjournal"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
