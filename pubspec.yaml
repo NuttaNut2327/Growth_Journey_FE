@@ -43,6 +43,8 @@ dependencies:
   intl: ^0.19.0
   image_picker: ^1.0.7
   dotted_border: ^2.1.0
+  google_maps_flutter: ^2.6.0
+  geolocator: ^10.1.0
   jwt_decoder: ^2.0.1
 
 dev_dependencies:
@@ -88,6 +90,7 @@ flutter:
     - assets/images/angry_level_2.png
     - assets/images/angry_level_3.png
     - .env
+    - assets/markers/garden_marker.png
     
     
 

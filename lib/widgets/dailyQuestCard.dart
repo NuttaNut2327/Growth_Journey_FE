@@ -131,8 +131,8 @@ class DailyQuestCard extends StatelessWidget {
                     return StatefulBuilder(
                       builder: (context, setState) {
                         return DraggableScrollableSheet(
-                          initialChildSize: 0.5,
-                          minChildSize: 0.3,
+                          initialChildSize: 0.6,
+                          minChildSize: 0.6,
                           maxChildSize: 0.9,
                           expand: false,
                           builder: (_, controller) {

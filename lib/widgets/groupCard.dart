@@ -66,6 +66,7 @@ class GroupCard extends StatelessWidget {
                   'https://jkfenner.com/wp-content/uploads/2019/11/default.jpg',
               width: double.infinity,
               height: 120,
+              cacheHeight: 240,
               fit: BoxFit.cover,
             ),
           ),
