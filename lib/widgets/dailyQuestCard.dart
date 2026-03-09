@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -9,11 +8,15 @@ import 'package:fe/widgets/uploadImageButton.dart';
 
 class DailyQuestCard extends StatelessWidget {
   final Quest quest;
+  final bool isCompleted;
+  final Future<void> Function(Uint8List imageBytes)? onDoQuest;
 
   const DailyQuestCard({
     super.key,
-    required this.quest
-    });
+    required this.quest,
+    this.isCompleted = false,
+    this.onDoQuest,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +25,7 @@ class DailyQuestCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: const Color(0xFFF7EDF7),
-          width: 2,
-        ),
+        border: Border.all(color: const Color(0xFFF7EDF7), width: 2),
         boxShadow: const [
           BoxShadow(
             color: Color(0x1A000000),
@@ -48,13 +48,11 @@ class DailyQuestCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Wrap(
-                          spacing: 8,      
+                          spacing: 8,
                           runSpacing: 4,
                           children: [
                             ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                maxWidth: 180,
-                              ),
+                              constraints: const BoxConstraints(maxWidth: 180),
                               child: Text(
                                 quest.title,
                                 style: const TextStyle(
@@ -74,12 +72,15 @@ class DailyQuestCard extends StatelessWidget {
                                   ),
                                 ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                         Spacer(),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0x80F6DDE4),
                             borderRadius: BorderRadius.circular(999),
@@ -93,14 +94,14 @@ class DailyQuestCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                '${quest.point} pts', 
+                                '${quest.point} pts',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
-                          )
+                          ),
                         ),
                       ],
                     ),
@@ -119,81 +120,116 @@ class DailyQuestCard extends StatelessWidget {
             width: double.infinity,
             height: 36,
             child: MainButton(
-              text: "Do Quest", 
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  builder: (_) {
-
-                    String? imagePath;
-
-                    return StatefulBuilder(
-                      builder: (context, setState) {
-                        return DraggableScrollableSheet(
-                          initialChildSize: 0.6,
-                          minChildSize: 0.6,
-                          maxChildSize: 0.9,
-                          expand: false,
-                          builder: (_, controller) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(24),
-                                ),
-                              ),
-                              child: ListView(
-                                controller: controller,
-                                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 36),
-                                children: [
-                                  Text(
-                                    quest.title,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
+              text: isCompleted ? 'Completed' : 'Do Quest',
+              onPressed: isCompleted
+                  ? null
+                  : () {
+                      showModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.transparent,
+                        builder: (_) {
+                          Uint8List? selectedImageBytes;
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return DraggableScrollableSheet(
+                                initialChildSize: 0.6,
+                                minChildSize: 0.6,
+                                maxChildSize: 0.9,
+                                expand: false,
+                                builder: (_, controller) {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(24),
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Send pictures of doing quests',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xFF8B7A99),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  UploadImageButton(
-                                    onImageSelected: (Uint8List? bytes) {
-                                      setState(() {
-                                        imagePath = bytes != null ? base64Encode(bytes) : null;
-                                      });
-                                    },
-                                  ),
-                                  const SizedBox(height: 20),
-                                  MainButton(
-                                    text: 'Send',
-                                    onPressed: () {
-                                      print('Quest ID: ${quest.questId}');
-                                      print('Image Path: $imagePath');
+                                    child: ListView(
+                                      controller: controller,
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 36,
+                                      ),
+                                      children: [
+                                        Text(
+                                          quest.title,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Send pictures of doing quests',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xFF8B7A99),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+                                        UploadImageButton(
+                                          onImageSelected: (bytes) {
+                                            setState(() {
+                                              selectedImageBytes = bytes;
+                                            });
+                                          },
+                                        ),
+                                        const SizedBox(height: 20),
+                                        MainButton(
+                                          text: 'Send',
+                                          onPressed: selectedImageBytes == null
+                                              ? null
+                                              : () {
+                                                  () async {
+                                                    try {
+                                                      if (onDoQuest != null) {
+                                                        await onDoQuest!(
+                                                          selectedImageBytes!,
+                                                        );
+                                                      }
 
-                                      Navigator.pop(context);
-                                    },
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-            )
+                                                      if (context.mounted) {
+                                                        Navigator.pop(context);
+                                                        ScaffoldMessenger.of(
+                                                          context,
+                                                        ).showSnackBar(
+                                                          const SnackBar(
+                                                            content: Text(
+                                                              'Quest completed successfully',
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+                                                    } catch (e) {
+                                                      if (context.mounted) {
+                                                        ScaffoldMessenger.of(
+                                                          context,
+                                                        ).showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(
+                                                              'Error: $e',
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+                                                    }
+                                                  }();
+                                                },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+            ),
           ),
         ],
       ),
     );
   }
-} 
+}
