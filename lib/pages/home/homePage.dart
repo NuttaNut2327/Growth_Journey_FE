@@ -211,7 +211,7 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 8),
         Text(
-          emotion.label,
+          emotion.label[0].toUpperCase() + emotion.label.substring(1),
           style: const TextStyle(
             fontSize: 14,
             color: Color(0xFF8B7A99),
