@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/widgets/customTextField.dart';
 import 'package:fe/widgets/bottomActionButton.dart';
+import 'package:fe/pages/blog/repository/blog_repository.dart';
 
 class CreateBlogPage extends StatefulWidget {
   const CreateBlogPage({super.key});
@@ -11,9 +12,9 @@ class CreateBlogPage extends StatefulWidget {
 }
 
 class _CreateBlogPageState extends State<CreateBlogPage> {
-
   final _formKey = GlobalKey<FormState>();
   final contentController = TextEditingController();
+  final _blogRepository = BlogRepository();
 
   @override
   void dispose() {
@@ -42,7 +43,10 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
         child: SingleChildScrollView(
           child: Center(
             child: Padding(
-              padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 16),
+              padding: EdgeInsetsGeometry.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -55,7 +59,8 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
                     ),
                     AppTextField(
                       label: '',
-                      hintText: 'Stories you want to share with your friends...',
+                      hintText:
+                          'Stories you want to share with your friends...',
                       controller: contentController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -65,18 +70,34 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
                       },
                       maxLines: 15,
                     ),
-                  ]
-                )
-              )
-            )
-          )
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
       bottomNavigationBar: BottomActionButton(
         text: "Post",
-        onPressed: () {
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
-            print("Content: ${contentController.text}");
+            try {
+              await _blogRepository.createBlog(contentController.text);
+              if (!context.mounted) {
+                return;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Blog posted successfully')),
+              );
+              Navigator.pop(context, true);
+            } catch (e) {
+              if (!context.mounted) {
+                return;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Failed to post blog: $e')),
+              );
+            }
           }
         },
       ),
