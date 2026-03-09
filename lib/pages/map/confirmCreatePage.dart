@@ -1,3 +1,4 @@
+import 'package:fe/routes/app_routes.dart';
 import 'package:fe/widgets/bottomActionButton.dart';
 import 'package:fe/widgets/tagField.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +10,12 @@ import 'package:hugeicons/hugeicons.dart';
 
 class Confirmcreatepage extends StatefulWidget {
   final String link;
+  final CheckLocation? initialLocation;
 
   const Confirmcreatepage({
     super.key,
     required this.link,
+    this.initialLocation,
   });
 
   @override
@@ -20,7 +23,6 @@ class Confirmcreatepage extends StatefulWidget {
 }
 
 class _ConfirmcreatepageState extends State<Confirmcreatepage> {
-
   final repository = CheckLocationRepository();
 
   CheckLocation? location;
@@ -28,26 +30,33 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController locationNameController = TextEditingController();
-  final TextEditingController locationAddressController = TextEditingController();
-  final TextEditingController locationDescriptionController = TextEditingController();
+  final TextEditingController locationAddressController =
+      TextEditingController();
+  final TextEditingController locationDescriptionController =
+      TextEditingController();
   final TextEditingController latitudeController = TextEditingController();
   final TextEditingController longitudeController = TextEditingController();
   String? selectTag;
 
-    final tags = [
-      LocationType.clinic.label, 
-      LocationType.park.label, 
-      LocationType.museum.label, 
-      LocationType.cafe.label, 
-      LocationType.library.label, 
-      LocationType.other.label
-    ];
+  final tags = [
+    LocationType.clinic.label,
+    LocationType.park.label,
+    LocationType.museum.label,
+    LocationType.cafe.label,
+    LocationType.library.label,
+    LocationType.other.label,
+  ];
 
   @override
   void initState() {
     super.initState();
     selectTag = tags.last;
-    loadLocation();
+    if (widget.initialLocation != null) {
+      _applyLocation(widget.initialLocation!);
+      isLoading = false;
+    } else {
+      loadLocation();
+    }
   }
 
   @override
@@ -61,14 +70,14 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
   }
 
   Future<void> loadLocation() async {
-
     final result = await repository.getLocationFromLink(widget.link);
 
+    if (!mounted) {
+      return;
+    }
+
     if (result != null) {
-      locationNameController.text = result.name;
-      locationAddressController.text = result.address;
-      latitudeController.text = result.latitude.toString();
-      longitudeController.text = result.longitude.toString();
+      _applyLocation(result);
     }
 
     setState(() {
@@ -77,9 +86,16 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
     });
   }
 
+  void _applyLocation(CheckLocation result) {
+    locationNameController.text = result.name;
+    locationAddressController.text = result.address;
+    latitudeController.text = result.latitude.toString();
+    longitudeController.text = result.longitude.toString();
+    location = result;
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Confirm location details"),
@@ -94,106 +110,165 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
               child: isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : location == null
-                      ? const Center(child: Text("Location not found"))
-                      : Form(
-                          key: _formKey,
-                          child: Column(
+                  ? const Center(child: Text("Location not found"))
+                  : Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          AppTextField(
+                            label: 'Location name',
+                            hintText: 'Enter location name',
+                            controller: locationNameController,
+                            isRequired: true,
+                          ),
+                          const SizedBox(height: 16),
+                          AppTextField(
+                            label: 'Location address',
+                            hintText: 'Enter location address',
+                            controller: locationAddressController,
+                            isRequired: true,
+                            maxLines: 4,
+                          ),
+                          const SizedBox(height: 16),
+                          AppTextField(
+                            label: 'Location description',
+                            hintText:
+                                'Tell people what your location is about...',
+                            controller: locationDescriptionController,
+                            isRequired: true,
+                            maxLines: 4,
+                          ),
+                          const SizedBox(height: 16),
+                          AppTextField(
+                            label: 'Latitude',
+                            hintText: 'Enter latitude',
+                            controller: latitudeController,
+                            readOnly: true,
+                          ),
+                          const SizedBox(height: 16),
+                          AppTextField(
+                            label: 'Longitude',
+                            hintText: 'Enter longitude',
+                            controller: longitudeController,
+                            readOnly: true,
+                          ),
+                          const SizedBox(height: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AppTextField(
-                                label: 'Location name',
-                                hintText: 'Enter location name',
-                                controller: locationNameController,
-                                isRequired: true,
-                              ),
-                              const SizedBox(height: 16),
-                              AppTextField(
-                                label: 'Location address',
-                                hintText: 'Enter location address',
-                                controller: locationAddressController,
-                                isRequired: true,
-                                maxLines: 4,
-                              ),
-                              const SizedBox(height: 16),
-                              AppTextField(
-                                label: 'Location description',
-                                hintText: 'Tell people what your location is about...',
-                                controller: locationDescriptionController,
-                                isRequired: true,
-                                maxLines: 4,
-                              ),
-                              const SizedBox(height: 16),
-                              AppTextField(
-                                label: 'Latitude', 
-                                hintText: 'Enter latitude', 
-                                controller: latitudeController, 
-                                readOnly: true,
-                              ),
-                              const SizedBox(height: 16),
-                              AppTextField(
-                                label: 'Longitude', 
-                                hintText: 'Enter longitude',
-                                controller: longitudeController, 
-                                readOnly: true,
-                              ),
-                              const SizedBox(height: 16),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              Row(
                                 children: [
-                                  Row(
-                                    children: [
-                                      Text('*', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.red)),
-                                      const SizedBox(width: 4),
-                                      HugeIcon(
-                                        icon: HugeIcons.strokeRoundedTag01, 
-                                        size: 18, 
-                                        strokeWidth: 2,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text('Categories', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))
-                                    ],
+                                  Text(
+                                    '*',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.red,
+                                    ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: tags.map((tag) {
-                                      final isSelected = selectTag == tag;
-
-                                      return TagField(
-                                        label: tag,
-                                        isSelected: isSelected,
-                                        onTap: () {
-                                          setState(() {
-                                            selectTag = tag;
-                                          });
-                                        },
-                                      );
-                                    }).toList(),
+                                  const SizedBox(width: 4),
+                                  HugeIcon(
+                                    icon: HugeIcons.strokeRoundedTag01,
+                                    size: 18,
+                                    strokeWidth: 2,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Categories',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: tags.map((tag) {
+                                  final isSelected = selectTag == tag;
+
+                                  return TagField(
+                                    label: tag,
+                                    isSelected: isSelected,
+                                    onTap: () {
+                                      setState(() {
+                                        selectTag = tag;
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                              ),
                             ],
                           ),
-                        )
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ),
             ),
           ),
         ),
       ),
       bottomNavigationBar: BottomActionButton(
         text: "Confirm request",
-        onPressed: () {
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
-            print("Location Name: ${locationNameController.text}");
+            final selectedLocationType = LocationType.values.firstWhere(
+              (type) => type.label == selectTag,
+              orElse: () => LocationType.other,
+            );
+
+            final latitude = double.tryParse(latitudeController.text);
+            final longitude = double.tryParse(longitudeController.text);
+
+            if (latitude == null || longitude == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Invalid latitude or longitude value'),
+                ),
+              );
+              return;
+            }
+             print("Location Name: ${locationNameController.text}");
             print("Location Address: ${locationAddressController.text}");
             print("Location Description: ${locationDescriptionController.text}");
             print("Latitude: ${latitudeController.text}");
             print("Longitude: ${longitudeController.text}");
             print("Selected Tag: ${selectTag}");
+
+            try {
+                
+              await repository.createLocationRequest(
+                name: locationNameController.text,
+                description: locationDescriptionController.text,
+                address: locationAddressController.text,
+                latitude: latitude,
+                longitude: longitude,
+                type: selectedLocationType.name,
+              );
+
+              if (!context.mounted) {
+                return;
+              }
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Location request submitted successfully'),
+                ),
+              );
+              Navigator.pushNamed(context,AppRoutes.map);
+            } catch (e) {
+              if (!context.mounted) {
+                return;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Failed to submit request: $e')),
+              );
+            }
           }
         },
       ),
     );
   }
 }
-                      

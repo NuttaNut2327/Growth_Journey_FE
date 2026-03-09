@@ -1,3 +1,4 @@
+import 'package:fe/pages/map/mapPage.dart';
 import 'package:flutter/material.dart';
 import 'routes/app_routes.dart';
 import 'pages/login/loginPage.dart';
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: const Color(0xFFFEF8FC),
       ),
-      initialRoute: AppRoutes.bottomnavbar,
+      initialRoute: AppRoutes.login,
       routes: {
         AppRoutes.login: (context) => const LoginPage(),
         AppRoutes.register: (context) => const RegisterPage(),
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         AppRoutes.assessment: (context) => const AssessmentPage(),
         // AppRoutes.profile: (context) => const ProfilePage(),
         AppRoutes.createLocation: (context) => const CreateLocationPage(),
+        AppRoutes.map: (context) => const MapPage(), // Assuming MapPage is part of Bottomnavbar
       },
     );
   }

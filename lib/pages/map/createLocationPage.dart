@@ -14,7 +14,6 @@ class CreateLocationPage extends StatefulWidget {
 }
 
 class _CreateLocationPageState extends State<CreateLocationPage> {
-
   final _formKey = GlobalKey<FormState>();
   final linkController = TextEditingController();
   String? selectTag;
@@ -50,7 +49,10 @@ class _CreateLocationPageState extends State<CreateLocationPage> {
         child: SingleChildScrollView(
           child: Center(
             child: Padding(
-              padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 32),
+              padding: EdgeInsetsGeometry.symmetric(
+                horizontal: 16,
+                vertical: 32,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -58,7 +60,7 @@ class _CreateLocationPageState extends State<CreateLocationPage> {
                   children: [
                     AppTextField(
                       label: 'Google Maps Link',
-                      hintText: 'Enter google maps link of the location', 
+                      hintText: 'Enter google maps link of the location',
                       controller: linkController,
                       isRequired: true,
                       prefixIcon: Padding(
@@ -70,23 +72,39 @@ class _CreateLocationPageState extends State<CreateLocationPage> {
                       ),
                     ),
                   ],
-                )
-              )
-            )
-          )
-        )
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       bottomNavigationBar: BottomActionButton(
         text: "Submit request",
-        onPressed: () {
-
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
+            final result = await repository.getLocationFromLink(
+              linkController.text,
+            );
+
+            if (!context.mounted) {
+              return;
+            }
+
+            if (result == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Cannot fetch location from this URL'),
+                ),
+              );
+              return;
+            }
 
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => Confirmcreatepage(
                   link: linkController.text,
+                  initialLocation: result,
                 ),
               ),
             );

@@ -266,14 +266,14 @@ class _MapPageState extends State<MapPage> {
         onPressed: () {
           Navigator.pushNamed(context, AppRoutes.createLocation);
         },
+        backgroundColor: const Color(0xFFD8A7D9),
+        shape: const CircleBorder(),
         child: HugeIcon(
           icon: HugeIcons.strokeRoundedAdd01, 
           size: 24,
           strokeWidth: 2,
           color: Colors.white,
         ),
-        backgroundColor: const Color(0xFFD8A7D9),
-        shape: const CircleBorder(),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
