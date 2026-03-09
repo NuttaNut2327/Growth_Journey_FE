@@ -6,7 +6,8 @@ import 'package:fe/widgets/bottomNavBar.dart';
 import 'package:fe/pages/assessment/assessmentPage.dart';
 import 'package:fe/pages/group/groupDetailPage.dart';
 import 'package:fe/pages/group/createGroupPage.dart';
-// import 'pages/profile/profile_page.dart';
+import 'package:fe/pages/profile/profilePage.dart';
+import 'package:fe/pages/profile/editProfilePage.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -30,7 +31,8 @@ class MyApp extends StatelessWidget {
         AppRoutes.createGroup: (context) => const CreateGroupPage(),
         AppRoutes.groupDetail: (_) => const GroupDetailPage(),   
         AppRoutes.assessment: (context) => const AssessmentPage(),
-        // AppRoutes.profile: (context) => const ProfilePage(),
+        AppRoutes.profile: (context) => const ProfilePage(),
+        AppRoutes.editProfile: (context) => const EditProfilePage(),
       },
     );
   }

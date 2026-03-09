@@ -4,12 +4,14 @@ import 'package:hugeicons/hugeicons.dart';
 
 class UserLevelCard extends StatelessWidget {
   final UserLevel user;
-  final bool showEditIcon;   
+  final bool showEditIcon;
+  final void Function()? onEdit;   
 
   const UserLevelCard({
     super.key,
     required this.user,
     this.showEditIcon = false,
+    this.onEdit,
   });
 
   @override
@@ -93,7 +95,11 @@ class UserLevelCard extends StatelessWidget {
                   const Spacer(),
                   if (showEditIcon)
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        if (onEdit != null) {
+                          onEdit!();
+                        }
+                      },
                       icon: HugeIcon(
                         icon: HugeIcons.strokeRoundedPencilEdit02,
                         strokeWidth: 2,

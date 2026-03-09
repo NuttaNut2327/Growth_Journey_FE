@@ -182,7 +182,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget emotionButton(Emotions emotion, double size) {
-    final level = emotionLevels[emotion] ?? 1;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
