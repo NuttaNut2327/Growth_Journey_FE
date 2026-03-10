@@ -6,7 +6,35 @@ Future<User> getUserByID() async {
   final api = ApiClient();
 
   try {
-    final response = await api.dio.get('/users/me');
+    Response<dynamic>? response;
+
+    for (var attempt = 1; attempt <= 2; attempt++) {
+      try {
+        response = await api.dio.get('/users/me');
+        break;
+      } on DioException catch (e) {
+        final status = e.response?.statusCode;
+        final isRetryable = e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            status == 500 ||
+            status == 502 ||
+            status == 503 ||
+            status == 504;
+
+        if (!isRetryable || attempt == 2) {
+          rethrow;
+        }
+
+        await Future.delayed(const Duration(milliseconds: 700));
+      }
+    }
+
+    if (response == null) {
+      throw Exception('Failed to retrieve user');
+    }
+
     return User.fromJson(response.data);
   } on DioException catch (e) {
     if (e.response != null) {

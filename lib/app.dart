@@ -13,6 +13,7 @@ import 'package:fe/pages/profile/profilePage.dart';
 import 'package:fe/pages/profile/editProfilePage.dart';
 import 'package:fe/pages/blog/createBlogPage.dart';
 import 'package:fe/pages/map/createLocationPage.dart';
+import 'package:fe/services/navigation_service.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -53,6 +54,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: AppNavigationService.navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Flutter FE Project',
       theme: ThemeData(

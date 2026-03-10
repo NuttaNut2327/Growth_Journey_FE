@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:fe/services/navigation_service.dart';
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -42,7 +43,7 @@ class ApiClient {
           }
           return handler.next(response);
         },
-        onError: (DioException e, handler) {
+        onError: (DioException e, handler) async {
           if (kDebugMode) {
             debugPrint(
               'HTTP ERROR (${e.type}) ${e.requestOptions.method} ${e.requestOptions.uri} '
@@ -51,7 +52,9 @@ class ApiClient {
           }
 
           if (e.response?.statusCode == 401) {
-            print("Token expired or unauthorized");
+            await _storage.delete(key: 'token');
+            AppNavigationService.redirectToLogin();
+            print('Token expired or unauthorized. Redirecting to login.');
           }
           return handler.next(e);
         },

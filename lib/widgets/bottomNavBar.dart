@@ -16,20 +16,36 @@ class Bottomnavbar extends StatefulWidget {
 class _BottomnavbarState extends State<Bottomnavbar> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomePage(),
-    BlogPage(),
-    GroupPage(),
-    MapPage(),
-    HealPage(),
-  ];
+  final List<Widget?> _pages = List<Widget?>.filled(5, null);
+
+  Widget _buildPage(int index) {
+    switch (index) {
+      case 0:
+        return const HomePage();
+      case 1:
+        return const BlogPage();
+      case 2:
+        return const GroupPage();
+      case 3:
+        return const MapPage();
+      case 4:
+        return const HealPage();
+      default:
+        return const SizedBox.shrink();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    _pages[_currentIndex] ??= _buildPage(_currentIndex);
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _pages,
+        children: List<Widget>.generate(
+          _pages.length,
+          (index) => _pages[index] ?? const SizedBox.shrink(),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Color(0xFFD8A7D9),

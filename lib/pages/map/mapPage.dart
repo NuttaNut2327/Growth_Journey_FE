@@ -27,6 +27,7 @@ class _MapPageState extends State<MapPage> {
   late LocationRepository _repository;
   List<Location> places = [];
   bool isLoading = true;
+  String? loadError;
   
   final ActivityRepository repo = ActivityRepository();
 
@@ -118,11 +119,28 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _loadLocations() async {
-    final data = await _repository.getLocations();
     setState(() {
-      places = data;
-      isLoading = false;
+      isLoading = true;
+      loadError = null;
     });
+
+    try {
+      final data = await _repository.getLocations();
+      if (!mounted) return;
+
+      setState(() {
+        places = data;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        places = [];
+        isLoading = false;
+        loadError = e.toString().replaceFirst('Exception: ', '');
+      });
+    }
   }
 
   Future<void> _goToCurrentLocation() async {
@@ -277,7 +295,36 @@ class _MapPageState extends State<MapPage> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Stack(
+          : loadError != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.map_outlined, size: 44, color: Color(0xFF8B7A99)),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'Unable to load map locations',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          loadError!,
+                          style: const TextStyle(fontSize: 14, color: Color(0xFF8B7A99)),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        FilledButton(
+                          onPressed: _loadLocations,
+                          child: const Text('Try again'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Stack(
               children: [
                 GoogleMap(
                   initialCameraPosition: const CameraPosition(

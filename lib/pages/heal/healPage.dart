@@ -28,11 +28,18 @@ class _HealPageState extends State<HealPage> {
   }
 
   Future<void> _initPageData() async {
-    try {
+    final userFuture = getUserByID();
+    final questsFuture = _loadDailyQuests();
+
+    if (mounted) {
       setState(() {
-        _userFuture = getUserByID();
-        _questsFuture = _loadDailyQuests();
+        _userFuture = userFuture;
+        _questsFuture = questsFuture;
       });
+    }
+
+    try {
+      await Future.wait([userFuture, questsFuture]);
     } catch (e) {
       debugPrint('Error initializing heal page: $e');
     }
@@ -57,118 +64,117 @@ class _HealPageState extends State<HealPage> {
       return;
     }
 
-    setState(() {
-      _userFuture = getUserByID();
-      _questsFuture = _loadDailyQuests();
-    });
+    await _initPageData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const MainUpperNavBar(),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Boost positive energy',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                  const Text(
-                    'Complete quests and earn emotional energy.',
-                    style: TextStyle(fontSize: 14, color: Color(0xFF8B7A99)),
-                  ),
-                  const SizedBox(height: 16),
-
-                  if (_userFuture == null)
-                    const Center(child: CircularProgressIndicator())
-                  else
-                    FutureBuilder<User>(
-                      future: _userFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Center(
-                            child: Text('Error: ${snapshot.error}'),
-                          );
-                        } else if (snapshot.hasData) {
-                          return UserLevelCard(user: snapshot.data!);
-                        }
-                        return const SizedBox.shrink();
-                      },
+      body: RefreshIndicator(
+        onRefresh: _initPageData,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              const MainUpperNavBar(),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Boost positive energy',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
-
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Daily Quests',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 16),
-
-                  if (_questsFuture == null)
-                    const Center(child: CircularProgressIndicator())
-                  else
-                    FutureBuilder<List<Quest>>(
-                      future: _questsFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (snapshot.hasError) {
-                          return Center(
-                            child: Text('Error: ${snapshot.error}'),
-                          );
-                        }
-
-                        final quests = snapshot.data ?? [];
-
-                        if (quests.isEmpty) {
-                          return const Center(
-                            child: Text('No quests for today'),
-                          );
-                        }
-
-                        return Column(
-                          children: quests.map((quest) {
-                            final isCompleted =
-                                quest.status.toUpperCase() == 'COMPLETED';
-
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: DailyQuestCard(
-                                quest: quest,
-                                isCompleted: isCompleted,
-                                onDoQuest: isCompleted
-                                    ? null
-                                    : (imageBytes) => _doQuestAndRefresh(
-                                        quest.questId,
-                                        imageBytes,
-                                      ),
-                              ),
+                    const Text(
+                      'Complete quests and earn emotional energy.',
+                      style: TextStyle(fontSize: 14, color: Color(0xFF8B7A99)),
+                    ),
+                    const SizedBox(height: 16),
+                    if (_userFuture == null)
+                      const Center(child: CircularProgressIndicator())
+                    else
+                      FutureBuilder<User>(
+                        future: _userFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
                             );
-                          }).toList(),
-                        );
-                      },
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else if (snapshot.hasData) {
+                            return UserLevelCard(user: snapshot.data!);
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Daily Quests',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                     ),
+                    const SizedBox(height: 16),
+                    if (_questsFuture == null)
+                      const Center(child: CircularProgressIndicator())
+                    else
+                      FutureBuilder<List<Quest>>(
+                        future: _questsFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
 
-                ],
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          }
+
+                          final quests = snapshot.data ?? [];
+
+                          if (quests.isEmpty) {
+                            return const Center(
+                              child: Text('No quests for today'),
+                            );
+                          }
+
+                          return Column(
+                            children: quests.map((quest) {
+                              final isCompleted =
+                                  quest.status.toUpperCase() == 'COMPLETED';
+
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: DailyQuestCard(
+                                  quest: quest,
+                                  isCompleted: isCompleted,
+                                  onDoQuest: isCompleted
+                                      ? null
+                                      : (imageBytes) => _doQuestAndRefresh(
+                                            quest.questId,
+                                            imageBytes,
+                                          ),
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
