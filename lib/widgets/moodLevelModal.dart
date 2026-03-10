@@ -57,6 +57,7 @@ class _MoodLevelModalState extends State<MoodLevelModal> {
             MainButton(
               text: "Confirm",
               onPressed: () {
+                print('Selected level: ${level.toInt()} for emotion: ${widget.emotion.label}');
                 Navigator.pop(context, level.toInt());
               },
             )
