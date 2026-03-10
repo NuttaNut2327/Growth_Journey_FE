@@ -18,7 +18,7 @@ class _UploadImageState extends State<UploadImageButton> {
   double? imageSizeMB;
 
   Future<void> pickImage() async {
-    final result = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final result = await ImagePicker().pickImage(source: ImageSource.camera);
 
     if (result == null) return;
 
