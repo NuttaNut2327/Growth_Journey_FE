@@ -168,6 +168,7 @@ class DailyQuestCard extends StatelessWidget {
                                         ),
                                         const SizedBox(height: 20),
                                         UploadImageButton(
+                                          mode: UploadImageMode.camera,
                                           onImageSelected: (bytes) {
                                             setState(() {
                                               selectedImageBytes = bytes;

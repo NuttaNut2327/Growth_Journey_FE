@@ -6,14 +6,25 @@ Future<List<Location>> getLocationsByStatus(String status) async {
   final api = ApiClient();
 
   try {
-    final response = await api.dio.get('/locations/status', queryParameters: {'status': status});
-    
-    final List data = response.data['locations'];
+    final response = await api.dio.get(
+      '/locations/status',
+      queryParameters: {'status': status},
+    );
 
-    return data.map((json) => Location.fromJson(json)).toList();
+    final payload = response.data;
+    final list = payload is List
+        ? payload
+        : (payload is Map<String, dynamic> && payload['locations'] is List
+            ? payload['locations'] as List
+            : const []);
+
+    return list
+        .whereType<Map>()
+        .map((json) => Location.fromJson(Map<String, dynamic>.from(json)))
+        .toList();
   } on DioException catch (e) {
     if (e.response != null) {
-      final data = e.response?.data.locations;
+      final data = e.response?.data;
 
       if (data is Map<String, dynamic> && data['message'] != null) {
         throw Exception(data['message']);

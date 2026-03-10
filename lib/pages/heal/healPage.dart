@@ -20,6 +20,7 @@ class HealPage extends StatefulWidget {
 class _HealPageState extends State<HealPage> {
   Future<User>? _userFuture;
   Future<List<Quest>>? _questsFuture;
+  final Set<String> _localCompletedQuestIds = <String>{};
 
   @override
   void initState() {
@@ -48,10 +49,23 @@ class _HealPageState extends State<HealPage> {
   Future<List<Quest>> _loadDailyQuests() async {
     final randomQuests = await getRandomQuests();
     final doneQuests = await getDoneQuests();
-    final doneQuestIds = doneQuests.map((quest) => quest.questId).toSet();
+    final doneQuestIds = doneQuests
+        .map((quest) => _normalizeQuestKey(quest.questId))
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    final doneQuestTitles = doneQuests
+        .map((quest) => _normalizeQuestKey(quest.title))
+        .where((title) => title.isNotEmpty)
+        .toSet();
 
     return randomQuests.map((quest) {
-      if (doneQuestIds.contains(quest.questId)) {
+      final normalizedQuestId = _normalizeQuestKey(quest.questId);
+      final normalizedQuestTitle = _normalizeQuestKey(quest.title);
+      final isCompleted = doneQuestIds.contains(normalizedQuestId) ||
+          doneQuestTitles.contains(normalizedQuestTitle) ||
+          _localCompletedQuestIds.contains(normalizedQuestId);
+
+      if (isCompleted) {
         return quest.copyWith(status: 'COMPLETED');
       }
       return quest;
@@ -64,8 +78,14 @@ class _HealPageState extends State<HealPage> {
       return;
     }
 
+    setState(() {
+      _localCompletedQuestIds.add(_normalizeQuestKey(questId));
+    });
+
     await _initPageData();
   }
+
+  String _normalizeQuestKey(String value) => value.trim().toLowerCase();
 
   @override
   Widget build(BuildContext context) {

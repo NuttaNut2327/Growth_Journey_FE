@@ -9,12 +9,12 @@ import 'package:fe/pages/group/models/group_model.dart';
 import 'package:fe/pages/group/enum/group_status.dart';
 import 'package:fe/pages/group/chatGroupPage.dart';
 
-class GroupCard extends StatelessWidget {
+class GroupCard extends StatefulWidget {
   final Group group;
   final bool isJoined;
   final RoleParticipant? role;
-  final Future<void> Function()? onJoin;
-  final Future<void> Function()? onLeave;
+  final Future<bool> Function()? onJoin;
+  final Future<bool> Function()? onLeave;
 
   const GroupCard({
     super.key,
@@ -26,7 +26,78 @@ class GroupCard extends StatelessWidget {
   });
 
   @override
+  State<GroupCard> createState() => _GroupCardState();
+}
+
+class _GroupCardState extends State<GroupCard> {
+  late bool _isJoined;
+  late RoleParticipant? _role;
+  bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isJoined = widget.isJoined;
+    _role = widget.role;
+  }
+
+  @override
+  void didUpdateWidget(covariant GroupCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isJoined != widget.isJoined ||
+        oldWidget.role != widget.role) {
+      _isJoined = widget.isJoined;
+      _role = widget.role;
+    }
+  }
+
+  Future<void> _handleJoin() async {
+    if (_isProcessing || widget.onJoin == null) {
+      return;
+    }
+    setState(() {
+      _isProcessing = true;
+    });
+    final success = await widget.onJoin!.call();
+    if (!mounted) {
+      return;
+    }
+    if (success) {
+      setState(() {
+        _isJoined = true;
+        _role = RoleParticipant.MEMBER;
+      });
+    }
+    setState(() {
+      _isProcessing = false;
+    });
+  }
+
+  Future<void> _handleLeave() async {
+    if (_isProcessing || widget.onLeave == null) {
+      return;
+    }
+    setState(() {
+      _isProcessing = true;
+    });
+    final success = await widget.onLeave!.call();
+    if (!mounted) {
+      return;
+    }
+    if (success) {
+      setState(() {
+        _isJoined = false;
+        _role = null;
+      });
+    }
+    setState(() {
+      _isProcessing = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final group = widget.group;
     String formattedDate = DateFormat('dd MMM yyyy').format(group.date);
     String formattedTime = DateFormat('h:mm a').format(group.date);
 
@@ -52,11 +123,11 @@ class GroupCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(group.title, style: TextStyle(fontWeight: FontWeight.w700)),
-              if (role == RoleParticipant.CREATOR)
+              if (_role == RoleParticipant.CREATOR)
                 _joinedBadge(GroupStatus.OWNER.label),
-              if (isJoined && role == RoleParticipant.MEMBER)
+              if (_isJoined && _role == RoleParticipant.MEMBER)
                 _joinedBadge(GroupStatus.JOINED.label),
-              if (!isJoined) _joinedBadge(GroupStatus.NOT_JOINED.label),
+              if (!_isJoined) _joinedBadge(GroupStatus.NOT_JOINED.label),
             ],
           ),
           const SizedBox(height: 16),
@@ -136,15 +207,16 @@ class GroupCard extends StatelessWidget {
             children: group.tags.map((tag) => TagGroup(label: tag)).toList(),
           ),
           const SizedBox(height: 16),
-          if (isJoined)
+          if (_role == RoleParticipant.CREATOR)
+            _chatOnlyButton(context, group)
+          else if (_isJoined)
             _joinedButton(
               context,
               group,
-              role == RoleParticipant.CREATOR,
-              onLeave,
+              _isProcessing ? null : _handleLeave,
             )
-          else if (!isJoined)
-            _joinButton(onJoin),
+          else if (!_isJoined)
+            _joinButton(_isProcessing ? null : _handleJoin),
         ],
       ),
     );
@@ -172,57 +244,76 @@ Widget _joinedBadge(String label) {
 Widget _joinedButton(
   BuildContext context,
   Group group,
-  bool isOwner,
   Future<void> Function()? onLeave,
 ) {
   return Row(
     children: [
       Expanded(
-        child: Opacity(
-          opacity: isOwner ? 0.5 : 1.0,
-          child: SecondButton(
-            text: 'Leave group',
-            onPressed: isOwner
-                ? () {}
-                : () {
-                    onLeave?.call();
-                  },
-          ),
+        child: SecondButton(
+          text: 'Leave group',
+          onPressed: () {
+            onLeave?.call();
+          },
         ),
       ),
       const SizedBox(width: 12),
-      Opacity(
-        opacity: isOwner ? 0.5 : 1.0,
-        child: SizedBox(
-          width: 44,
-          height: 44,
-          child: ElevatedButton(
-            onPressed: isOwner
-                ? null
-                : () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChatGroupPage(group: group),
-                      ),
-                    );
-                  },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFD8A7D9),
-              disabledBackgroundColor: const Color(0xFFD8A7D9).withOpacity(0.3),
-              shape: const CircleBorder(),
-              padding: EdgeInsets.zero,
-            ),
-            child: const HugeIcon(
-              icon: HugeIcons.strokeRoundedMessageMultiple02,
-              color: Colors.white,
-              size: 18,
-              strokeWidth: 2,
-            ),
+      SizedBox(
+        width: 44,
+        height: 44,
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatGroupPage(group: group),
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFD8A7D9),
+            shape: const CircleBorder(),
+            padding: EdgeInsets.zero,
+          ),
+          child: const HugeIcon(
+            icon: HugeIcons.strokeRoundedMessageMultiple02,
+            color: Colors.white,
+            size: 18,
+            strokeWidth: 2,
           ),
         ),
       ),
     ],
+  );
+}
+
+Widget _chatOnlyButton(BuildContext context, Group group) {
+  return Align(
+    alignment: Alignment.centerRight,
+    child: SizedBox(
+      width: 44,
+      height: 44,
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatGroupPage(group: group),
+            ),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFD8A7D9),
+          shape: const CircleBorder(),
+          padding: EdgeInsets.zero,
+        ),
+        child: const HugeIcon(
+          icon: HugeIcons.strokeRoundedMessageMultiple02,
+          color: Colors.white,
+          size: 18,
+          strokeWidth: 2,
+        ),
+      ),
+    ),
   );
 }
 

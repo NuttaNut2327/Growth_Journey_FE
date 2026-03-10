@@ -33,6 +33,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   List<String> selectedTags = [];
   Uint8List? imageBytes;
   String? selectedLocationId;
+  bool _isSubmitting = false;
   late Future<List<Location>> locationsFuture;
 
   @override
@@ -127,8 +128,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
                         return AppDropdownField<String>(
                           label: 'Location',
-                          hintText:
-                              snapshot.connectionState ==
+                          hintText: snapshot.connectionState ==
                                   ConnectionState.waiting
                               ? 'Loading...'
                               : 'Where will this happen?',
@@ -305,6 +305,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                         ),
                         const SizedBox(height: 8),
                         UploadImageButton(
+                          mode: UploadImageMode.gallery,
                           onImageSelected: (bytes) {
                             imageBytes = bytes;
                           },
@@ -320,57 +321,74 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       ),
       bottomNavigationBar: BottomActionButton(
         text: "Create group",
-        onPressed: () async {
-          if (_formKey.currentState!.validate()) {
-            if (selectedDate == null || selectedTime == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Please select date and time")),
-              );
-              return;
-            }
+        onPressed: _isSubmitting
+            ? null
+            : () async {
+                if (_formKey.currentState!.validate()) {
+                  if (selectedDate == null || selectedTime == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Please select date and time")),
+                    );
+                    return;
+                  }
 
-            try {
-              final eventDateTime = DateTime(
-                selectedDate!.year,
-                selectedDate!.month,
-                selectedDate!.day,
-                selectedTime!.hour,
-                selectedTime!.minute,
-              );
-              final formattedDate = eventDateTime.toUtc().toIso8601String();
-              final group = GroupRequest(
-                title: activityNameController.text,
-                description: descriptionController.text,
-                targetMemberCount: int.parse(maxParticipantsController.text),
-                eventDate: formattedDate,
-                location: selectedLocationId!,
-                tags: selectedTags,
-                imageBytes: imageBytes,
-              );
-              bool isLoading;
-              setState(() => isLoading = true);
-              await createGroup(group);
-              setState(() => isLoading = false);
-              if (!mounted) return;
+                  if (selectedLocationId == null ||
+                      selectedLocationId!.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Please select location")),
+                    );
+                    return;
+                  }
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Group created successfully 🎉"),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 3),
-                ),
-              );
+                  try {
+                    setState(() => _isSubmitting = true);
 
-              await Future.delayed(const Duration(seconds: 3));
+                    final eventDateTime = DateTime(
+                      selectedDate!.year,
+                      selectedDate!.month,
+                      selectedDate!.day,
+                      selectedTime!.hour,
+                      selectedTime!.minute,
+                    );
+                    final formattedDate =
+                        eventDateTime.toUtc().toIso8601String();
+                    final group = GroupRequest(
+                      title: activityNameController.text,
+                      description: descriptionController.text,
+                      targetMemberCount:
+                          int.parse(maxParticipantsController.text),
+                      eventDate: formattedDate,
+                      location: selectedLocationId!,
+                      tags: selectedTags,
+                      imageBytes: imageBytes,
+                    );
 
-              Navigator.pop(context);
-            } catch (e) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(e.toString())));
-            }
-          }
-        },
+                    await createGroup(group);
+
+                    if (!mounted) return;
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Group created successfully 🎉"),
+                        backgroundColor: Colors.green,
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+
+                    await Future.delayed(const Duration(seconds: 3));
+
+                    Navigator.pop(context);
+                  } catch (e) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(e.toString())));
+                  } finally {
+                    if (!mounted) return;
+                    setState(() => _isSubmitting = false);
+                  }
+                }
+              },
       ),
     );
   }

@@ -227,8 +227,6 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
           ),
 
           const SizedBox(height: 24),
-
-          /// Activities list
           buildActivities(),
         ],
       ),
