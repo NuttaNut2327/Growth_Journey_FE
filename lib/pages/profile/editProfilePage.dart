@@ -4,6 +4,11 @@ import 'package:fe/widgets/customTextField.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:fe/widgets/bottomActionButton.dart';
+import 'package:fe/api/auth/updateProfile.dart';
+import 'package:fe/api/auth/getUserByID.dart';
+import 'package:fe/interface/auth/updateProfileRequest.dart';
+import 'package:fe/interface/auth/user.dart';
+import 'package:intl/intl.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -23,7 +28,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final phoneNumberController = TextEditingController();
   String? selectedGender;
   File? imageFile;
+  String? imageUrl;
   final ImagePicker picker = ImagePicker();
+  bool _isLoading = false;
+  bool _isFetching = true;
 
   Future<void> pickImage() async {
     final XFile? picked = await picker.pickImage(
@@ -52,15 +60,91 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
+    _loadUser();
+  }
 
-    /// mock data (ปกติจะมาจาก API)
-    usernameController.text = "jessica123";
-    firstNameController.text = "Jessica";
-    lastNameController.text = "Parker";
-    emailController.text = "jessica@email.com";
-    birthdayController.text = "12/06/1998";
-    phoneNumberController.text = "0891234567";
-    selectedGender = "Female";
+  Future<void> _loadUser() async {
+    try {
+      final User user = await getUserByID();
+      // populate controllers
+      usernameController.text = user.username;
+      firstNameController.text = user.firstName;
+      lastNameController.text = user.lastName;
+      emailController.text = user.email;
+      phoneNumberController.text = user.phone;
+      selectedGender = user.gender.isNotEmpty ?
+          (user.gender[0].toUpperCase() + user.gender.substring(1)) : null;
+      // format birthdate as dd/MM/yyyy
+      birthdayController.text = DateFormat('dd/MM/yyyy').format(user.birthdate);
+      imageUrl = user.imageUrl;
+    } catch (e) {
+      // ignore or show error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load profile: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFetching = false;
+        });
+      }
+    }
+  }
+
+  void _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final req = UpdateProfileRequest(
+        image: imageFile,
+        username: usernameController.text.trim(),
+        firstName: firstNameController.text.trim(),
+        lastName: lastNameController.text.trim(),
+        email: emailController.text.trim(),
+        // leaving password empty since we don't ask for it here
+        gender: (selectedGender ?? '').toLowerCase(),
+        birthdate: DateFormat('yyyy-MM-dd').format(DateFormat('dd/MM/yyyy').parse(birthdayController.text)),
+        phone: phoneNumberController.text.trim(),
+      );
+
+      final updated = await updateProfile(req);
+      if (!mounted) return;
+      // optionally refresh UI with whatever server returned
+      setState(() {
+        imageUrl = updated.imageUrl;
+        usernameController.text = updated.username;
+        firstNameController.text = updated.firstName;
+        lastNameController.text = updated.lastName;
+        emailController.text = updated.email;
+        phoneNumberController.text = updated.phone;
+        selectedGender = updated.gender.isNotEmpty
+            ? (updated.gender[0].toUpperCase() + updated.gender.substring(1))
+            : null;
+        birthdayController.text = DateFormat('dd/MM/yyyy').format(updated.birthdate);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile updated successfully')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -81,11 +165,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 32),
-              child: Form(
+        child: _isFetching
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 32),
+                    child: Form(
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -95,9 +181,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       backgroundColor: const Color(0xFFF8ECF4),
                       backgroundImage: imageFile != null
                           ? FileImage(imageFile!)
-                          : const NetworkImage(
-                              "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-                            ) as ImageProvider,
+                          : (imageUrl != null
+                              ? NetworkImage(imageUrl!)
+                              : const NetworkImage(
+                                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+                                )) as ImageProvider,
                     ),
                     const SizedBox(height: 12),
                     const Text(
@@ -381,18 +469,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
         )
       ),
       bottomNavigationBar: BottomActionButton(
+        child: _isLoading
+            ? const SizedBox(
+                height: 48,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                ),
+              )
+            : null,
         text: "Save profile",
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            print("Username: ${usernameController.text}");
-            print("First Name: ${firstNameController.text}");
-            print("Last Name: ${lastNameController.text}");
-            print("Email: ${emailController.text}");
-            print("Birthday: ${birthdayController.text}");
-            print("Phone Number: ${phoneNumberController.text}");
-            print("Gender: $selectedGender");
-          }
-        },
+        onPressed: _isLoading ? () {} : _submit,
       ),
     );
   }

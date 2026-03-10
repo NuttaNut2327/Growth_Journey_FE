@@ -10,15 +10,6 @@ import 'package:fe/widgets/profileActivityCard.dart';
 import 'package:fe/api/auth/getUserByID.dart';
 import 'package:fe/interface/auth/user.dart';
 
-final user = UserLevel(
-  imagePath:
-      'https://i.pinimg.com/736x/e7/a0/32/e7a0323ead05bb13a9ad1f78135b51c1.jpg',
-  level: 5,
-  userName: 'NuttaNut',
-  userPoint: 1250,
-  fullPoint: 1500,
-);
-
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -112,7 +103,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                       child: Text('Error: ${snapshot.error}'),
                                     );
                                   } else if (snapshot.hasData) {
-                                    return UserLevelCard(user: snapshot.data!);
+                                    return UserLevelCard(
+                                      user: snapshot.data!, 
+                                      showEditIcon: true, 
+                                      onEdit: () {
+                                        Navigator.pushNamed(context, AppRoutes.editProfile);
+                                      }
+                                    );
                                   }
                                   return const SizedBox.shrink();
                                 },
@@ -120,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             const SizedBox(height: 24),
                             MoodCalendarCard(moods: moods, isLoading: isLoading),
                             const SizedBox(height: 24),
-                            ProfileActivitiesCard(),
+                            ProfileActivitiesCard(userId: '1'),
                           ]
                         )
                     )
