@@ -1,112 +1,55 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class UploadImageButton extends StatefulWidget {
-  const UploadImageButton({
-    super.key,
-    this.onImageSelected,
-  });
-
-  final Function(String?)? onImageSelected;
+  const UploadImageButton({super.key, this.onImageSelected});
+  final Function(Uint8List?)? onImageSelected;
 
   @override
   State<UploadImageButton> createState() => _UploadImageState();
 }
 
 class _UploadImageState extends State<UploadImageButton> {
-  File? image;
   XFile? pickedFile;
+  Uint8List? imageBytes;
   double? imageSizeMB;
 
-
   Future<void> pickImage() async {
-    final result = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
+    final result = await ImagePicker().pickImage(source: ImageSource.camera);
 
     if (result == null) return;
 
-    final file = File(result.path);
-    final bytes = await file.length();
-    final sizeMB = bytes / (1024 * 1024);
+    final bytes = await result.readAsBytes();
+    final sizeMB = bytes.length / (1024 * 1024);
+
+    if (sizeMB > 5) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Image must be less than 5MB")),
+      );
+      return;
+    }
 
     setState(() {
       pickedFile = result;
-      image = file;
-      imageSizeMB = sizeMB; 
+      imageBytes = bytes;
+      imageSizeMB = sizeMB;
     });
 
-    widget.onImageSelected?.call(result.path);
+    widget.onImageSelected?.call(bytes);
   }
 
-  Widget fileBar() {
-    if (pickedFile == null) return SizedBox();
+  void removeImage() {
+    setState(() {
+      pickedFile = null;
+      imageBytes = null;
+      imageSizeMB = null;
+    });
 
-    final name = pickedFile!.name;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFD8A7D9)),
-      ),
-      child: Row(
-        children: [
-          const HugeIcon(
-            icon: HugeIcons.strokeRoundedImage03, 
-            color: Color(0xFFD8A7D9)
-          ),
-
-          const SizedBox(width: 12),
-
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          Text(
-            imageSizeMB != null
-                ? "${imageSizeMB!.toStringAsFixed(1)} MB"
-                : "",
-          ),
-
-
-          const SizedBox(width: 8),
-
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                image = null;
-                pickedFile = null;
-              });
-
-              widget.onImageSelected?.call(null);
-            },
-            child: HugeIcon(
-              icon: HugeIcons.strokeRoundedCancel01,
-              color: Color(0x804A4458)
-            ),
-          )
-        ],
-      ),
-    );
+    widget.onImageSelected?.call(null);
   }
 
   @override
@@ -114,12 +57,44 @@ class _UploadImageState extends State<UploadImageButton> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        fileBar(),
-
-        GestureDetector(
-          onTap: () async {
-            await pickImage();
-          },
+        if (pickedFile != null)
+          Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFD8A7D9)),
+            ),
+            child: Row(
+              children: [
+                const HugeIcon(
+                  icon: HugeIcons.strokeRoundedImage03,
+                  color: Color(0xFFD8A7D9),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    pickedFile!.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text("${imageSizeMB!.toStringAsFixed(1)} MB"),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: removeImage,
+                  child: const HugeIcon(
+                    icon: HugeIcons.strokeRoundedCancel01,
+                    color: Color(0x804A4458),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: pickImage,
           child: DottedBorder(
             color: const Color(0x80D8A7D9),
             strokeWidth: 1.5,
@@ -128,18 +103,19 @@ class _UploadImageState extends State<UploadImageButton> {
             radius: const Radius.circular(20),
             child: Container(
               width: double.infinity,
-              height: 200,
+              height: 220,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: image != null
+              child: imageBytes != null
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: Image.file(
-                        image!,
+                      child: Image.memory(
+                        imageBytes!,
                         fit: BoxFit.cover,
                         width: double.infinity,
+                        height: double.infinity,
                       ),
                     )
                   : Column(
@@ -158,13 +134,7 @@ class _UploadImageState extends State<UploadImageButton> {
                           ),
                         ),
                         const SizedBox(height: 18),
-                        const Text(
-                          "Click here to upload a photo.",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF333333),
-                          ),
-                        ),
+                        const Text("Click here to upload a photo."),
                       ],
                     ),
             ),

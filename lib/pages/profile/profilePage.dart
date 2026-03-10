@@ -7,6 +7,8 @@ import 'package:fe/pages/profile/repository/mood_repository.dart';
 import 'package:fe/pages/profile/models/mood_model.dart';
 import 'package:fe/widgets/moodCalendarCard.dart';
 import 'package:fe/widgets/profileActivityCard.dart';
+import 'package:fe/api/auth/getUserByID.dart';
+import 'package:fe/interface/auth/user.dart';
 
 final user = UserLevel(
   imagePath:
@@ -27,13 +29,26 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final MoodRepository repo = MoodRepository();
 
+  Future<User>? _userFuture;
   List<Mood> moods = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _initPageData();
     loadMoods();
+  }
+
+  Future<void> _initPageData() async {
+    try {
+      setState(() {
+        _userFuture = getUserByID();
+        // _questsFuture = _loadDailyQuests();
+      });
+    } catch (e) {
+      debugPrint('Error initializing heal page: $e');
+    }
   }
 
   Future<void> loadMoods() async {
@@ -81,14 +96,27 @@ class _ProfilePageState extends State<ProfilePage> {
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         child: Column(
                           children: [
-                            UserLevelCard(
-                              user: user,
-                              showEditIcon: true,
-                              onEdit: () {
-                                Navigator.pushNamed(
-                                    context, AppRoutes.editProfile);
-                              },
-                            ),
+                            if (_userFuture == null)
+                              const Center(child: CircularProgressIndicator())
+                            else
+                              FutureBuilder<User>(
+                                future: _userFuture,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  } else if (snapshot.hasError) {
+                                    return Center(
+                                      child: Text('Error: ${snapshot.error}'),
+                                    );
+                                  } else if (snapshot.hasData) {
+                                    return UserLevelCard(user: snapshot.data!);
+                                  }
+                                  return const SizedBox.shrink();
+                                },
+                              ),
                             const SizedBox(height: 24),
                             MoodCalendarCard(moods: moods, isLoading: isLoading),
                             const SizedBox(height: 24),

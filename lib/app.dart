@@ -1,3 +1,4 @@
+import 'package:fe/pages/map/mapPage.dart';
 import 'package:flutter/material.dart';
 import 'routes/app_routes.dart';
 import 'pages/login/loginPage.dart';
@@ -8,6 +9,7 @@ import 'package:fe/pages/group/groupDetailPage.dart';
 import 'package:fe/pages/group/createGroupPage.dart';
 import 'package:fe/pages/profile/profilePage.dart';
 import 'package:fe/pages/profile/editProfilePage.dart';
+import 'package:fe/pages/map/createLocationPage.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -33,6 +35,8 @@ class MyApp extends StatelessWidget {
         AppRoutes.assessment: (context) => const AssessmentPage(),
         AppRoutes.profile: (context) => const ProfilePage(),
         AppRoutes.editProfile: (context) => const EditProfilePage(),
+        AppRoutes.createLocation: (context) => const CreateLocationPage(),
+        AppRoutes.map: (context) => const MapPage(), // Assuming MapPage is part of Bottomnavbar
       },
     );
   }

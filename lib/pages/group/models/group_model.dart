@@ -1,42 +1,58 @@
-import 'package:fe/pages/group/enum/group_status.dart';
-
 class Group {
-  final String groupId;
+  final String id;
   final String title;
-  final String imagePath;
   final String description;
-  final String location;
-  final String eventDate;
-  final int joinedMemberCount;
   final int targetMemberCount;
-  final List<String> tags;
-  final GroupStatus status;
+  final int joinedMemberCount;
+  final String? image;
+  final DateTime date;
+  final String locationId;
+  final String location;
+  final List<String> tags; 
+  final String createdBy;
+  final DateTime createdAt;
 
   Group({
-    required this.groupId,
+    required this.id,
     required this.title,
-    required this.imagePath,
     required this.description,
-    required this.location,
-    required this.eventDate,
-    required this.joinedMemberCount,
     required this.targetMemberCount,
+    required this.joinedMemberCount,
+    required this.date,
+    this.image,
+    required this.locationId,
+    required this.location,
     required this.tags,
-    required this.status,
+    required this.createdBy,
+    required this.createdAt,
   });
 
-  factory Group.fromMap(Map<String, dynamic> map) {
+  factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
-      groupId: map['groupId'],
-      title: map['title'],
-      imagePath: map['imagePath'],
-      description: map['description'],
-      location: map['location'],
-      eventDate: map['eventDate'],
-      joinedMemberCount: map['joinedMemberCount'],
-      targetMemberCount: map['targetMemberCount'],
-      tags: List<String>.from(map['tags']),
-      status: map['status'],
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      targetMemberCount: _toInt(json['target_member_count']),
+      joinedMemberCount: _toInt(json['joined_member_count']),
+      image: json['image_url']?.toString(),
+      date: _toDateTime(json['date']),
+      locationId: json['location_id']?.toString() ?? '',
+      location: (json['location_name'] ) ?? '',
+      tags: List<String>.from(json['tags'] ?? []),
+      createdBy: json['created_by']?.toString() ?? '',
+      createdAt: _toDateTime(json['created_at']),
     );
+  }
+
+  static int _toInt(dynamic value) {
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
+  static DateTime _toDateTime(dynamic value) {
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+    return DateTime.now();
   }
 }
