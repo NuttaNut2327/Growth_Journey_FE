@@ -13,12 +13,12 @@ class Participant {
     required this.role,
   });
 
-  factory Participant.fromMap(Map<String, dynamic> map) {
+  factory Participant.fromMap(Map<String, dynamic>  json) {
     return Participant(
-      userId: map['userId'],
-      name: map['name'],
-      imagePath: map['imagePath'],
-      role: map['role'],
+      userId:  json['user_id'] as String ,
+      name: json['name'] as String  ,
+      imagePath: json['image_url']?.toString(),
+      role: RoleParticipant.values.firstWhere((e) => e.label == json['role']),
     );
   }
 }

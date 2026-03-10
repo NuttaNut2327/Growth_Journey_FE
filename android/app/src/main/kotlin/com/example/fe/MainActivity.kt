@@ -1,4 +1,4 @@
-package com.example.fe
+package com.yuukakawai.growthjournal
 
 import io.flutter.embedding.android.FlutterActivity
 

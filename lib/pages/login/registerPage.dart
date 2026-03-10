@@ -45,7 +45,6 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   String formatBirthdate(String value) {
-    // value = DD/MM/YYYY
     final parts = value.split('/');
     return '${parts[2]}-${parts[1]}-${parts[0]}';
   }

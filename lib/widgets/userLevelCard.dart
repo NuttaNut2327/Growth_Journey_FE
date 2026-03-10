@@ -1,9 +1,9 @@
+import 'package:fe/interface/auth/user.dart';
 import 'package:flutter/material.dart';
-import 'package:fe/pages/heal/models/user_level_model.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class UserLevelCard extends StatelessWidget {
-  final UserLevel user;
+  final User user;
   final bool showEditIcon;   
 
   const UserLevelCard({
@@ -57,7 +57,14 @@ class UserLevelCard extends StatelessWidget {
                         ),
                       ],
                       image: DecorationImage(
-                        image: NetworkImage(user.imagePath),
+                        image: ResizeImage(
+                          NetworkImage(
+                            user.imageUrl ??
+                                'https://jkfenner.com/wp-content/uploads/2019/11/default.jpg',
+                          ),
+                          width: 150,
+                          height: 150,
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -82,7 +89,7 @@ class UserLevelCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        user.userName, 
+                        user.username, 
                         style: TextStyle(
                           fontSize: 18, 
                           fontWeight: FontWeight.w700
@@ -112,7 +119,7 @@ class UserLevelCard extends StatelessWidget {
                       color: Color(0xFF8B7A99)
                     )
                   ),
-                  Text('${user.userPoint} / ${user.fullPoint} XP', 
+                  Text('${user.points} / 100 XP', 
                     style: TextStyle(
                       fontSize: 14, 
                       fontWeight: FontWeight.w500
@@ -124,7 +131,7 @@ class UserLevelCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: LinearProgressIndicator(
-                  value: user.userPoint / user.fullPoint,
+                  value: user.points / 100,
                   minHeight: 12,
                   backgroundColor: Color(0x33D8A7D9),
                   valueColor: AlwaysStoppedAnimation(Color(0xFFD8A7D9)),

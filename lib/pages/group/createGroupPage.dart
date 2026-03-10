@@ -1,3 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:fe/api/group/createGroup.dart';
+import 'package:fe/api/location/getLocations.dart';
+import 'package:fe/interface/group/createGroupRequest.dart';
+import 'package:fe/interface/location/location.dart';
+import 'package:fe/widgets/appDropdownField.dart.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/widgets/customTextField.dart';
@@ -14,7 +21,6 @@ class CreateGroupPage extends StatefulWidget {
 }
 
 class _CreateGroupPageState extends State<CreateGroupPage> {
-
   final _formKey = GlobalKey<FormState>();
   final activityNameController = TextEditingController();
   final descriptionController = TextEditingController();
@@ -25,7 +31,15 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   TimeOfDay? selectedTime;
   final maxParticipantsController = TextEditingController();
   List<String> selectedTags = [];
-  String? imagePath;
+  Uint8List? imageBytes;
+  String? selectedLocationId;
+  late Future<List<Location>> locationsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    locationsFuture = getLocationsByStatus('approved');
+  }
 
   @override
   void dispose() {
@@ -38,8 +52,18 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
     super.dispose();
   }
 
-  final tags = ['Yoga', 'Running', 'Meditation', 'Art', 'Music',
-  'Support', 'Sharing', 'Evening','Creative','Exercise','Outdoor'
+  final tags = [
+    'Yoga',
+    'Running',
+    'Meditation',
+    'Art',
+    'Music',
+    'Support',
+    'Sharing',
+    'Evening',
+    'Creative',
+    'Exercise',
+    'Outdoor',
   ];
 
   @override
@@ -63,7 +87,10 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
         child: SingleChildScrollView(
           child: Center(
             child: Padding(
-              padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 32),
+              padding: EdgeInsetsGeometry.symmetric(
+                horizontal: 16,
+                vertical: 32,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -71,36 +98,62 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                   children: [
                     AppTextField(
                       label: 'Activity name',
-                      hintText: 'Enter activity name', 
+                      hintText: 'Enter activity name',
                       controller: activityNameController,
                       isRequired: true,
                     ),
                     const SizedBox(height: 16),
                     AppTextField(
                       label: 'Description',
-                      hintText: 'Tell people what your activity is about...', 
+                      hintText: 'Tell people what your activity is about...',
                       controller: descriptionController,
                       isRequired: true,
                     ),
                     const SizedBox(height: 16),
-                    AppTextField(
-                      label: 'Location',
-                      hintText: 'Where this happen?', 
-                      controller: locationController,
-                      isRequired: true,
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: HugeIcon(
-                          icon: HugeIcons.strokeRoundedLocation01,
-                          color: Color(0xFFD8A7D9),
-                        ),
-                      ),
+                    FutureBuilder<List<Location>>(
+                      future: locationsFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        }
+
+                        final locations = snapshot.data ?? [];
+                        final menuItems = locations.map((loc) {
+                          return DropdownMenuItem<String>(
+                            value: loc.id.toString(),
+                            child: Text(loc.name),
+                          );
+                        }).toList();
+
+                        return AppDropdownField<String>(
+                          label: 'Location',
+                          hintText:
+                              snapshot.connectionState ==
+                                  ConnectionState.waiting
+                              ? 'Loading...'
+                              : 'Where will this happen?',
+                          isRequired: true,
+                          value: selectedLocationId,
+                          prefixIcon: const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Icon(
+                              Icons.location_on,
+                              color: Color(0xFFD8A7D9),
+                            ),
+                          ),
+                          items: menuItems,
+                          controller: locationController,
+                          onChanged: (val) {
+                            setState(() => selectedLocationId = val);
+                          },
+                        );
+                      },
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
                         Expanded(
-                          child:  AppTextField(
+                          child: AppTextField(
                             label: 'Date',
                             hintText: 'Select Date',
                             controller: dateController,
@@ -123,8 +176,9 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
                               if (picked != null) {
                                 selectedDate = picked;
-                                dateController.text =
-                                    DateFormat('dd MMM yyyy').format(picked);
+                                dateController.text = DateFormat(
+                                  'dd MMM yyyy',
+                                ).format(picked);
                               }
                             },
                           ),
@@ -162,8 +216,9 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                                   picked.minute,
                                 );
 
-                                timeController.text =
-                                    DateFormat('h:mm a').format(dateTime);
+                                timeController.text = DateFormat(
+                                  'h:mm a',
+                                ).format(dateTime);
                               }
                             },
                           ),
@@ -172,8 +227,8 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                     ),
                     const SizedBox(height: 16),
                     AppTextField(
-                      label: 'Max participants', 
-                      hintText: 'How many people can join?', 
+                      label: 'Max participants',
+                      hintText: 'How many people can join?',
                       controller: maxParticipantsController,
                       prefixIcon: Padding(
                         padding: const EdgeInsets.all(16),
@@ -190,12 +245,18 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                         Row(
                           children: [
                             HugeIcon(
-                              icon: HugeIcons.strokeRoundedTag01, 
-                              size: 18, 
+                              icon: HugeIcons.strokeRoundedTag01,
+                              size: 18,
                               strokeWidth: 2,
                             ),
                             const SizedBox(width: 8),
-                            Text('Categories', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))
+                            Text(
+                              'Categories',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -228,41 +289,86 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                         Row(
                           children: [
                             HugeIcon(
-                              icon: HugeIcons.strokeRoundedImage02, 
-                              size: 18, 
+                              icon: HugeIcons.strokeRoundedImage02,
+                              size: 18,
                               strokeWidth: 2,
                             ),
                             const SizedBox(width: 8),
-                            Text('Cover photo', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))
+                            Text(
+                              'Cover photo',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
                         UploadImageButton(
-                          onImageSelected: (path) {
-                            imagePath = path;
+                          onImageSelected: (bytes) {
+                            imageBytes = bytes;
                           },
-                        )
+                        ),
                       ],
-                    )
+                    ),
                   ],
-                )
-              )
-            )
-          )
-        )
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       bottomNavigationBar: BottomActionButton(
         text: "Create group",
-        onPressed: () {
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
-            print("Activity Name: ${activityNameController.text}");
-            print("Description: ${descriptionController.text}");
-            print("Location: ${locationController.text}");
-            print("Date: ${dateController.text}");
-            print("Time: ${timeController.text}");
-            print("Max Participants: ${maxParticipantsController.text}");
-            print("Tags: $selectedTags");
-            print("Image Path: $imagePath");
+            if (selectedDate == null || selectedTime == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Please select date and time")),
+              );
+              return;
+            }
+
+            try {
+              final eventDateTime = DateTime(
+                selectedDate!.year,
+                selectedDate!.month,
+                selectedDate!.day,
+                selectedTime!.hour,
+                selectedTime!.minute,
+              );
+              final formattedDate = eventDateTime.toUtc().toIso8601String();
+              final group = GroupRequest(
+                title: activityNameController.text,
+                description: descriptionController.text,
+                targetMemberCount: int.parse(maxParticipantsController.text),
+                eventDate: formattedDate,
+                location: selectedLocationId!,
+                tags: selectedTags,
+                imageBytes: imageBytes,
+              );
+              bool isLoading;
+              setState(() => isLoading = true);
+              await createGroup(group);
+              setState(() => isLoading = false);
+              if (!mounted) return;
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Group created successfully 🎉"),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 3),
+                ),
+              );
+
+              await Future.delayed(const Duration(seconds: 3));
+
+              Navigator.pop(context);
+            } catch (e) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(e.toString())));
+            }
           }
         },
       ),
