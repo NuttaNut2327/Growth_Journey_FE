@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:fe/routes/app_routes.dart';
 
 class MainUpperNavBar extends StatelessWidget {
 
@@ -45,7 +46,7 @@ class MainUpperNavBar extends StatelessWidget {
             ),
             IconButton(
               onPressed: () {
-                print('Profile clicked');
+                Navigator.pushNamed(context, AppRoutes.profile);
               }, 
               icon: HugeIcon(
                 icon:  HugeIcons.strokeRoundedUser, 

@@ -187,7 +187,7 @@ class GroupDetailPage extends StatelessWidget {
                                   'No participants yet',
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color: Color(0xFFD8A7D9),
+                                    color: Colors.grey,
                                   ),
                                 ),
                               ),

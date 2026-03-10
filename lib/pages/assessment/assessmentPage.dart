@@ -20,9 +20,9 @@ class _AssessmentPageState extends State<AssessmentPage> {
   ];
 
   final List<String> images = [
-    'assets/images/anxios_level_1.png',
-    'assets/images/anxios_level_2.png',
-    'assets/images/anxios_level_3.png',
+    'assets/images/anxious_level_1.png',
+    'assets/images/anxious_level_2.png',
+    'assets/images/anxious_level_3.png',
     'assets/images/tired_level_3.png',
     'assets/images/tired_level_1.png',
   ];
@@ -78,15 +78,17 @@ class _AssessmentPageState extends State<AssessmentPage> {
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: AssessmentCard(
-          questionNumber: currentIndex + 1,
-          question: questions[currentIndex],
-          imagePath: images[currentIndex],
-          onAnswerSelected: onAnswerSelected,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: AssessmentCard(
+            questionNumber: currentIndex + 1,
+            question: questions[currentIndex],
+            imagePath: images[currentIndex],
+            onAnswerSelected: onAnswerSelected,
+          ),
         ),
-      ),
+      )
     );
   }
 }
