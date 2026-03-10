@@ -6,6 +6,7 @@ import 'package:fe/widgets/backNavbar.dart';
 import 'package:fe/widgets/tagGroup.dart';
 import 'package:fe/pages/group/models/group_model.dart';
 import 'package:fe/pages/group/models/participant_model.dart';
+import 'package:fe/pages/group/chatGroupPage.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:fe/widgets/bottomActionButton.dart';
@@ -265,7 +266,13 @@ class GroupDetailPage extends StatelessWidget {
                             strokeWidth: 2,
                           ),
                           onPressed: () {
-                            print('chat');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ChatGroupPage(group: group),
+                              ),
+                            );
                           },
                         ),
                       ),

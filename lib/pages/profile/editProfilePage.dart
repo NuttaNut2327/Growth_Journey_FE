@@ -469,6 +469,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         )
       ),
       bottomNavigationBar: BottomActionButton(
+        text: "Save profile",
+        onPressed: _isLoading ? () {} : _submit,
         child: _isLoading
             ? const SizedBox(
                 height: 48,
@@ -479,8 +481,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
               )
             : null,
-        text: "Save profile",
-        onPressed: _isLoading ? () {} : _submit,
       ),
     );
   }

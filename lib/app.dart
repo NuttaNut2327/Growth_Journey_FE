@@ -1,5 +1,7 @@
 import 'package:fe/pages/map/mapPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:fe/services/fcm_notification_service.dart';
 import 'routes/app_routes.dart';
 import 'pages/login/loginPage.dart';
 import 'pages/login/registerPage.dart';
@@ -12,8 +14,41 @@ import 'package:fe/pages/profile/editProfilePage.dart';
 import 'package:fe/pages/blog/createBlogPage.dart';
 import 'package:fe/pages/map/createLocationPage.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  FCMNotificationService? _fcmService;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!kIsWeb) {
+      _initializeFCM();
+    } else {
+      print('⚠️ FCM Service not available on Web platform');
+    }
+  }
+
+  Future<void> _initializeFCM() async {
+    try {
+      _fcmService = FCMNotificationService();
+      await _fcmService!.initialize();
+      print('✅ FCM Service initialized in MyApp');
+    } catch (e) {
+      print('🔴 Error initializing FCM: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _fcmService?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +67,7 @@ class MyApp extends StatelessWidget {
         AppRoutes.bottomnavbar: (context) => const Bottomnavbar(),
 
         AppRoutes.createGroup: (context) => const CreateGroupPage(),
-        AppRoutes.groupDetail: (_) => const GroupDetailPage(),   
+        AppRoutes.groupDetail: (_) => const GroupDetailPage(),
         AppRoutes.assessment: (context) => const AssessmentPage(),
         AppRoutes.profile: (context) => const ProfilePage(),
         AppRoutes.editProfile: (context) => const EditProfilePage(),

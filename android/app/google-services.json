@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "274714575227",
+    "project_id": "graceful-cider-486915-i4",
+    "storage_bucket": "graceful-cider-486915-i4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:274714575227:android:b85166fccc9667c633fdde",
+        "android_client_info": {
+          "package_name": "com.yuukakawai.growthjournal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzN-TXep5_L6Mdwzzmk3cWdo0TFcCaPjs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

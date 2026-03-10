@@ -1,4 +1,3 @@
-import 'package:fe/pages/heal/models/user_level_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/widgets/userLevelCard.dart';

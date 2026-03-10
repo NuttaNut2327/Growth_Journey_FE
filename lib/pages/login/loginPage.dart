@@ -21,6 +21,15 @@ class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
+  String _extractErrorMessage(Object error) {
+    final raw = error.toString();
+    const prefix = 'Exception: ';
+    if (raw.startsWith(prefix)) {
+      return raw.substring(prefix.length).trim();
+    }
+    return raw;
+  }
+
   @override
   void dispose() {
     usernameController.dispose();
@@ -35,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
 
     setState(() {
       _isLoading = true;
-      _errorMessage = null; 
+      _errorMessage = null;
     });
 
     try {
@@ -51,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = "Invalid username or password";
+        _errorMessage = _extractErrorMessage(e);
       });
     } finally {
       if (mounted) {
@@ -282,7 +291,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ],
-
                         SizedBox(
                           width: double.infinity,
                           child: MainButton(

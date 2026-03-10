@@ -235,7 +235,7 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
             print("Location Description: ${locationDescriptionController.text}");
             print("Latitude: ${latitudeController.text}");
             print("Longitude: ${longitudeController.text}");
-            print("Selected Tag: ${selectTag}");
+            print("Selected Tag: $selectTag");
 
             try {
                 
