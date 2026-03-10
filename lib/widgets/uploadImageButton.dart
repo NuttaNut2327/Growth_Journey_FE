@@ -4,9 +4,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:hugeicons/hugeicons.dart';
 
+enum UploadImageMode { gallery, camera }
+
 class UploadImageButton extends StatefulWidget {
-  const UploadImageButton({super.key, this.onImageSelected});
+  const UploadImageButton({
+    super.key,
+    this.onImageSelected,
+    this.mode = UploadImageMode.gallery,
+  });
+
   final Function(Uint8List?)? onImageSelected;
+  final UploadImageMode mode;
 
   @override
   State<UploadImageButton> createState() => _UploadImageState();
@@ -18,7 +26,11 @@ class _UploadImageState extends State<UploadImageButton> {
   double? imageSizeMB;
 
   Future<void> pickImage() async {
-    final result = await ImagePicker().pickImage(source: ImageSource.camera);
+    final source = widget.mode == UploadImageMode.camera
+        ? ImageSource.camera
+        : ImageSource.gallery;
+
+    final result = await ImagePicker().pickImage(source: source);
 
     if (result == null) return;
 
@@ -135,6 +147,28 @@ class _UploadImageState extends State<UploadImageButton> {
                         ),
                         const SizedBox(height: 18),
                         const Text("Click here to upload a photo."),
+                        if (widget.mode == UploadImageMode.camera)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 6),
+                            child: Text(
+                              "Take a photo",
+                              style: TextStyle(
+                                color: Color(0xFF8F839C),
+                                fontSize: 12,
+                              ),
+                            ),
+                          )
+                        else
+                          const Padding(
+                            padding: EdgeInsets.only(top: 6),
+                            child: Text(
+                              "Choose from gallery",
+                              style: TextStyle(
+                                color: Color(0xFF8F839C),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
             ),

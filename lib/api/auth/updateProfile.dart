@@ -2,9 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:path/path.dart' as p;
 import 'package:fe/api/api_client.dart';
 import 'package:fe/interface/auth/updateProfileRequest.dart';
-import 'package:fe/interface/auth/user.dart';
 
-Future<User> updateProfile(UpdateProfileRequest request) async {
+Future<void> updateProfile(UpdateProfileRequest request) async {
   final api = ApiClient();
 
   final formData = FormData();
@@ -14,7 +13,7 @@ Future<User> updateProfile(UpdateProfileRequest request) async {
     if (await file.exists()) {
       final fileName = p.basename(file.path);
       formData.files.add(MapEntry(
-        'imagePath',
+        'image',
         await MultipartFile.fromFile(file.path, filename: fileName),
       ));
     }
@@ -31,12 +30,11 @@ Future<User> updateProfile(UpdateProfileRequest request) async {
   ]);
 
   try {
-    final response = await api.dio.patch(
-      '/user/me',
+    await api.dio.patch(
+      '/users/me',
       data: formData,
       options: Options(contentType: 'multipart/form-data'),
     );
-    return User.fromJson(response.data);
   } on DioException catch (e) {
     if (e.response != null) {
       final data = e.response?.data;
@@ -45,7 +43,7 @@ Future<User> updateProfile(UpdateProfileRequest request) async {
         throw Exception(data['message']);
       }
 
-      throw Exception("Registration failed");
+      throw Exception("Failed to update profile");
     } else {
       throw Exception("Network error");
     }

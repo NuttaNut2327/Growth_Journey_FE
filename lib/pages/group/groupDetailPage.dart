@@ -7,24 +7,35 @@ import 'package:fe/widgets/tagGroup.dart';
 import 'package:fe/pages/group/models/group_model.dart';
 import 'package:fe/pages/group/models/participant_model.dart';
 import 'package:fe/pages/group/chatGroupPage.dart';
+import 'package:fe/pages/group/enum/role_participant.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:fe/widgets/bottomActionButton.dart';
+import 'package:fe/widgets/mainButton.dart';
 import 'package:fe/widgets/secondButton.dart';
 import 'package:fe/widgets/participantCard.dart';
 
-class GroupDetailPage extends StatelessWidget {
+class GroupDetailPage extends StatefulWidget {
   const GroupDetailPage({super.key});
+
+  @override
+  State<GroupDetailPage> createState() => _GroupDetailPageState();
+}
+
+class _GroupDetailPageState extends State<GroupDetailPage> {
+  final _groupRepository = GroupRepository();
+  final _participantRepository = ParticipantRepository();
+  late Group _group;
+  late Future<Map<String, dynamic>> _groupFuture;
+  bool _isInitialized = false;
 
   Future<Map<String, dynamic>> _loadData(String groupId) async {
     final userId = await getUserId();
-    final participantRepository = ParticipantRepository();
-    final participants = await participantRepository.getParticipantsByGroup(
+    final participants = await _participantRepository.getParticipantsByGroup(
       groupId,
     );
 
-    final isJoined =
-        userId != null &&
+    final isJoined = userId != null &&
         participants.any((participant) => participant.userId == userId);
 
     return {
@@ -35,8 +46,74 @@ class GroupDetailPage extends StatelessWidget {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isInitialized) {
+      return;
+    }
+    _group = ModalRoute.of(context)!.settings.arguments as Group;
+    _groupFuture = _loadData(_group.id);
+    _isInitialized = true;
+  }
+
+  Future<void> _refreshPage() async {
+    setState(() {
+      _groupFuture = _loadData(_group.id);
+    });
+    await _groupFuture;
+  }
+
+  Future<void> _handleJoin() async {
+    try {
+      await _groupRepository.joinGroup(_group.id);
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Joined group successfully'),
+        ),
+      );
+      await _refreshPage();
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to join group: $e')),
+      );
+    }
+  }
+
+  Future<void> _handleLeave() async {
+    try {
+      await _groupRepository.leaveGroup(_group.id);
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Left group successfully'),
+        ),
+      );
+      await _refreshPage();
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to leave group: $e')),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final group = ModalRoute.of(context)!.settings.arguments as Group;
+    if (!_isInitialized) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final group = _group;
 
     DateTime dateTime = DateTime.parse(group.date.toString()).toLocal();
 
@@ -47,7 +124,7 @@ class GroupDetailPage extends StatelessWidget {
     String formattedTime = DateFormat('h:mm a').format(dateTime);
 
     return FutureBuilder<Map<String, dynamic>>(
-      future: _loadData(group.id),
+      future: _groupFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -77,6 +154,15 @@ class GroupDetailPage extends StatelessWidget {
         final data = snapshot.data!;
         final participants = data['participants'] as List<Participant>;
         final isJoined = data['isJoined'] as bool;
+        final userId = data['userId'] as String?;
+        final currentParticipant = userId == null
+            ? null
+            : participants
+                .where((participant) => participant.userId == userId)
+                .cast<Participant?>()
+                .firstWhere((participant) => participant != null,
+                    orElse: () => null);
+        final isOwner = currentParticipant?.role == RoleParticipant.CREATOR;
 
         return Scaffold(
           body: SingleChildScrollView(
@@ -125,7 +211,8 @@ class GroupDetailPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          if (isJoined) _joinedBadge(),
+                          if (isJoined)
+                            _joinedBadge(isOwner ? 'Owner' : 'Joined'),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -172,7 +259,7 @@ class GroupDetailPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        '${group.joinedMemberCount}/${group.targetMemberCount} participants',
+                        '${participants.length}/${group.targetMemberCount} participants',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -214,114 +301,115 @@ class GroupDetailPage extends StatelessWidget {
               ],
             ),
           ),
-          bottomNavigationBar: isJoined
-              ? BottomActionButton(
-                  text: '',
-                  onPressed: () {},
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 48,
-                          child: SecondButton(
-                            text: 'Leave group',
-                            onPressed: () async {
-                              try {
-                                await GroupRepository().leaveGroup(group.id);
-                                if (!context.mounted) {
-                                  return;
-                                }
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Left group successfully'),
-                                  ),
-                                );
-                              } catch (e) {
-                                if (!context.mounted) {
-                                  return;
-                                }
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Failed to leave group: $e'),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFD8A7D9),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: const HugeIcon(
-                            icon: HugeIcons.strokeRoundedMessageMultiple02,
-                            color: Colors.white,
-                            size: 18,
-                            strokeWidth: 2,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ChatGroupPage(group: group),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : BottomActionButton(
-                  text: 'Join group',
-                  onPressed: () async {
-                    try {
-                      await GroupRepository().joinGroup(group.id);
-                      if (!context.mounted) {
-                        return;
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Joined group successfully'),
-                        ),
-                      );
-                    } catch (e) {
-                      if (!context.mounted) {
-                        return;
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to join group: $e')),
-                      );
-                    }
-                  },
-                ),
+          bottomNavigationBar: _buildBottomActionBar(
+            context: context,
+            group: group,
+            isOwner: isOwner,
+            isJoined: isJoined,
+            onJoin: _handleJoin,
+            onLeave: _handleLeave,
+          ),
         );
       },
     );
   }
 }
 
-Widget _joinedBadge() {
+Widget _joinedBadge(String label) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
     decoration: BoxDecoration(
       color: const Color(0xFFF6DDE4),
       borderRadius: BorderRadius.circular(999),
     ),
-    child: const Text(
-      'Joined',
+    child: Text(
+      label,
       style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w700,
         color: Color(0xFF4A3A4A),
       ),
     ),
+  );
+}
+
+Widget _buildBottomActionBar({
+  required BuildContext context,
+  required Group group,
+  required bool isOwner,
+  required bool isJoined,
+  required Future<void> Function() onJoin,
+  required Future<void> Function() onLeave,
+}) {
+  if (isOwner) {
+    return BottomActionButton(
+      text: '',
+      onPressed: null,
+      child: SizedBox(
+        width: double.infinity,
+        height: 48,
+        child: MainButton(
+          text: 'Open group chat',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatGroupPage(group: group),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  if (isJoined) {
+    return BottomActionButton(
+      text: '',
+      onPressed: null,
+      child: Row(
+        children: [
+          Expanded(
+            child: SizedBox(
+              height: 48,
+              child: SecondButton(
+                text: 'Leave group',
+                onPressed: onLeave,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Container(
+            width: 48,
+            height: 48,
+            decoration: const BoxDecoration(
+              color: Color(0xFFD8A7D9),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const HugeIcon(
+                icon: HugeIcons.strokeRoundedMessageMultiple02,
+                color: Colors.white,
+                size: 18,
+                strokeWidth: 2,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatGroupPage(group: group),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  return BottomActionButton(
+    text: 'Join group',
+    onPressed: onJoin,
   );
 }

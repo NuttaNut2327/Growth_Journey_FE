@@ -3,7 +3,7 @@ import 'package:fe/widgets/mainButton.dart';
 
 class BottomActionButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Widget? child;
 
   const BottomActionButton({

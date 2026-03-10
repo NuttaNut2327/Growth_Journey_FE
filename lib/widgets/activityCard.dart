@@ -35,16 +35,19 @@ class ActivityCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.network(
-              activity.image ??
-                  'https://jkfenner.com/wp-content/uploads/2019/11/default.jpg',
-              width: 90,
-              height: 90,
-              cacheWidth: 180,
-              cacheHeight: 180,
-              fit: BoxFit.cover,
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
+                (activity.image?.isEmpty ?? true)
+                    ? 'https://jkfenner.com/wp-content/uploads/2019/11/default.jpg'
+                    : activity.image!,
+                width: 90,
+                height: 90,
+                cacheWidth: 180,
+                cacheHeight: 180,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -65,14 +68,14 @@ class ActivityCard extends StatelessWidget {
                 Row(
                   children: [
                     const HugeIcon(
-                      icon: HugeIcons.strokeRoundedLocation01, 
-                      size: 14, 
+                      icon: HugeIcons.strokeRoundedLocation01,
+                      size: 14,
                       color: Color(0xFFD8A7D9),
                       strokeWidth: 2,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      activity.location, 
+                      activity.location,
                       style: const TextStyle(fontSize: 12),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -83,14 +86,14 @@ class ActivityCard extends StatelessWidget {
                 Row(
                   children: [
                     HugeIcon(
-                      icon: HugeIcons.strokeRoundedCalendar04, 
-                      size: 14, 
+                      icon: HugeIcons.strokeRoundedCalendar04,
+                      size: 14,
                       color: Color(0xFFD8A7D9),
                       strokeWidth: 2,
                     ),
                     SizedBox(width: 8),
                     Text(
-                      formattedDate, 
+                      formattedDate,
                       style: const TextStyle(fontSize: 12),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -101,8 +104,8 @@ class ActivityCard extends StatelessWidget {
                 Row(
                   children: [
                     HugeIcon(
-                      icon: HugeIcons.strokeRoundedUserMultiple02, 
-                      size: 14, 
+                      icon: HugeIcons.strokeRoundedUserMultiple02,
+                      size: 14,
                       color: Color(0xFFD8A7D9),
                       strokeWidth: 2,
                     ),

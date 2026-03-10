@@ -31,43 +31,45 @@ class _GroupPageState extends State<GroupPage> {
     await _groupFuture;
   }
 
-  Future<void> _handleJoinGroup(String groupId) async {
+  Future<bool> _handleJoinGroup(String groupId) async {
     try {
       await _groupRepository.joinGroup(groupId);
       if (!mounted) {
-        return;
+        return false;
       }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Joined group successfully')),
       );
-      await _handleRefresh();
+      return true;
     } catch (e) {
       if (!mounted) {
-        return;
+        return false;
       }
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed to join group: $e')));
+      return false;
     }
   }
 
-  Future<void> _handleLeaveGroup(String groupId) async {
+  Future<bool> _handleLeaveGroup(String groupId) async {
     try {
       await _groupRepository.leaveGroup(groupId);
       if (!mounted) {
-        return;
+        return false;
       }
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Left group successfully')));
-      await _handleRefresh();
+      return true;
     } catch (e) {
       if (!mounted) {
-        return;
+        return false;
       }
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed to leave group: $e')));
+      return false;
     }
   }
 
@@ -116,7 +118,6 @@ class _GroupPageState extends State<GroupPage> {
                             AppRoutes.createGroup,
                           );
                         },
-
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(12),
@@ -164,12 +165,11 @@ class _GroupPageState extends State<GroupPage> {
 
                     return Column(
                       children: groups.map((group) {
-                        final membership = joinedGroups
-                            .cast<dynamic>()
-                            .firstWhere(
-                              (g) => g.groupId == group.id,
-                              orElse: () => null,
-                            );
+                        final membership =
+                            joinedGroups.cast<dynamic>().firstWhere(
+                                  (g) => g.groupId == group.id,
+                                  orElse: () => null,
+                                );
 
                         final bool isJoined = membership != null;
                         return Padding(

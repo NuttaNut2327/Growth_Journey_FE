@@ -88,7 +88,7 @@ class _BottomnavbarState extends State<Bottomnavbar> {
             icon: HugeIcon(
               icon: HugeIcons.strokeRoundedFavourite,
               size: 20,
-            ), 
+            ),
             label: 'Heal',
           ),
         ],
@@ -96,4 +96,3 @@ class _BottomnavbarState extends State<Bottomnavbar> {
     );
   }
 }
-

@@ -75,17 +75,26 @@ class Location {
   });
 
   factory Location.fromJson(Map<String, dynamic> json) {
+    final rawType = json['type'];
+    final parsedType = rawType is List
+        ? rawType.map((e) => e.toString()).toList()
+        : (rawType is String && rawType.isNotEmpty
+            ? <String>[rawType]
+            : <String>[]);
+
     return Location(
-      id: json['ID'] ?? '',
+      id: (json['id'] ?? json['ID'] ?? '').toString(),
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
-      type: List<String>.from(json['type'] ?? []),
+      type: parsedType,
       status: json['status'] ?? '',
       createdBy: json['created_by'] ?? '',
-      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updated_at'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+          json['created_at'] ?? DateTime.now().toIso8601String()),
+      updatedAt: DateTime.parse(
+          json['updated_at'] ?? DateTime.now().toIso8601String()),
     );
   }
 
@@ -103,5 +112,4 @@ class Location {
       'updated_at': updatedAt.toIso8601String(),
     };
   }
-
 }

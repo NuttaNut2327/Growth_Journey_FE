@@ -5,6 +5,8 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/routes/app_routes.dart';
 import 'package:fe/widgets/moodLevelModal.dart';
 import 'package:fe/pages/home/enum/emotions.dart';
+import 'package:fe/api/mood/recordMood.dart';
+import 'package:fe/api/mood/getMoodByDate.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,7 +16,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   Map<Emotions, int> emotionLevels = {
     Emotions.CALM: 1,
     Emotions.HAPPY: 1,
@@ -27,6 +28,40 @@ class _HomePageState extends State<HomePage> {
   Emotions? selectedEmotion;
   int selectedLevel = 1;
   bool showRive = false;
+  bool _isSubmittingMood = false;
+  bool _isCheckingTodayMood = true;
+  TodayMood? _todayMood;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTodayMood();
+  }
+
+  Future<void> _loadTodayMood() async {
+    setState(() {
+      _isCheckingTodayMood = true;
+    });
+
+    try {
+      final todayMood = await getMoodByDate(DateTime.now());
+      if (!mounted) return;
+
+      setState(() {
+        _todayMood = todayMood;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _todayMood = null;
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isCheckingTodayMood = false;
+      });
+    }
+  }
 
   String getRiveAsset() {
     if (selectedEmotion == null) return '';
@@ -55,134 +90,119 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const MainUpperNavBar(),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0x33D8A7D9),
-                      Color(0x33C8E5D8),
-                      Colors.white,
-                    ],
+        body: SingleChildScrollView(
+            child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const MainUpperNavBar(),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0x33D8A7D9),
+                Color(0x33C8E5D8),
+                Colors.white,
+              ],
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Good to see you',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                child: Padding(
-                  padding: EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Good to see you',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                        ),
+                SizedBox(height: 8),
+                Text(
+                  'How was your day, sunshine?',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                SizedBox(height: 24),
+                _buildMoodSection(),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: const Color(0xFFEEDFF1),
+                  width: 2,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x1A000000),
+                    blurRadius: 12,
+                    offset: Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: const [
+                      HugeIcon(
+                        icon: HugeIcons.strokeRoundedMonocle01,
+                        size: 20,
+                        color: Color(0xFFD6A6D8),
+                        strokeWidth: 2,
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(width: 8),
                       Text(
-                        'How was your day, sunshine?',
+                        'Stress Test Questionnaire (ST5)',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(height: 24),
-                      Wrap(
-                        spacing: 16,
-                        runSpacing: 24,
-                        crossAxisAlignment: WrapCrossAlignment.end,
-                        alignment: WrapAlignment.center,
-                        children: [
-                          emotionButton(Emotions.CALM, 96),
-                          emotionButton(Emotions.HAPPY, 110),
-                          emotionButton(Emotions.TIRED, 95),
-                          emotionButton(Emotions.ANXIOUS, 99),
-                          emotionButton(Emotions.SAD, 100),
-                          emotionButton(Emotions.ANGRY, 100),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Complete a stress test questionnaire to evaluate your stress level.',
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                      width: double.infinity,
+                      height: 36,
+                      child: MainButton(
+                        text: "Start assessment",
+                        onPressed: () {
+                          Navigator.pushNamed(context, AppRoutes.assessment);
+                        },
+                      )),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: const Color(0xFFEEDFF1),
-                      width: 2,
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x1A000000),
-                        blurRadius: 12,
-                        offset: Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: const [
-                          HugeIcon(
-                            icon: HugeIcons.strokeRoundedMonocle01, 
-                            size: 20,
-                            color: Color(0xFFD6A6D8),
-                            strokeWidth: 2,
-                          ), 
-                          SizedBox(width: 8),
-                          Text(
-                            'Stress Test Questionnaire (ST5)',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Complete a stress test questionnaire to evaluate your stress level.',
-                        style: TextStyle(color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w400),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 36,
-                        child: MainButton(
-                          text: "Start assessment", 
-                          onPressed: () {
-                            Navigator.pushNamed(context, AppRoutes.assessment);
-                          },
-                        )
-                      ),
-                    ],
-                  ),
-                )
-              )
-            ],
-          )
-        )
-      );
+            ))
+      ],
+    )));
   }
 
   Widget emotionButton(Emotions emotion, double size) {
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -196,12 +216,46 @@ class _HomePageState extends State<HomePage> {
             );
 
             if (level != null) {
+              if (_isSubmittingMood) return;
+
               setState(() {
-                emotionLevels[emotion] = level;
-                selectedEmotion = emotion;
-                selectedLevel = level;
-                showRive = true;
+                _isSubmittingMood = true;
               });
+
+              try {
+                await recordMood(
+                  emotion: emotion,
+                  intensity: level,
+                );
+
+                if (!mounted) return;
+
+                setState(() {
+                  emotionLevels[emotion] = level;
+                  selectedEmotion = emotion;
+                  selectedLevel = level;
+                  showRive = true;
+                  _todayMood = TodayMood(emotion: emotion, intensity: level);
+                });
+
+                await _loadTodayMood();
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Mood recorded successfully')),
+                );
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content:
+                          Text(e.toString().replaceFirst('Exception: ', ''))),
+                );
+              } finally {
+                if (!mounted) return;
+                setState(() {
+                  _isSubmittingMood = false;
+                });
+              }
             }
           },
           child: Image.asset(
@@ -221,6 +275,58 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }
+
+  Widget _buildMoodSection() {
+    if (_isCheckingTodayMood) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_todayMood != null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFEEDFF1), width: 1.5),
+        ),
+        child: Row(
+          children: [
+            Image.asset(
+              'assets/images/${_todayMood!.emotion.name.toLowerCase()}_level_1.png',
+              width: 56,
+              errorBuilder: (context, error, stackTrace) =>
+                  const SizedBox(width: 56, height: 56),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Today\'s mood: ${_todayMood!.emotion.label[0].toUpperCase()}${_todayMood!.emotion.label.substring(1)} (level ${_todayMood!.intensity})',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF4C4456),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Wrap(
+      spacing: 16,
+      runSpacing: 24,
+      crossAxisAlignment: WrapCrossAlignment.end,
+      alignment: WrapAlignment.center,
+      children: [
+        emotionButton(Emotions.CALM, 96),
+        emotionButton(Emotions.HAPPY, 110),
+        emotionButton(Emotions.TIRED, 95),
+        emotionButton(Emotions.ANXIOUS, 99),
+        emotionButton(Emotions.SAD, 100),
+        emotionButton(Emotions.ANGRY, 100),
+      ],
+    );
+  }
 }
-
-

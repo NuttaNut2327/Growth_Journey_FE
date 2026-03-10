@@ -22,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<User>? _userFuture;
   List<Mood> moods = [];
   bool isLoading = true;
+  String? moodError;
 
   @override
   void initState() {
@@ -42,12 +43,32 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> loadMoods() async {
-    final data = await repo.get30DayMoodsMock();
-
     setState(() {
-      moods = data;
-      isLoading = false;
+      isLoading = true;
+      moodError = null;
     });
+
+    try {
+      final data = await repo.getMoodsInCurrentMonth();
+      if (!mounted) return;
+
+      setState(() {
+        moods = data;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        moods = [];
+        moodError = e.toString().replaceFirst('Exception: ', '');
+      });
+    } finally {
+      if (!mounted) return;
+
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -83,46 +104,44 @@ class _ProfilePageState extends State<ProfilePage> {
             child: SingleChildScrollView(
                 child: Center(
                     child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                        child: Column(
-                          children: [
-                            if (_userFuture == null)
-                              const Center(child: CircularProgressIndicator())
-                            else
-                              FutureBuilder<User>(
-                                future: _userFuture,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  } else if (snapshot.hasError) {
-                                    return Center(
-                                      child: Text('Error: ${snapshot.error}'),
-                                    );
-                                  } else if (snapshot.hasData) {
-                                    return UserLevelCard(
-                                      user: snapshot.data!, 
-                                      showEditIcon: true, 
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 16),
+                        child: Column(children: [
+                          if (_userFuture == null)
+                            const Center(child: CircularProgressIndicator())
+                          else
+                            FutureBuilder<User>(
+                              future: _userFuture,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text('Error: ${snapshot.error}'),
+                                  );
+                                } else if (snapshot.hasData) {
+                                  return UserLevelCard(
+                                      user: snapshot.data!,
+                                      showEditIcon: true,
                                       onEdit: () {
-                                        Navigator.pushNamed(context, AppRoutes.editProfile);
-                                      }
-                                    );
-                                  }
-                                  return const SizedBox.shrink();
-                                },
-                              ),
-                            const SizedBox(height: 24),
-                            MoodCalendarCard(moods: moods, isLoading: isLoading),
-                            const SizedBox(height: 24),
-                            ProfileActivitiesCard(userId: '1'),
-                          ]
-                        )
-                    )
-                 )
-             )
-          )
-    );
+                                        Navigator.pushNamed(
+                                            context, AppRoutes.editProfile);
+                                      });
+                                }
+                                return const SizedBox.shrink();
+                              },
+                            ),
+                          const SizedBox(height: 24),
+                          MoodCalendarCard(
+                            moods: moods,
+                            isLoading: isLoading,
+                            errorMessage: moodError,
+                          ),
+                          const SizedBox(height: 24),
+                          ProfileActivitiesCard(userId: '1'),
+                        ]))))));
   }
 }
