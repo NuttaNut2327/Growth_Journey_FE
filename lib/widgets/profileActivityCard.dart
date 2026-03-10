@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fe/pages/profile/repository/activity_repository.dart';
+import 'package:fe/pages/profile/models/activity_model.dart';
 import 'package:fe/widgets/activityCard.dart';
 import 'package:fe/routes/app_routes.dart';
 import 'package:fe/pages/group/enum/role_participant.dart';
@@ -15,9 +16,10 @@ class ProfileActivitiesCard extends StatefulWidget {
 
 class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
   int selectedTab = 0;
-  List activities = [];
-  List joinedActivities = [];
-  List createdActivities = [];
+  bool isLoading = true;
+  String? errorMessage;
+  List<Activity> joinedActivities = [];
+  List<Activity> createdActivities = [];
 
   @override
   void initState() {
@@ -25,18 +27,37 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
     loadActivities();
   }
 
-Future<void> loadActivities() async {
-  // final data = await activityRepo.getActivities();
-  final ActivityRepository activityRepo = ActivityRepository();
-  final data = await activityRepo.getActivitiesByUserId(widget.userId);
-  setState(() {
-    joinedActivities =
-        data.where((a) => a.role == RoleParticipant.MEMBER).toList();
+  Future<void> loadActivities() async {
+    final ActivityRepository activityRepo = ActivityRepository();
 
-    createdActivities =
-        data.where((a) => a.role == RoleParticipant.CREATOR).toList();
-  });
-}
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      final data = await activityRepo.getActivitiesByUserId(widget.userId);
+      if (!mounted) return;
+
+      setState(() {
+        joinedActivities =
+            data.where((a) => a.role == RoleParticipant.MEMBER).toList();
+
+        createdActivities =
+            data.where((a) => a.role == RoleParticipant.CREATOR).toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        joinedActivities = [];
+        createdActivities = [];
+        isLoading = false;
+        errorMessage = e.toString().replaceFirst('Exception: ', '');
+      });
+    }
+  }
 
   Widget buildTab(String title, int index) {
     final bool isSelected = selectedTab == index;
@@ -67,59 +88,80 @@ Future<void> loadActivities() async {
     );
   }
 
-Widget buildActivities() {
-  final list =
-      selectedTab == 0 ? joinedActivities : createdActivities;
+  Widget buildActivities() {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-  if (list.isEmpty) {
-    return const Center(
-      child: Text(
-        "No activities",
-        style: TextStyle(
-          fontSize: 14,
-          color: Colors.grey,
+    if (errorMessage != null) {
+      return Center(
+        child: Column(
+          children: [
+            Text(
+              errorMessage!,
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: loadActivities,
+              child: const Text('Try again'),
+            ),
+          ],
         ),
-      ),
+      );
+    }
+
+    final list = selectedTab == 0 ? joinedActivities : createdActivities;
+
+    if (list.isEmpty) {
+      return const Center(
+        child: Text(
+          "No activities",
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey,
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: list.map((Activity activity) {
+        final group = Group(
+          id: activity.groupId,
+          title: activity.title,
+          image: activity.imagePath,
+          description: activity.description,
+          locationId: activity.locationId,
+          location: activity.location,
+          date: DateTime.tryParse(activity.eventDate) ?? DateTime.now(),
+          joinedMemberCount: activity.joinedMemberCount,
+          targetMemberCount: activity.targetMemberCount,
+          tags: activity.tags,
+          createdAt: activity.createdAt,
+          createdBy: activity.createdBy,
+        );
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                AppRoutes.groupDetail,
+                arguments: group,
+              );
+            },
+            child: ActivityCard(activity: group),
+          ),
+        );
+      }).toList(),
     );
   }
 
-  return Column(
-    children: list.map((activity) {
-      final group = Group(
-        id: activity.groupId,
-        title: activity.title,
-        image: activity.imagePath,
-        description: activity.description,
-        locationId: activity.locationId,
-        location: activity.location,
-        date: DateTime.parse(activity.eventDate),
-        joinedMemberCount: activity.joinedMemberCount,
-        targetMemberCount: activity.targetMemberCount,
-        tags: activity.tags,
-        createdAt: activity.createdAt,  
-        createdBy: activity.createdBy,
-      );
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 16),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-          Navigator.pushNamed(
-            context,
-            AppRoutes.groupDetail,
-            arguments: group,
-          );
-        },
-          child: ActivityCard(activity: group),
-        ),
-      );
-    }).toList(),
-  );
-}
-
   @override
   Widget build(BuildContext context) {
-
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -140,7 +182,6 @@ Widget buildActivities() {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           /// Tabs
           Container(
             padding: const EdgeInsets.all(4),

@@ -14,11 +14,17 @@ class Mood {
   });
 
   factory Mood.fromJson(Map<String, dynamic> json) {
+    final moodRaw = (json['mood_type'] ?? '').toString().toLowerCase();
+
     return Mood(
-      userId: json['user_id'],
-      moodType: json['mood_type'],
-      intensity: json['intensity'],
-      recordedAt: DateTime.parse(json['recorded_at']),
+      userId: (json['user_id'] ?? '').toString(),
+      moodType: Emotions.values.firstWhere(
+        (emotion) => emotion.label == moodRaw,
+        orElse: () => Emotions.CALM,
+      ),
+      intensity: (json['intensity'] as num?)?.toInt() ?? 0,
+      recordedAt: DateTime.tryParse((json['recorded_at'] ?? '').toString()) ??
+          DateTime.now(),
     );
   }
 

@@ -1,43 +1,76 @@
+import 'package:dio/dio.dart';
+import 'package:fe/api/api_client.dart';
 import 'package:fe/pages/profile/models/mood_model.dart';
-import 'package:fe/pages/home/enum/emotions.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 
 class MoodRepository {
- final List<Mood> mockMoods = [
-  Mood(userId: "1", moodType: Emotions.HAPPY, intensity: 5, recordedAt: DateTime(2026,3,1)),
-  Mood(userId: "1", moodType: Emotions.CALM, intensity: 4, recordedAt: DateTime(2026,3,2)),
-  Mood(userId: "1", moodType: Emotions.SAD, intensity: 3, recordedAt: DateTime(2026,3,3)),
-  Mood(userId: "1", moodType: Emotions.ANXIOUS, intensity: 4, recordedAt: DateTime(2026,3,4)),
-  Mood(userId: "1", moodType: Emotions.TIRED, intensity: 2, recordedAt: DateTime(2026,3,5)),
-  Mood(userId: "1", moodType: Emotions.CALM, intensity: 4, recordedAt: DateTime(2026,3,6)),
-  Mood(userId: "1", moodType: Emotions.HAPPY, intensity: 5, recordedAt: DateTime(2026,3,7)),
-  Mood(userId: "1", moodType: Emotions.SAD, intensity: 2, recordedAt: DateTime(2026,3,8)),
-  Mood(userId: "1", moodType: Emotions.HAPPY, intensity: 5, recordedAt: DateTime(2026,3,9)),
-  Mood(userId: "1", moodType: Emotions.ANGRY, intensity: 4, recordedAt: DateTime(2026,3,10)),
-  Mood(userId: "1", moodType: Emotions.CALM, intensity: 4, recordedAt: DateTime(2026,3,11)),
-  Mood(userId: "1", moodType: Emotions.SAD, intensity: 3, recordedAt: DateTime(2026,3,12)),
-  Mood(userId: "1", moodType: Emotions.ANXIOUS, intensity: 4, recordedAt: DateTime(2026,3,13)),
-  Mood(userId: "1", moodType: Emotions.TIRED, intensity: 3, recordedAt: DateTime(2026,3,14)),
-  Mood(userId: "1", moodType: Emotions.CALM, intensity: 4, recordedAt: DateTime(2026,3,15)),
-  Mood(userId: "1", moodType: Emotions.HAPPY, intensity: 5, recordedAt: DateTime(2026,3,16)),
-  Mood(userId: "1", moodType: Emotions.SAD, intensity: 3, recordedAt: DateTime(2026,3,17)),
-  Mood(userId: "1", moodType: Emotions.HAPPY, intensity: 5, recordedAt: DateTime(2026,3,18)),
-  Mood(userId: "1", moodType: Emotions.ANXIOUS, intensity: 4, recordedAt: DateTime(2026,3,19)),
-  Mood(userId: "1", moodType: Emotions.TIRED, intensity: 2, recordedAt: DateTime(2026,3,20)),
-  Mood(userId: "1", moodType: Emotions.CALM, intensity: 4, recordedAt: DateTime(2026,3,21)),
-  Mood(userId: "1", moodType: Emotions.HAPPY, intensity: 5, recordedAt: DateTime(2026,3,22)),
-  Mood(userId: "1", moodType: Emotions.SAD, intensity: 2, recordedAt: DateTime(2026,3,23)),
-  Mood(userId: "1", moodType: Emotions.CALM, intensity: 4, recordedAt: DateTime(2026,3,24)),
-  Mood(userId: "1", moodType: Emotions.TIRED, intensity: 3, recordedAt: DateTime(2026,3,25)),
-  Mood(userId: "1", moodType: Emotions.CALM, intensity: 4, recordedAt: DateTime(2026,3,26)),
-  Mood(userId: "1", moodType: Emotions.HAPPY, intensity: 5, recordedAt: DateTime(2026,3,27)),
-  Mood(userId: "1", moodType: Emotions.ANXIOUS, intensity: 4, recordedAt: DateTime(2026,3,28)),
-  Mood(userId: "1", moodType: Emotions.CALM, intensity: 4, recordedAt: DateTime(2026,3,29)),
-  Mood(userId: "1", moodType: Emotions.HAPPY, intensity: 5, recordedAt: DateTime(2026,3,30)),
-];
+  Future<List<Mood>> getMoodsInCurrentMonth() async {
+    final api = ApiClient();
+    final now = DateTime.now();
+    final startOfMonth = DateTime(now.year, now.month, 1);
 
-  Future<List<Mood>> get30DayMoodsMock() async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    return mockMoods;
+    final dateStart = _formatDate(startOfMonth);
+    final dateEnd = _formatDate(now);
+
+    try {
+      final response = await api.dio.get(
+        '/moods',
+        queryParameters: {
+          'date_start': dateStart,
+          'date_end': dateEnd,
+        },
+      );
+      return _parseMoodList(response.data);
+    } on DioException catch (e1) {
+      try {
+        // Alternative style in case gateway/proxy mishandles queryParameters.
+        final response = await api.dio.get(
+          '/moods?date_start=$dateStart&date_end=$dateEnd',
+        );
+        return _parseMoodList(response.data);
+      } on DioException catch (e2) {
+        try {
+          // Final fallback without date range.
+          final fallback = await api.dio.get('/moods');
+          return _parseMoodList(fallback.data);
+        } on DioException catch (e3) {
+          final message = _extractMessage(e3) ??
+              _extractMessage(e2) ??
+              _extractMessage(e1) ??
+              'Failed to fetch moods';
+          debugPrint('Mood API failed: $message');
+          return [];
+        }
+      }
+    }
   }
 
+  List<Mood> _parseMoodList(dynamic raw) {
+    final list = raw is List
+        ? raw
+        : (raw is Map<String, dynamic> && raw['data'] is List
+            ? raw['data'] as List
+            : const []);
+
+    return list
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .map(Mood.fromJson)
+        .toList();
+  }
+
+  String? _extractMessage(DioException e) {
+    final data = e.response?.data;
+    if (data is Map && data['message'] != null) {
+      return data['message'].toString();
+    }
+    return null;
+  }
+
+  String _formatDate(DateTime date) {
+    final y = date.year.toString().padLeft(4, '0');
+    final m = date.month.toString().padLeft(2, '0');
+    final d = date.day.toString().padLeft(2, '0');
+    return '$y-$m-$d';
+  }
 }

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:fe/api/api_client.dart';
-import 'package:fe/interface/auth/user.dart'; 
+import 'package:fe/interface/auth/user.dart';
 
 Future<User> getUserByID() async {
   final api = ApiClient();

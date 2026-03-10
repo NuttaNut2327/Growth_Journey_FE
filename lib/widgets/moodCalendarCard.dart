@@ -6,11 +6,13 @@ import 'package:fe/pages/home/enum/emotions.dart';
 class MoodCalendarCard extends StatelessWidget {
   final List<Mood> moods;
   final bool isLoading;
+  final String? errorMessage;
 
   const MoodCalendarCard({
     super.key,
     required this.moods,
     required this.isLoading,
+    this.errorMessage,
   });
 
   Color getMoodColor(Emotions mood) {
@@ -31,26 +33,54 @@ class MoodCalendarCard extends StatelessWidget {
   }
 
   Widget buildCalendar() {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 10,
-      children: moods.map((mood) {
-        int day = mood.recordedAt.day;
+    final now = DateTime.now();
+    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+
+    final moodByDay = <int, Mood>{};
+    for (final mood in moods) {
+      final localDate = mood.recordedAt.toLocal();
+      if (localDate.year == now.year && localDate.month == now.month) {
+        moodByDay[localDate.day] = mood;
+      }
+    }
+
+    return GridView.builder(
+      itemCount: daysInMonth,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 7,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 10,
+        childAspectRatio: 1,
+      ),
+      itemBuilder: (context, index) {
+        final day = index + 1;
+        final mood = moodByDay[day];
 
         return Container(
-          width: 36,
-          height: 36,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: getMoodColor(mood.moodType),
+            color:
+                mood != null ? getMoodColor(mood.moodType) : Colors.transparent,
             shape: BoxShape.circle,
+            border: Border.all(
+              color:
+                  mood != null ? Colors.transparent : const Color(0xFFD9D2E1),
+            ),
           ),
           child: Text(
             day.toString(),
-            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+              color: mood != null
+                  ? const Color(0xFF4C4456)
+                  : const Color(0xFF8F839C),
+            ),
           ),
         );
-      }).toList(),
+      },
     );
   }
 
@@ -118,13 +148,19 @@ class MoodCalendarCard extends StatelessWidget {
             style: TextStyle(color: Color(0xFF8B7A99)),
           ),
           const SizedBox(height: 24),
-
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : buildCalendar(),
-
+          if (isLoading)
+            const Center(child: CircularProgressIndicator())
+          else if (errorMessage != null)
+            Center(
+              child: Text(
+                errorMessage!,
+                style: const TextStyle(color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+            )
+          else
+            buildCalendar(),
           const SizedBox(height: 24),
-
           const Text(
             'Mood Legend :',
             style: TextStyle(
@@ -133,9 +169,7 @@ class MoodCalendarCard extends StatelessWidget {
               color: Colors.grey,
             ),
           ),
-
           const SizedBox(height: 8),
-
           GridView.count(
             crossAxisCount: 3,
             shrinkWrap: true,
