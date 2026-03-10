@@ -12,6 +12,7 @@ Future<List<ParticipantGroup>> getGroupByID(String userId) async {
       return [];
     }
 
+
     if (responseData is List) {
       return responseData
           .map((json) => ParticipantGroup.fromJson(json))

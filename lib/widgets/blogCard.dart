@@ -8,6 +8,7 @@ class BlogCard extends StatefulWidget {
 
   const BlogCard({super.key, required this.blog});
 
+  @override
   State<BlogCard> createState() => _BlogCardState();
 }
 

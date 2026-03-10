@@ -7,6 +7,7 @@ import 'package:fe/widgets/secondButton.dart';
 import 'package:intl/intl.dart';
 import 'package:fe/pages/group/models/group_model.dart';
 import 'package:fe/pages/group/enum/group_status.dart';
+import 'package:fe/pages/group/chatGroupPage.dart';
 
 class GroupCard extends StatelessWidget {
   final Group group;
@@ -136,7 +137,12 @@ class GroupCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           if (isJoined)
-            _joinedButton(role == RoleParticipant.CREATOR, onLeave)
+            _joinedButton(
+              context,
+              group,
+              role == RoleParticipant.CREATOR,
+              onLeave,
+            )
           else if (!isJoined)
             _joinButton(onJoin),
         ],
@@ -163,7 +169,12 @@ Widget _joinedBadge(String label) {
   );
 }
 
-Widget _joinedButton(bool isOwner, Future<void> Function()? onLeave) {
+Widget _joinedButton(
+  BuildContext context,
+  Group group,
+  bool isOwner,
+  Future<void> Function()? onLeave,
+) {
   return Row(
     children: [
       Expanded(
@@ -189,7 +200,12 @@ Widget _joinedButton(bool isOwner, Future<void> Function()? onLeave) {
             onPressed: isOwner
                 ? null
                 : () {
-                    // Logic
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatGroupPage(group: group),
+                      ),
+                    );
                   },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFD8A7D9),
