@@ -9,6 +9,7 @@ import 'package:fe/pages/group/groupDetailPage.dart';
 import 'package:fe/pages/group/createGroupPage.dart';
 import 'package:fe/pages/profile/profilePage.dart';
 import 'package:fe/pages/profile/editProfilePage.dart';
+import 'package:fe/pages/blog/createBlogPage.dart';
 import 'package:fe/pages/map/createLocationPage.dart';
 
 class MyApp extends StatelessWidget {
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         AppRoutes.assessment: (context) => const AssessmentPage(),
         AppRoutes.profile: (context) => const ProfilePage(),
         AppRoutes.editProfile: (context) => const EditProfilePage(),
+        AppRoutes.createBlog: (context) => const CreateBlogPage(),
         AppRoutes.createLocation: (context) => const CreateLocationPage(),
         AppRoutes.map: (context) => const MapPage(), // Assuming MapPage is part of Bottomnavbar
       },
