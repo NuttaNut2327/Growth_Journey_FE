@@ -1,4 +1,5 @@
 import 'package:fe/pages/group/enum/group_status.dart';
+import 'package:fe/pages/group/enum/role_participant.dart';
 
 class Activity {
   final String groupId;
@@ -11,6 +12,7 @@ class Activity {
   final int targetMemberCount;
   final String tags;
   final GroupStatus status;
+  final RoleParticipant role;
 
   Activity({
     required this.groupId,
@@ -23,6 +25,8 @@ class Activity {
     required this.targetMemberCount,
     required this.tags,
     required this.status,
+    required this.role,
+
   });
 
   factory Activity.fromMap(Map<String, dynamic> map) {
@@ -37,6 +41,7 @@ class Activity {
       targetMemberCount: map['targetMemberCount'],
       tags: map['tags'],
       status: map['status'],
+      role: map['role'],
     );
   }
 }

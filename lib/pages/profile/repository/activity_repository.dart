@@ -1,3 +1,4 @@
+import 'package:fe/pages/group/enum/role_participant.dart';
 import 'package:fe/pages/profile/models/activity_model.dart';
 import 'package:fe/pages/group/enum/group_status.dart';
 
@@ -16,6 +17,7 @@ class ActivityRepository {
         targetMemberCount: 20,
         tags: 'tag1',
         status: GroupStatus.JOINED,
+        role: RoleParticipant.MEMBER
       ),
       Activity(
         groupId: '3f9c2a74-8b1e-4f2d-a6c3-91e5b7d2637a',
@@ -28,6 +30,7 @@ class ActivityRepository {
         targetMemberCount: 30,
         tags: 'tag2',
         status: GroupStatus.JOINED,
+        role: RoleParticipant.MEMBER
       ),
       Activity(
         groupId: '3f9c2a74-8b1e-4f2d-a6c3-91e5b7d2637a',
@@ -40,6 +43,7 @@ class ActivityRepository {
         targetMemberCount: 40,
         tags: 'tag3',
         status: GroupStatus.JOINED,
+        role: RoleParticipant.MEMBER
        ),
       Activity(
         groupId: '3f9c2a74-8b1e-4f2d-a6c3-91e5b7d2637a',
@@ -52,6 +56,7 @@ class ActivityRepository {
         targetMemberCount: 50,
         tags: 'tag4',
         status: GroupStatus.JOINED,
+        role: RoleParticipant.CREATOR
        ),
     ],
     'a7d5e3b1-2c4f-47a8-9d6b-0f12c8e9789d': [
@@ -66,6 +71,7 @@ class ActivityRepository {
         targetMemberCount: 60,
         tags: 'tag5',
         status: GroupStatus.JOINED,
+        role: RoleParticipant.CREATOR
       ),
     ],
   };
