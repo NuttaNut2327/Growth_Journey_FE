@@ -23,14 +23,12 @@ class MoodRepository {
       return _parseMoodList(response.data);
     } on DioException catch (e1) {
       try {
-        // Alternative style in case gateway/proxy mishandles queryParameters.
         final response = await api.dio.get(
           '/moods?date_start=$dateStart&date_end=$dateEnd',
         );
         return _parseMoodList(response.data);
       } on DioException catch (e2) {
         try {
-          // Final fallback without date range.
           final fallback = await api.dio.get('/moods');
           return _parseMoodList(fallback.data);
         } on DioException catch (e3) {

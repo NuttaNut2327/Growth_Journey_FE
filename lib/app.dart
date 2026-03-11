@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.editProfile: (context) => const EditProfilePage(),
         AppRoutes.createBlog: (context) => const CreateBlogPage(),
         AppRoutes.createLocation: (context) => const CreateLocationPage(),
-        AppRoutes.map: (context) => const MapPage(), // Assuming MapPage is part of Bottomnavbar
+        AppRoutes.map: (context) => const MapPage(),
       },
     );
   }

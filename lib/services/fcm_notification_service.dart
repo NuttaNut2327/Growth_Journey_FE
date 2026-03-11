@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fe/pages/group/chatGroupPage.dart';
+import 'package:fe/pages/group/repository/group_repository.dart';
+import 'package:fe/services/navigation_service.dart';
 import 'dart:convert';
 
-/// Handler สำหรับ Background Messages
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('📱 Background Message: ${message.messageId}');
@@ -48,7 +51,6 @@ class FCMNotificationService {
   bool _isRetrySyncScheduled = false;
   bool _isTokenRecoveryScheduled = false;
 
-  /// Initialize FCM Service
   Future<void> initialize() async {
     if (_isInitialized) {
       return;
@@ -57,7 +59,6 @@ class FCMNotificationService {
     try {
       await _initializeLocalNotifications();
 
-      // Request Permission (iOS)
       NotificationSettings settings =
           await _firebaseMessaging.requestPermission(
         alert: true,
@@ -74,17 +75,13 @@ class FCMNotificationService {
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
         print('✅ User granted notification permission');
 
-        // Get FCM Token
         await _getFCMToken();
 
         if (Platform.isIOS) {
           _scheduleIOSRetrySync();
         }
-
-        // Setup Listeners
         _setupListeners();
 
-        // Set Foreground Notification Presentation Options
         await _firebaseMessaging.setForegroundNotificationPresentationOptions(
           alert: true,
           badge: true,
@@ -279,9 +276,7 @@ class FCMNotificationService {
     });
   }
 
-  /// Setup Message Listeners
   void _setupListeners() {
-    // Foreground Messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('📨 Foreground Message Received');
       print('Title: ${message.notification?.title}');
@@ -291,13 +286,11 @@ class FCMNotificationService {
       _showForegroundNotification(message);
       _messageController.add(message);
 
-      // หาก message มาจาก chat ให้ refresh UI
       if (message.data['type'] == 'chat_message') {
         _handleChatNotification(message);
       }
     });
 
-    // Background/Terminated - Message Tap
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('📱 Notification Tapped (Background)');
       print('Data: ${message.data}');
@@ -417,9 +410,7 @@ class FCMNotificationService {
     }
   }
 
-  /// Handle Chat Notification (Foreground)
   void _handleChatNotification(RemoteMessage message) {
-    // อัพเดท UI แบบ real-time ถ้าอยู่ในหน้า chat
     final groupId = message.data['group_id'];
     final messageText = message.data['message'];
     final senderName = message.data['sender_name'] ?? 'Member';
@@ -430,7 +421,6 @@ class FCMNotificationService {
     _showLocalNotification(senderName, groupName, messageText);
   }
 
-  /// Show Local Chat Notification
   Future<void> _showLocalNotification(
     String senderName,
     String groupName,
@@ -465,18 +455,36 @@ class FCMNotificationService {
     }
   }
 
-  /// Handle Notification Tap
   void _handleNotificationTap(RemoteMessage message) {
     final type = message.data['type'];
-    final groupId = message.data['group_id'];
+    final groupId = message.data['group_id']?.toString();
 
     print('👆 Notification Tapped - Type: $type, Group: $groupId');
 
-    // Navigate to appropriate screen
-    // ใช้ Navigator หรือ routing system ของแอป
+    if (type != 'chat_message' || groupId == null || groupId.isEmpty) {
+      return;
+    }
+
+    Future<void>(() async {
+      try {
+        final group = await GroupRepository().getGroup(groupId);
+        final navigator = AppNavigationService.navigatorKey.currentState;
+        if (navigator == null) {
+          print('⚠️ Navigator is not ready for notification navigation');
+          return;
+        }
+
+        navigator.push(
+          MaterialPageRoute(
+            builder: (_) => ChatGroupPage(group: group),
+          ),
+        );
+      } catch (e) {
+        print('🔴 Failed to navigate from notification: $e');
+      }
+    });
   }
 
-  /// Subscribe to Topic (Optional)
   Future<void> subscribeToTopic(String topic) async {
     try {
       await _firebaseMessaging.subscribeToTopic(topic);
@@ -486,7 +494,6 @@ class FCMNotificationService {
     }
   }
 
-  /// Unsubscribe from Topic
   Future<void> unsubscribeFromTopic(String topic) async {
     try {
       await _firebaseMessaging.unsubscribeFromTopic(topic);
@@ -496,7 +503,6 @@ class FCMNotificationService {
     }
   }
 
-  /// Delete FCM Token
   Future<void> deleteToken() async {
     try {
       await _firebaseMessaging.deleteToken();
@@ -508,7 +514,6 @@ class FCMNotificationService {
     }
   }
 
-  /// Dispose
   void dispose() {
     _messageController.close();
     _tokenController.close();

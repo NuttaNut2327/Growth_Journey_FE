@@ -65,7 +65,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> _loadUser() async {
     try {
       final User user = await getUserByID();
-      // populate controllers
       usernameController.text = user.username;
       firstNameController.text = user.firstName;
       lastNameController.text = user.lastName;
@@ -74,11 +73,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       selectedGender = user.gender.isNotEmpty
           ? (user.gender[0].toUpperCase() + user.gender.substring(1))
           : null;
-      // format birthdate as dd/MM/yyyy
       birthdayController.text = DateFormat('dd/MM/yyyy').format(user.birthdate);
       imageUrl = user.imageUrl;
     } catch (e) {
-      // ignore or show error
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to load profile: $e')),
@@ -107,7 +104,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
         firstName: firstNameController.text.trim(),
         lastName: lastNameController.text.trim(),
         email: emailController.text.trim(),
-        // leaving password empty since we don't ask for it here
         gender: (selectedGender ?? '').toLowerCase(),
         birthdate: DateFormat('yyyy-MM-dd')
             .format(DateFormat('dd/MM/yyyy').parse(birthdayController.text)),
@@ -136,9 +132,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         const SnackBar(
           content: Text('Profile updated successfully'),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 3),),
+          duration: Duration(seconds: 3),
+        ),
       );
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -157,7 +154,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit profile', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+        title: const Text('Edit profile',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(

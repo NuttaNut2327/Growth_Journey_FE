@@ -21,6 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final MoodRepository repo = MoodRepository();
 
   Future<User>? _userFuture;
+  int _activitiesRefreshKey = 0;
   List<Mood> moods = [];
   bool isLoading = true;
   String? moodError;
@@ -36,10 +37,20 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       setState(() {
         _userFuture = getUserByID();
-        // _questsFuture = _loadDailyQuests();
       });
     } catch (e) {
       debugPrint('Error initializing heal page: $e');
+    }
+  }
+
+  Future<void> _handleRefresh() async {
+    setState(() {
+      _userFuture = getUserByID();
+      _activitiesRefreshKey++;
+    });
+    await loadMoods();
+    if (_userFuture != null) {
+      await _userFuture!;
     }
   }
 
@@ -75,42 +86,49 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('User profile', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-          centerTitle: true,
-          leading: IconButton(
+      appBar: AppBar(
+        title: const Text(
+          'User profile',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            size: 24,
+            strokeWidth: 2,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          IconButton(
             icon: HugeIcon(
-              icon: HugeIcons.strokeRoundedArrowLeft01,
-              size: 24,
+              icon: HugeIcons.strokeRoundedLogout02,
+              size: 20,
               strokeWidth: 2,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              showDialog(
+                context: context,
+                builder: (context) => const ConfirmLogoutModal(),
+              );
             },
           ),
-          actions: [
-            IconButton(
-              icon: HugeIcon(
-                icon: HugeIcons.strokeRoundedLogout02,
-                size: 20,
-                strokeWidth: 2,
-              ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => const ConfirmLogoutModal(),
-                );
-              },
-            ),
-          ],
-        ),
-        body: SafeArea(
+        ],
+      ),
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _handleRefresh,
           child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 16),
-                child: Column(children: [
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: Column(
+                  children: [
                     if (_userFuture == null)
                       const Center(child: CircularProgressIndicator())
                     else
@@ -128,12 +146,18 @@ class _ProfilePageState extends State<ProfilePage> {
                             );
                           } else if (snapshot.hasData) {
                             return UserLevelCard(
-                                user: snapshot.data!,
-                                showEditIcon: true,
-                                onEdit: () {
-                                  Navigator.pushNamed(
-                                      context, AppRoutes.editProfile);
-                                });
+                              user: snapshot.data!,
+                              showEditIcon: true,
+                              onEdit: () async {
+                                final result = await Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.editProfile,
+                                );
+                                if (result == true) {
+                                  await _handleRefresh();
+                                }
+                              },
+                            );
                           }
                           return const SizedBox.shrink();
                         },
@@ -145,13 +169,16 @@ class _ProfilePageState extends State<ProfilePage> {
                       errorMessage: moodError,
                     ),
                     const SizedBox(height: 24),
-                    ProfileActivitiesCard(),
-                  ]
-                )
-              )
-            )
-          )
-        )
-      );
+                    ProfileActivitiesCard(
+                      key: ValueKey(_activitiesRefreshKey),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

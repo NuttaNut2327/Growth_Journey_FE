@@ -1,7 +1,7 @@
 import 'dart:io';
 
 class UpdateProfileRequest {
-  final File? image; // local file to upload
+  final File? image;
   final String username;
   final String firstName;
   final String lastName;
@@ -22,7 +22,6 @@ class UpdateProfileRequest {
   });
 
   Map<String, dynamic> toJson() {
-    // helper for non-file fields (not used by updateProfile directly)
     final data = {
       "username": username,
       "first_name": firstName,

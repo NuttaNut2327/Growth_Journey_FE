@@ -46,11 +46,8 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
     try {
       _currentUserId = await getUserId();
       await _loadParticipantNames();
-
-      // 1. เชื่อมต่อ Socket.io
       await _chatService.connect();
 
-      // 2. ฟัง Stream แยกตาม event
       _messageSubscription = _chatService.messageStream.listen((data) {
         _handleNewMessage(data);
       });
@@ -61,8 +58,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
       });
 
       _joinedSubscription = _chatService.joinedGroupStream.listen((groupId) {
-        print('✅ Successfully joined group: $groupId');
-        // โหลดประวัติข้อความทันทีเมื่อ join สำเร็จ
+        print('Successfully joined group: $groupId');
         _chatService.loadMessages(widget.group.id, limit: 50);
       });
 
@@ -70,24 +66,19 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
         _showError(error);
       });
 
-      // 3. ส่งคำสั่ง Join Group
       _chatService.joinGroup(widget.group.id);
-
-      // เรียกโหลด history ทันทีอีกรอบเพื่อกันกรณี event room_joined มาช้า/ตกหล่น
       _chatService.loadMessages(widget.group.id, limit: 50);
 
-      // fallback: ถ้าไม่ได้ history ทาง WebSocket ภายใน 2 วิ ให้ดึงผ่าน REST
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted && !_hasReceivedHistory) {
           _loadHistoryFromRest();
         }
       });
 
-      // Timeout: ปิด loading หลัง 3 วินาทีถ้ายังไม่ได้รับ room_joined
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted && _isLoading) {
           setState(() => _isLoading = false);
-          print('⏱️ Loading timeout - showing chat interface');
+          print('⏱ Loading timeout - showing chat interface');
         }
       });
     } catch (e) {
@@ -127,7 +118,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
   }
 
   void _handleChatHistory(List<dynamic> messagesData) {
-    print('📜 Chat history received: ${messagesData.length} messages');
+    print('Chat history received: ${messagesData.length} messages');
     try {
       final history = messagesData
           .map((m) => ChatMessage.fromJson(m as Map<String, dynamic>))
@@ -253,14 +244,6 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            Text(
-              '${widget.group.joinedMemberCount} participants',
-              style: const TextStyle(
-                color: Color(0xFF8B7A99),
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
           ],
         ),
       ),
@@ -331,7 +314,6 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
 
   Widget _buildDateDivider(DateTime date) {
     String dateText;
-    // Convert to Thai timezone (UTC+7)
     final thaiDate = date.add(const Duration(hours: 7));
     final thaiNow = DateTime.now().add(const Duration(hours: 7));
     final today = DateTime(thaiNow.year, thaiNow.month, thaiNow.day);
@@ -444,9 +426,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
     );
   }
 
-  /// Format time in Thai timezone (UTC+7)
   String _formatThaiTime(DateTime utcTime) {
-    // Bangkok timezone is UTC+7
     final thaiTime = utcTime.add(const Duration(hours: 7));
     return DateFormat('h:mm a').format(thaiTime);
   }
@@ -545,7 +525,6 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
   }
 
   bool _isSameDay(DateTime date1, DateTime date2) {
-    // Convert to Thai timezone (UTC+7) for comparison
     final thai1 = date1.add(const Duration(hours: 7));
     final thai2 = date2.add(const Duration(hours: 7));
     return thai1.year == thai2.year &&
@@ -554,8 +533,6 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
   }
 
   void _scrollToBottom() {
-    // ใช้ WidgetsBinding เพื่อรอให้ Flutter วาด UI (Frame) เสร็จก่อน
-    // จึงจะสามารถสั่ง Scroll ไปยังจุดสุดท้ายที่มีข้อความใหม่ได้แม่นยำ
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
