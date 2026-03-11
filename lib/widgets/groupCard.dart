@@ -287,34 +287,22 @@ Widget _joinedButton(
 }
 
 Widget _chatOnlyButton(BuildContext context, Group group) {
-  return Align(
-    alignment: Alignment.centerRight,
-    child: SizedBox(
-      width: 44,
-      height: 44,
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatGroupPage(group: group),
-            ),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFD8A7D9),
-          shape: const CircleBorder(),
-          padding: EdgeInsets.zero,
-        ),
-        child: const HugeIcon(
-          icon: HugeIcons.strokeRoundedMessageMultiple02,
-          color: Colors.white,
-          size: 18,
-          strokeWidth: 2,
-        ),
-      ),
-    ),
+  return SizedBox(
+    width: double.infinity,
+    child: MainButton(
+      text: 'Chat group', 
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatGroupPage(group: group),
+          ),
+        );
+      }
+    )
   );
+    
+  
 }
 
 Widget _joinButton(Future<void> Function()? onJoin) {

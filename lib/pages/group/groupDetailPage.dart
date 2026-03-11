@@ -345,21 +345,78 @@ Widget _buildBottomActionBar({
     return BottomActionButton(
       text: '',
       onPressed: null,
-      child: SizedBox(
-        width: double.infinity,
-        height: 48,
-        child: MainButton(
-          text: 'Open group chat',
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatGroupPage(group: group),
+      child: Row(
+        children: [
+          Expanded(
+            child: SecondButton(
+              text: 'Manage group',
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context, 
+                  builder: (context) {
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(40),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: MainButton(
+                              text: 'Edit group', 
+                              onPressed: () {
+                                print('Edit group');
+                              }
+                            ),
+                          ),                          
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: SecondButton(
+                              text: 'Delete group', 
+                              onPressed: () {
+                                print('Delete group');
+                              }
+                            ),
+                          ),                          
+                        ]
+                      )
+                    );
+                  }
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 12),
+          SizedBox(
+            width: 44,
+            height: 44,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatGroupPage(group: group),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFD8A7D9),
+                shape: const CircleBorder(),
+                padding: EdgeInsets.zero,
               ),
-            );
-          },
-        ),
-      ),
+              child: const HugeIcon(
+                icon: HugeIcons.strokeRoundedMessageMultiple02,
+                color: Colors.white,
+                size: 18,
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+        ],
+      )
     );
   }
 
