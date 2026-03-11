@@ -422,9 +422,47 @@ class FCMNotificationService {
     // อัพเดท UI แบบ real-time ถ้าอยู่ในหน้า chat
     final groupId = message.data['group_id'];
     final messageText = message.data['message'];
+    final senderName = message.data['sender_name'] ?? 'Member';
+    final groupName = message.data['group_name'] ?? 'Group';
 
     print('💬 Chat Message - Group: $groupId, Message: $messageText');
-    // สามารถใช้ Stream หรือ State Management เพื่ออัพเดท UI
+
+    _showLocalNotification(senderName, groupName, messageText);
+  }
+
+  /// Show Local Chat Notification
+  Future<void> _showLocalNotification(
+    String senderName,
+    String groupName,
+    String messageText,
+  ) async {
+    try {
+      final title = '$senderName ($groupName)';
+      final body = messageText;
+
+      await _localNotifications.show(
+        DateTime.now().millisecond,
+        title,
+        body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            _chatChannel.id,
+            _chatChannel.name,
+            channelDescription: _chatChannel.description,
+            importance: Importance.high,
+            priority: Priority.high,
+            showWhen: true,
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
+      );
+    } catch (e) {
+      print('🔴 Error showing local notification: $e');
+    }
   }
 
   /// Handle Notification Tap
