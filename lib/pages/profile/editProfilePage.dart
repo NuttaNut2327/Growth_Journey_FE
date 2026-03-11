@@ -188,7 +188,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         : (imageUrl != null
                                             ? NetworkImage(imageUrl!)
                                             : const NetworkImage(
-                                                'https://jkfenner.com/wp-content/uploads/2019/11/default.jpg',
+                                                'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg',
                                               )) as ImageProvider,
                                   ),
                                   const SizedBox(height: 12),
