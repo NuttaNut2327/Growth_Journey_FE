@@ -76,7 +76,7 @@ class ResultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Assessment Results'),
+        title: const Text('Assessment Results', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(

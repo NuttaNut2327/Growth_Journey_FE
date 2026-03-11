@@ -52,6 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFEF8FC),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -153,6 +154,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
+                                isExpanded: true,
                                 items: ['Male', 'Female', 'Other']
                                     .map(
                                       (g) => DropdownMenuItem(
@@ -433,7 +435,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           ).showSnackBar(
                                             const SnackBar(
                                               content: Text(
-                                                "Account created successfully 🎉",
+                                                "Account created successfully",
                                               ),
                                               backgroundColor: Colors.green,
                                               duration: Duration(seconds: 2),

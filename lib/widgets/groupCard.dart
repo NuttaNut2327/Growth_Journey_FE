@@ -127,7 +127,6 @@ class _GroupCardState extends State<GroupCard> {
                 _joinedBadge(GroupStatus.OWNER.label),
               if (_isJoined && _role == RoleParticipant.MEMBER)
                 _joinedBadge(GroupStatus.JOINED.label),
-              if (!_isJoined) _joinedBadge(GroupStatus.NOT_JOINED.label),
             ],
           ),
           const SizedBox(height: 16),
@@ -159,7 +158,16 @@ class _GroupCardState extends State<GroupCard> {
                 strokeWidth: 1.5,
               ),
               const SizedBox(width: 8),
-              Text(group.location, style: TextStyle(fontSize: 12)),
+              Expanded(
+                child: Text(
+                  group.location,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1, 
+                  style: TextStyle(
+                    fontSize: 12
+                  )
+                ),
+              )
             ],
           ),
           const SizedBox(height: 8),
@@ -196,6 +204,8 @@ class _GroupCardState extends State<GroupCard> {
               const SizedBox(width: 8),
               Text(
                 '${group.joinedMemberCount}/${group.targetMemberCount} participants',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1, 
                 style: TextStyle(fontSize: 12),
               ),
             ],
@@ -207,9 +217,7 @@ class _GroupCardState extends State<GroupCard> {
             children: group.tags.map((tag) => TagGroup(label: tag)).toList(),
           ),
           const SizedBox(height: 16),
-          if (_role == RoleParticipant.CREATOR)
-            _chatOnlyButton(context, group)
-          else if (_isJoined)
+          if (_isJoined && _role != RoleParticipant.CREATOR)
             _joinedButton(
               context,
               group,
@@ -284,25 +292,6 @@ Widget _joinedButton(
       ),
     ],
   );
-}
-
-Widget _chatOnlyButton(BuildContext context, Group group) {
-  return SizedBox(
-    width: double.infinity,
-    child: MainButton(
-      text: 'Chat group', 
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatGroupPage(group: group),
-          ),
-        );
-      }
-    )
-  );
-    
-  
 }
 
 Widget _joinButton(Future<void> Function()? onJoin) {

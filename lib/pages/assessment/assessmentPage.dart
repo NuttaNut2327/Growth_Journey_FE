@@ -65,7 +65,7 @@ class _AssessmentPageState extends State<AssessmentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Stress Test Questionnaire'),
+        title: const Text('Stress Test Questionnaire', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(

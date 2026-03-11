@@ -8,7 +8,7 @@ class Group {
   final DateTime date;
   final String locationId;
   final String location;
-  final List<String> tags; 
+  final List<String> tags;
   final String createdBy;
   final DateTime createdAt;
 
@@ -35,12 +35,12 @@ class Group {
       targetMemberCount: _toInt(json['target_member_count']),
       joinedMemberCount: _toInt(json['joined_member_count']),
       image: json['image_url']?.toString(),
-      date: _toDateTime(json['date']),
+      date: _toDate(json['date']),
       locationId: json['location_id']?.toString() ?? '',
-      location: (json['location_name'] ) ?? '',
+      location: (json['location_name']) ?? '',
       tags: List<String>.from(json['tags'] ?? []),
       createdBy: json['created_by']?.toString() ?? '',
-      createdAt: _toDateTime(json['created_at']),
+      createdAt: _toDate(json['created_at']),
     );
   }
 
@@ -50,9 +50,24 @@ class Group {
     return 0;
   }
 
-  static DateTime _toDateTime(dynamic value) {
-    if (value is DateTime) return value;
-    if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
-    return DateTime.now();
+  static DateTime _toDate(dynamic value) {
+    if (value is String) {
+      final parsed = DateTime.tryParse(value) ?? DateTime.now();
+      // Convert to Thai timezone (UTC+7)
+      return parsed.add(const Duration(hours: 7));
+    }
+    return DateTime.now().add(const Duration(hours: 7));
+  }
+
+  static String _formatThaiDate(dynamic value) {
+    if (value is String && value.isNotEmpty) {
+      final parsed = DateTime.tryParse(value);
+      if (parsed != null) {
+        // Convert to Thai timezone (UTC+7)
+        final thaiDate = parsed.add(const Duration(hours: 7));
+        return thaiDate.toString().split(' ')[0]; // Return YYYY-MM-DD format
+      }
+    }
+    return '';
   }
 }

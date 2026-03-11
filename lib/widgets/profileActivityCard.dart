@@ -7,8 +7,7 @@ import 'package:fe/pages/group/enum/role_participant.dart';
 import 'package:fe/pages/group/models/group_model.dart';
 
 class ProfileActivitiesCard extends StatefulWidget {
-  final String userId;
-  const ProfileActivitiesCard({super.key, required this.userId});
+  const ProfileActivitiesCard({super.key});
 
   @override
   State<ProfileActivitiesCard> createState() => _ProfileActivitiesCardState();
@@ -36,7 +35,7 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
     });
 
     try {
-      final data = await activityRepo.getActivitiesByUserId(widget.userId);
+      final data = await activityRepo.getActivitiesByUserId();
       if (!mounted) return;
 
       setState(() {

@@ -14,9 +14,9 @@ class BackNavbar extends StatelessWidget {
         borderRadius: BorderRadius.zero,
       ),
       child: Padding(
-      padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16, 32, 16, 8),
       child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             IconButton(
               icon: HugeIcon(
@@ -28,27 +28,6 @@ class BackNavbar extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            Spacer(),
-            IconButton(
-              onPressed: () {
-                print('Notification clicked');
-              }, 
-              icon: HugeIcon(
-                icon:  HugeIcons.strokeRoundedNotification02, 
-                size: 18,
-                strokeWidth: 2,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                print('Profile clicked');
-              }, 
-              icon: HugeIcon(
-                icon:  HugeIcons.strokeRoundedUser, 
-                size: 18,
-                strokeWidth: 2,
-              ),
-            )
           ],
         ),
       )

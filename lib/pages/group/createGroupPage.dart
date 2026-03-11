@@ -71,7 +71,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create group'),
+        title: const Text('Create group', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(
@@ -122,7 +122,12 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                         final menuItems = locations.map((loc) {
                           return DropdownMenuItem<String>(
                             value: loc.id.toString(),
-                            child: Text(loc.name),
+                            child: Expanded(
+                              child: Text(loc.name, 
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              )
+                            ),
                           );
                         }).toList();
 
@@ -134,10 +139,10 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                               : 'Where will this happen?',
                           isRequired: true,
                           value: selectedLocationId,
-                          prefixIcon: const Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Icon(
-                              Icons.location_on,
+                          prefixIcon: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: HugeIcon(
+                              icon: HugeIcons.strokeRoundedLocation01,
                               color: Color(0xFFD8A7D9),
                             ),
                           ),
@@ -370,7 +375,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text("Group created successfully 🎉"),
+                        content: Text("Group created successfully"),
                         backgroundColor: Colors.green,
                         duration: Duration(seconds: 3),
                       ),

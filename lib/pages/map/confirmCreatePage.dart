@@ -1,4 +1,3 @@
-import 'package:fe/routes/app_routes.dart';
 import 'package:fe/widgets/bottomActionButton.dart';
 import 'package:fe/widgets/tagField.dart';
 import 'package:flutter/material.dart';
@@ -98,7 +97,7 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Confirm location details"),
+        title: const Text('Confirm location details', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -230,12 +229,6 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
               );
               return;
             }
-             print("Location Name: ${locationNameController.text}");
-            print("Location Address: ${locationAddressController.text}");
-            print("Location Description: ${locationDescriptionController.text}");
-            print("Latitude: ${latitudeController.text}");
-            print("Longitude: ${longitudeController.text}");
-            print("Selected Tag: $selectTag");
 
             try {
                 
@@ -255,9 +248,12 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Location request submitted successfully'),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 3),
                 ),
               );
-              Navigator.pushNamed(context,AppRoutes.map);
+              Navigator.pop(context);
+              Navigator.pop(context, true);
             } catch (e) {
               if (!context.mounted) {
                 return;

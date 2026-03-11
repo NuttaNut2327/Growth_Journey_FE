@@ -134,7 +134,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit group'),
+        title: const Text('Edit group', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(
@@ -186,13 +186,18 @@ class _EditGroupPageState extends State<EditGroupPage> {
                                     return Text('Error: ${snapshot.error}');
                                   }
 
-                                  final locations = snapshot.data ?? [];
-                                  final menuItems = locations.map((loc) {
-                                    return DropdownMenuItem<String>(
-                                      value: loc.id,
-                                      child: Text(loc.name),
-                                    );
-                                  }).toList();
+                        final locations = snapshot.data ?? [];
+                        final menuItems = locations.map((loc) {
+                          return DropdownMenuItem<String>(
+                            value: loc.id.toString(),
+                            child: Expanded(
+                              child: Text(loc.name, 
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              )
+                            ),
+                          );
+                        }).toList();
 
                                   final hasSelectedLocation =
                                       selectedLocationId != null &&
@@ -211,10 +216,10 @@ class _EditGroupPageState extends State<EditGroupPage> {
                                     value: hasSelectedLocation
                                         ? selectedLocationId
                                         : null,
-                                    prefixIcon: const Padding(
-                                      padding: EdgeInsets.all(16),
-                                      child: Icon(
-                                        Icons.location_on,
+                                    prefixIcon: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: HugeIcon(
+                                        icon: HugeIcons.strokeRoundedLocation01,
                                         color: Color(0xFFD8A7D9),
                                       ),
                                     ),

@@ -26,7 +26,7 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create your blog'),
+        title: const Text('Create your blog', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(
@@ -49,27 +49,31 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
               ),
               child: Form(
                 key: _formKey,
-                child: Column(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Image.asset(
                       'assets/images/happy_level_3.png',
-                      height: 175,
+                      height: 80,
                       fit: BoxFit.cover,
                     ),
-                    AppTextField(
-                      label: '',
-                      hintText:
-                          'Stories you want to share with your friends...',
-                      controller: contentController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter some content';
-                        }
-                        return null;
-                      },
-                      maxLines: 15,
-                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: AppTextField(
+                        label: '',
+                        hintText:
+                            'Share your story with us all!',
+                        controller: contentController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter some content';
+                          }
+                          return null;
+                        },
+                        maxLines: 15,
+                      ),
+                    ),   
                   ],
                 ),
               ),
@@ -87,7 +91,11 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
                 return;
               }
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Blog posted successfully')),
+                const SnackBar(
+                  content: Text('Blog posted successfully'), 
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 3),
+                ),
               );
               Navigator.pop(context, true);
             } catch (e) {

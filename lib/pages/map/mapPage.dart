@@ -144,6 +144,10 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
+  Future<void> _handleRefresh() async {
+    await _loadLocations();
+  }
+
   Future<void> _goToCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -249,12 +253,16 @@ class _MapPageState extends State<MapPage> {
                               padding: const EdgeInsets.only(bottom: 16),
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(16),
-                                onTap: () {
-                                  Navigator.pushNamed(
+                                onTap: () async {
+                                  final result = await Navigator.pushNamed(
                                     context,
                                     AppRoutes.groupDetail,
                                     arguments: activity,
                                   );
+
+                                  if (result == true) {
+                                    await _handleRefresh();
+                                  }
                                 },
                                 child: ActivityCard(activity: activity),
                               ),
@@ -277,8 +285,15 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, AppRoutes.createLocation);
+        onPressed: () async {
+          final result = await Navigator.pushNamed(
+            context,
+            AppRoutes.createLocation,
+          );
+
+          if (result == true) {
+            await _handleRefresh();
+          }
         },
         backgroundColor: const Color(0xFFD8A7D9),
         shape: const CircleBorder(),

@@ -133,7 +133,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully')),
+        const SnackBar(
+          content: Text('Profile updated successfully'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),),
       );
       Navigator.pop(context);
     } catch (e) {
@@ -154,7 +157,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit profile'),
+        title: const Text('Edit profile', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(
@@ -291,6 +294,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             fontWeight: FontWeight.w400,
                                           ),
                                         ),
+                                        isExpanded: true,
                                         items: ['Male', 'Female', 'Other']
                                             .map(
                                               (g) => DropdownMenuItem(
