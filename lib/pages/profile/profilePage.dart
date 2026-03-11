@@ -90,58 +90,64 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             IconButton(
               icon: HugeIcon(
-                icon: HugeIcons.strokeRoundedSettings01,
+                icon: HugeIcons.strokeRoundedLogout02,
                 size: 20,
                 strokeWidth: 2,
               ),
               onPressed: () {
-                print('Edit profile clicked');
+                print('Logout clicked');
               },
             ),
           ],
         ),
         body: SafeArea(
-            child: SingleChildScrollView(
-                child: Center(
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 16),
-                        child: Column(children: [
-                          if (_userFuture == null)
-                            const Center(child: CircularProgressIndicator())
-                          else
-                            FutureBuilder<User>(
-                              future: _userFuture,
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Center(
-                                    child: Text('Error: ${snapshot.error}'),
-                                  );
-                                } else if (snapshot.hasData) {
-                                  return UserLevelCard(
-                                      user: snapshot.data!,
-                                      showEditIcon: true,
-                                      onEdit: () {
-                                        Navigator.pushNamed(
-                                            context, AppRoutes.editProfile);
-                                      });
-                                }
-                                return const SizedBox.shrink();
-                              },
-                            ),
-                          const SizedBox(height: 24),
-                          MoodCalendarCard(
-                            moods: moods,
-                            isLoading: isLoading,
-                            errorMessage: moodError,
-                          ),
-                          const SizedBox(height: 24),
-                          ProfileActivitiesCard(userId: '1'),
-                        ]))))));
+          child: SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 16),
+                child: Column(children: [
+                    if (_userFuture == null)
+                      const Center(child: CircularProgressIndicator())
+                    else
+                      FutureBuilder<User>(
+                        future: _userFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          } else if (snapshot.hasData) {
+                            return UserLevelCard(
+                                user: snapshot.data!,
+                                showEditIcon: true,
+                                onEdit: () {
+                                  Navigator.pushNamed(
+                                      context, AppRoutes.editProfile);
+                                });
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    const SizedBox(height: 24),
+                    MoodCalendarCard(
+                      moods: moods,
+                      isLoading: isLoading,
+                      errorMessage: moodError,
+                    ),
+                    const SizedBox(height: 24),
+                    ProfileActivitiesCard(userId: '1'),
+                  ]
+                )
+              )
+            )
+          )
+        )
+      );
   }
 }
