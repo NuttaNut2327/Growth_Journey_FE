@@ -291,6 +291,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             fontWeight: FontWeight.w400,
                                           ),
                                         ),
+                                        isExpanded: true,
                                         items: ['Male', 'Female', 'Other']
                                             .map(
                                               (g) => DropdownMenuItem(

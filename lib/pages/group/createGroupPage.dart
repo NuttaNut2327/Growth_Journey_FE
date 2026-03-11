@@ -122,7 +122,12 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                         final menuItems = locations.map((loc) {
                           return DropdownMenuItem<String>(
                             value: loc.id.toString(),
-                            child: Text(loc.name),
+                            child: Expanded(
+                              child: Text(loc.name, 
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              )
+                            ),
                           );
                         }).toList();
 

@@ -153,6 +153,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
+                                isExpanded: true,
                                 items: ['Male', 'Female', 'Other']
                                     .map(
                                       (g) => DropdownMenuItem(

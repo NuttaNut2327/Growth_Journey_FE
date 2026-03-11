@@ -27,7 +27,6 @@ class AppDropdownField<T> extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ส่วน Label พร้อมดอกจันสีแดง (ถอดแบบมาจาก AppTextField)
         Row(
           children: [
             if (isRequired)
@@ -46,6 +45,7 @@ class AppDropdownField<T> extends StatelessWidget {
           initialValue: value,
           items: items,
           onChanged: onChanged,
+          isExpanded: true,
           validator:
               validator ??
               (isRequired
@@ -56,11 +56,10 @@ class AppDropdownField<T> extends StatelessWidget {
             fillColor: Colors.white,
             prefixIcon: prefixIcon,
             hintText: hintText,
-            hintStyle: const TextStyle(
+            hintStyle: TextStyle(
               color: Color(0x8009101D),
               fontWeight: FontWeight.w400,
             ),
-            // ใช้ค่า Border และสีเดียวกับ AppTextField ของคุณ
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
