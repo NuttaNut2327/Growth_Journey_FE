@@ -120,13 +120,13 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 
     final group = _group;
 
-    DateTime dateTime = DateTime.parse(group.date.toString()).toLocal();
+    DateTime dateTime = DateTime.parse(group.date.toString());
 
     // Date format
     String formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
 
     // Time format
-    String formattedTime = DateFormat('h:mm a').format(dateTime);
+    String formattedTime = DateFormat('hh:mm a').format(dateTime);
 
     return FutureBuilder<Map<String, dynamic>>(
       future: _groupFuture,
@@ -217,7 +217,9 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                             ),
                           ),
                           if (isJoined)
-                            _joinedBadge(isOwner ? GroupStatus.OWNER.label : GroupStatus.JOINED.label),
+                            _joinedBadge(isOwner
+                                ? GroupStatus.OWNER.label
+                                : GroupStatus.JOINED.label),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -348,84 +350,78 @@ Widget _buildBottomActionBar({
 }) {
   if (isOwner) {
     return BottomActionButton(
-      text: '',
-      onPressed: null,
-      child: Row(
-        children: [
-          Expanded(
-            child: SecondButton(
-              text: 'Manage group',
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context, 
-                  builder: (context) {
-                    return Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(40),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
+        text: '',
+        onPressed: null,
+        child: Row(
+          children: [
+            Expanded(
+              child: SecondButton(
+                text: 'Manage group',
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return Container(
                             width: double.infinity,
-                            height: 48,
-                            child: MainButton(
-                              text: 'Edit group', 
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.editGroup,
-                                );
-                              }
-                            ),
-                          ),                          
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: SecondButton(
-                              text: 'Delete group', 
-                              onPressed: () {
-                                print('Delete group');
-                              }
-                            ),
-                          ),                          
-                        ]
-                      )
-                    );
-                  }
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 44,
-            height: 44,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatGroupPage(group: group),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD8A7D9),
-                shape: const CircleBorder(),
-                padding: EdgeInsets.zero,
-              ),
-              child: const HugeIcon(
-                icon: HugeIcons.strokeRoundedMessageMultiple02,
-                color: Colors.white,
-                size: 18,
-                strokeWidth: 2,
+                            padding: const EdgeInsets.all(40),
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: MainButton(
+                                        text: 'Edit group',
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                            context,
+                                            AppRoutes.editGroup,
+                                          );
+                                        }),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: SecondButton(
+                                        text: 'Delete group',
+                                        onPressed: () {
+                                          print('Delete group');
+                                        }),
+                                  ),
+                                ]));
+                      });
+                },
               ),
             ),
-          ),
-        ],
-      )
-    );
+            const SizedBox(width: 12),
+            SizedBox(
+              width: 44,
+              height: 44,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatGroupPage(group: group),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFD8A7D9),
+                  shape: const CircleBorder(),
+                  padding: EdgeInsets.zero,
+                ),
+                child: const HugeIcon(
+                  icon: HugeIcons.strokeRoundedMessageMultiple02,
+                  color: Colors.white,
+                  size: 18,
+                  strokeWidth: 2,
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 
   if (isJoined) {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fe/widgets/mainButton.dart';
 import 'package:fe/widgets/secondButton.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fe/routes/app_routes.dart';
 
 class ConfirmLogoutModal extends StatefulWidget {
   const ConfirmLogoutModal({super.key});
@@ -10,6 +12,34 @@ class ConfirmLogoutModal extends StatefulWidget {
 }
 
 class _ConfirmLogoutModalState extends State<ConfirmLogoutModal> {
+  final _storage = const FlutterSecureStorage();
+  bool _isLoggingOut = false;
+
+  Future<void> _handleLogout() async {
+    if (_isLoggingOut) return;
+
+    setState(() {
+      _isLoggingOut = true;
+    });
+
+    try {
+      await _storage.delete(key: 'token');
+      if (!mounted) return;
+
+      Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+        AppRoutes.login,
+        (route) => false,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoggingOut = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Logout failed. Please try again.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +66,14 @@ class _ConfirmLogoutModalState extends State<ConfirmLogoutModal> {
                 SecondButton(
                   text: "Cancel",
                   onPressed: () {
+                    if (_isLoggingOut) return;
                     Navigator.pop(context);
                   },
                 ),
                 const SizedBox(width: 32),
                 MainButton(
-                  text: "Log Out",
-                  onPressed: () {
-                    print('log out confirmed');
-                  },
+                  text: _isLoggingOut ? "Logging out..." : "Log Out",
+                  onPressed: _isLoggingOut ? null : _handleLogout,
                 )
               ],
             )

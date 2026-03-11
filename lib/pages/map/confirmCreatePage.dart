@@ -230,12 +230,6 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
               );
               return;
             }
-             print("Location Name: ${locationNameController.text}");
-            print("Location Address: ${locationAddressController.text}");
-            print("Location Description: ${locationDescriptionController.text}");
-            print("Latitude: ${latitudeController.text}");
-            print("Longitude: ${longitudeController.text}");
-            print("Selected Tag: $selectTag");
 
             try {
                 
@@ -260,7 +254,7 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
                 ),
               );
               Navigator.pop(context);
-              Navigator.pop(context);
+              Navigator.pop(context, true);
             } catch (e) {
               if (!context.mounted) {
                 return;

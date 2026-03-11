@@ -331,16 +331,18 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
 
   Widget _buildDateDivider(DateTime date) {
     String dateText;
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final messageDate = DateTime(date.year, date.month, date.day);
+    // Convert to Thai timezone (UTC+7)
+    final thaiDate = date.add(const Duration(hours: 7));
+    final thaiNow = DateTime.now().add(const Duration(hours: 7));
+    final today = DateTime(thaiNow.year, thaiNow.month, thaiNow.day);
+    final messageDate = DateTime(thaiDate.year, thaiDate.month, thaiDate.day);
 
     if (messageDate == today) {
       dateText = 'Today';
     } else if (messageDate == today.subtract(const Duration(days: 1))) {
       dateText = 'Yesterday';
     } else {
-      dateText = DateFormat('MMM dd, yyyy').format(date);
+      dateText = DateFormat('MMM dd, yyyy').format(thaiDate);
     }
 
     return Padding(
@@ -423,7 +425,7 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    DateFormat('h:mm a').format(message.createdAt),
+                    _formatThaiTime(message.createdAt),
                     style: TextStyle(
                       color: isMe
                           ? Colors.white.withOpacity(0.8)
@@ -440,6 +442,13 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
         ],
       ),
     );
+  }
+
+  /// Format time in Thai timezone (UTC+7)
+  String _formatThaiTime(DateTime utcTime) {
+    // Bangkok timezone is UTC+7
+    final thaiTime = utcTime.add(const Duration(hours: 7));
+    return DateFormat('h:mm a').format(thaiTime);
   }
 
   Widget _buildAvatar() {
@@ -536,9 +545,12 @@ class _ChatGroupPageState extends State<ChatGroupPage> {
   }
 
   bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
+    // Convert to Thai timezone (UTC+7) for comparison
+    final thai1 = date1.add(const Duration(hours: 7));
+    final thai2 = date2.add(const Duration(hours: 7));
+    return thai1.year == thai2.year &&
+        thai1.month == thai2.month &&
+        thai1.day == thai2.day;
   }
 
   void _scrollToBottom() {
