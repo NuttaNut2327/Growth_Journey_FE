@@ -231,9 +231,6 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                             _joinedBadge(isOwner
                                 ? GroupStatus.OWNER.label
                                 : GroupStatus.JOINED.label),
-                            _joinedBadge(isOwner
-                                ? GroupStatus.OWNER.label
-                                : GroupStatus.JOINED.label),
                         ],
                       ),
                       const SizedBox(height: 16),
