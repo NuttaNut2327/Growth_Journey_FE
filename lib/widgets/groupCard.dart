@@ -158,7 +158,16 @@ class _GroupCardState extends State<GroupCard> {
                 strokeWidth: 1.5,
               ),
               const SizedBox(width: 8),
-              Text(group.location, style: TextStyle(fontSize: 12)),
+              Expanded(
+                child: Text(
+                  group.location,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1, 
+                  style: TextStyle(
+                    fontSize: 12
+                  )
+                ),
+              )
             ],
           ),
           const SizedBox(height: 8),
@@ -195,6 +204,8 @@ class _GroupCardState extends State<GroupCard> {
               const SizedBox(width: 8),
               Text(
                 '${group.joinedMemberCount}/${group.targetMemberCount} participants',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1, 
                 style: TextStyle(fontSize: 12),
               ),
             ],
