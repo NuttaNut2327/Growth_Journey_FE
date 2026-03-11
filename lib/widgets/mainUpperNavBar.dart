@@ -36,16 +36,6 @@ class MainUpperNavBar extends StatelessWidget {
             Spacer(),
             IconButton(
               onPressed: () {
-                print('Notification clicked');
-              }, 
-              icon: HugeIcon(
-                icon:  HugeIcons.strokeRoundedNotification02, 
-                size: 18,
-                strokeWidth: 2,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
                 Navigator.pushNamed(context, AppRoutes.profile);
               }, 
               icon: HugeIcon(
