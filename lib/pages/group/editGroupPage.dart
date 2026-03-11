@@ -139,10 +139,10 @@ class _EditGroupPageState extends State<EditGroupPage> {
                               : 'Where will this happen?',
                           isRequired: true,
                           value: selectedLocationId,
-                          prefixIcon: const Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Icon(
-                              Icons.location_on,
+                          prefixIcon: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: HugeIcon(
+                              icon: HugeIcons.strokeRoundedLocation01,
                               color: Color(0xFFD8A7D9),
                             ),
                           ),
