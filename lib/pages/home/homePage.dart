@@ -145,66 +145,69 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: const Color(0xFFEEDFF1),
-                  width: 2,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: const Color(0xFFEEDFF1),
+                width: 2,
+              ),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x1A000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 6),
                 ),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x1A000000),
-                    blurRadius: 12,
-                    offset: Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: const [
-                      HugeIcon(
-                        icon: HugeIcons.strokeRoundedMonocle01,
-                        size: 20,
-                        color: Color(0xFFD6A6D8),
-                        strokeWidth: 2,
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: const [
+                    HugeIcon(
+                      icon: HugeIcons.strokeRoundedMonocle01,
+                      size: 20,
+                      color: Color(0xFFD6A6D8),
+                      strokeWidth: 2,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Stress Test Questionnaire (ST5)',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Stress Test Questionnaire (ST5)',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Complete a stress test questionnaire to evaluate your stress level.',
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                      width: double.infinity,
-                      height: 36,
-                      child: MainButton(
-                        text: "Start assessment",
-                        onPressed: () {
-                          Navigator.pushNamed(context, AppRoutes.assessment);
-                        },
-                      )),
-                ],
-              ),
-            ))
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Complete a stress test questionnaire to evaluate your stress level.',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  height: 36,
+                  child: MainButton(
+                    text: "Start assessment",
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.assessment);
+                    },
+                  )
+                ),
+              ],
+            ),
+          )
+        ),
+        const SizedBox(height: 16),
       ],
     )));
   }
