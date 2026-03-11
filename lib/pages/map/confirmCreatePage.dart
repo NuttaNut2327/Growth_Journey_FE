@@ -98,7 +98,7 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Confirm location details"),
+        title: const Text('Confirm location details', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
       ),
       body: SafeArea(

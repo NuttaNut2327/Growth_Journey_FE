@@ -26,7 +26,7 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create your blog'),
+        title: const Text('Create your blog', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(

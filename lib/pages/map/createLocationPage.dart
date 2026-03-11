@@ -32,7 +32,7 @@ class _CreateLocationPageState extends State<CreateLocationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Request to add a location'),
+        title: const Text('Request to add a location', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(

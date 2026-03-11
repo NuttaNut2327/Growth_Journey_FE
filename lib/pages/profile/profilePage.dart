@@ -76,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('User profile'),
+          title: const Text('User profile', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
           centerTitle: true,
           leading: IconButton(
             icon: HugeIcon(
