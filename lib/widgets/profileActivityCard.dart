@@ -116,7 +116,7 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
     if (list.isEmpty) {
       return const Center(
         child: Text(
-          "No activities",
+          "No groups",
           style: TextStyle(
             fontSize: 14,
             color: Colors.grey,
@@ -194,8 +194,8 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
             ),
             child: Row(
               children: [
-                buildTab("Activities joined", 0),
-                buildTab("Activities created", 1),
+                buildTab("Groups joined", 0),
+                buildTab("Groups created", 1),
               ],
             ),
           ),
@@ -207,7 +207,7 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Activities Participated",
+                "Groups Participated",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -216,7 +216,7 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
               ),
               SizedBox(height: 2),
               Text(
-                "Your recent activity history",
+                "Your recent group history",
                 style: TextStyle(
                   fontSize: 13,
                   color: Color(0xFF8F839C),
