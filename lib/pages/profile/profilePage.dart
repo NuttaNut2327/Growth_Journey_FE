@@ -8,6 +8,7 @@ import 'package:fe/widgets/moodCalendarCard.dart';
 import 'package:fe/widgets/profileActivityCard.dart';
 import 'package:fe/api/auth/getUserByID.dart';
 import 'package:fe/interface/auth/user.dart';
+import 'package:fe/widgets/confirmLogoutModal.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -95,7 +96,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 strokeWidth: 2,
               ),
               onPressed: () {
-                print('Logout clicked');
+                showDialog(
+                  context: context,
+                  builder: (context) => const ConfirmLogoutModal(),
+                );
               },
             ),
           ],

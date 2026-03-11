@@ -49,27 +49,31 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
               ),
               child: Form(
                 key: _formKey,
-                child: Column(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Image.asset(
                       'assets/images/happy_level_3.png',
-                      height: 175,
+                      height: 80,
                       fit: BoxFit.cover,
                     ),
-                    AppTextField(
-                      label: '',
-                      hintText:
-                          'Stories you want to share with your friends...',
-                      controller: contentController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter some content';
-                        }
-                        return null;
-                      },
-                      maxLines: 15,
-                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: AppTextField(
+                        label: '',
+                        hintText:
+                            'Share your story with us all!',
+                        controller: contentController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter some content';
+                          }
+                          return null;
+                        },
+                        maxLines: 15,
+                      ),
+                    ),   
                   ],
                 ),
               ),
