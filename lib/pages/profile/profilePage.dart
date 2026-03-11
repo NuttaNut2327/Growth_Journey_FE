@@ -145,7 +145,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       errorMessage: moodError,
                     ),
                     const SizedBox(height: 24),
-                    ProfileActivitiesCard(userId: '1'),
+                    ProfileActivitiesCard(),
                   ]
                 )
               )

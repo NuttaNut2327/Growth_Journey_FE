@@ -120,13 +120,13 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 
     final group = _group;
 
-    DateTime dateTime = DateTime.parse(group.date.toString()).toLocal();
+    DateTime dateTime = DateTime.parse(group.date.toString());
 
     // Date format
     String formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
 
     // Time format
-    String formattedTime = DateFormat('h:mm a').format(dateTime);
+    String formattedTime = DateFormat('hh:mm a').format(dateTime);
 
     return FutureBuilder<Map<String, dynamic>>(
       future: _groupFuture,

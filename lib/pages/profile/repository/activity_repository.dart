@@ -5,7 +5,7 @@ import 'package:fe/pages/profile/models/activity_model.dart';
 import 'package:fe/pages/group/enum/group_status.dart';
 
 class ActivityRepository {
-  Future<List<Activity>> getActivitiesByUserId(String userId) async {
+  Future<List<Activity>> getActivitiesByUserId() async {
     final api = ApiClient();
 
     try {
@@ -62,7 +62,7 @@ class ActivityRepository {
       description: (json['description'] ?? '').toString(),
       locationId: (json['location_id'] ?? '').toString(),
       location: (json['location_name'] ?? '').toString(),
-      eventDate: (json['date'] ?? '').toString(),
+      eventDate: _formatThaiDate(json['date']),
       joinedMemberCount: _toInt(json['joined_member_count']),
       targetMemberCount: _toInt(json['target_member_count']),
       tags:
@@ -82,8 +82,20 @@ class ActivityRepository {
 
   DateTime _toDate(dynamic value) {
     if (value is String) {
-      return DateTime.tryParse(value) ?? DateTime.now();
+      final parsed = DateTime.tryParse(value) ?? DateTime.now();
+      return parsed.add(const Duration(hours: 7));
     }
-    return DateTime.now();
+    return DateTime.now().add(const Duration(hours: 7));
+  }
+
+  String _formatThaiDate(dynamic value) {
+    if (value is String && value.isNotEmpty) {
+      final parsed = DateTime.tryParse(value);
+      if (parsed != null) {
+        final thaiDate = parsed.add(const Duration(hours: 7));
+        return thaiDate.toString().split(' ')[0]; 
+      }
+    }
+    return '';
   }
 }
