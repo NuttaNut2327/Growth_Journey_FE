@@ -415,27 +415,53 @@ Widget _buildBottomActionBar({
                                         final confirmed =
                                             await showDialog<bool>(
                                           context: context,
-                                          builder: (ctx) => AlertDialog(
-                                            title: const Text('Delete group'),
-                                            content: const Text(
-                                              'Are you sure you want to delete this group? This action cannot be undone.',
+                                          builder: (ctx) => Dialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(24),
                                             ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(ctx, false),
-                                                child: const Text('Cancel'),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 32),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Text(
+                                                    'Delete group',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 16),
+                                                  const Text(
+                                                    'Are you sure you want to delete this group? \nThis action cannot be undone.',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 24),
+
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      SecondButton(
+                                                        text: "Cancel",
+                                                        onPressed: () {
+                                                          Navigator.pop(ctx, false);
+                                                        },
+                                                      ),
+                                                      const SizedBox(width: 32),
+                                                      MainButton(
+                                                        text: "Delete",
+                                                        onPressed: () {
+                                                          Navigator.pop(ctx, true);
+                                                        },
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
                                               ),
-                                              TextButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(ctx, true),
-                                                child: const Text(
-                                                  'Delete',
-                                                  style: TextStyle(
-                                                      color: Colors.red),
-                                                ),
-                                              ),
-                                            ],
+                                            ),
                                           ),
                                         );
 
