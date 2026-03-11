@@ -110,7 +110,7 @@ class _BlogPageState extends State<BlogPage> {
                                 icon: HugeIcons.strokeRoundedFlower,
                                 size: 20,
                                 strokeWidth: 2,
-                                color: Color(0xFF60BA92),
+                                color: Color(0xFF5FA17B),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
