@@ -53,7 +53,6 @@ class Group {
   static DateTime _toDate(dynamic value) {
     if (value is String) {
       final parsed = DateTime.tryParse(value) ?? DateTime.now();
-      // Convert to Thai timezone (UTC+7)
       return parsed.add(const Duration(hours: 7));
     }
     return DateTime.now().add(const Duration(hours: 7));
@@ -63,10 +62,8 @@ class Group {
     if (value is String && value.isNotEmpty) {
       final parsed = DateTime.tryParse(value);
       if (parsed != null) {
-        // Convert to Thai timezone (UTC+7)
         final thaiDate = parsed.add(const Duration(hours: 7));
-        return thaiDate.toString().split(' ')[0]; // Return YYYY-MM-DD format
-      }
+        return thaiDate.toString().split(' ')[0];
     }
     return '';
   }

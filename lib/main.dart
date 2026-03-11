@@ -11,16 +11,13 @@ import 'app.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load Environment Variables
   await dotenv.load(fileName: ".env");
 
-  // Initialize Firebase (Mobile Only)
   if (!kIsWeb) {
     try {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      // Register Background Message Handler
       FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
       print('✅ Firebase initialized successfully');
     } catch (e) {

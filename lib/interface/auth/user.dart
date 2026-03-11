@@ -1,17 +1,3 @@
-// {
-//     "id": "aaf4ab7f-5d10-437c-818d-188608389ade",
-//     "username": "yuuka_",
-//     "first_name": "Yuuka",
-//     "last_name": "Kawai",
-//     "gender": "female",
-//     "birthdate": "2001-04-19",
-//     "phone": "0812345678",
-//     "email": "yuuka1@example.com",
-//     "level": 0,
-//     "points": 0
-//     "image_url" : null
-// }
-
 class User {
   final String id;
   final String username;

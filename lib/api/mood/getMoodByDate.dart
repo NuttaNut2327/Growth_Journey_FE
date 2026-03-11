@@ -27,7 +27,6 @@ Future<TodayMood?> getMoodByDate(DateTime date) async {
       return parsed;
     }
   } on DioException {
-    // Fallback below.
   }
 
   try {

@@ -9,12 +9,10 @@ class ActivityRepository {
     final api = ApiClient();
 
     try {
-      // Preferred endpoint from profile requirements.
       final response = await api.dio.get('/users/history');
       return _parseActivities(response.data);
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
-        // Backward compatibility with existing backend route.
         final fallback = await api.dio.get('/groups/history');
         return _parseActivities(fallback.data);
       }

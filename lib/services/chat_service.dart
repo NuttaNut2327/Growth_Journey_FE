@@ -41,7 +41,6 @@ class ChatService {
     return rawUrl;
   }
 
-  /// เชื่อมต่อกับ WebSocket Server
   Future<void> connect() async {
     try {
       final token = await _storage.read(key: 'token');
@@ -52,7 +51,6 @@ class ChatService {
       final socketUrl = _resolveSocketBaseUrl(
         dotenv.env['WEBSOCKET_URL'] ?? 'http://127.0.0.1:8081',
       );
-      // แปลง HTTP → WS และ HTTPS → WSS
       final wsUrl = socketUrl
           .replaceFirst('http://', 'ws://')
           .replaceFirst('https://', 'wss://');
@@ -63,7 +61,6 @@ class ChatService {
 
       _channel = WebSocketChannel.connect(Uri.parse(connectionUrl));
 
-      // ฟัง messages จาก WebSocket
       _messageSubscription = _channel!.stream.listen(
         (dynamic data) {
           _handleIncomingMessage(data);
@@ -80,11 +77,9 @@ class ChatService {
         },
       );
 
-      // เมื่อเชื่อมต่อสำเร็จ
       _isConnected = true;
       print('✅ WebSocket Connected successfully');
 
-      // เริ่ม ping timer เพื่อเช็คการเชื่อมต่อ
       _startPingTimer();
     } catch (e) {
       print('🔴 Connection setup failed: $e');
@@ -94,7 +89,6 @@ class ChatService {
     }
   }
 
-  /// จัดการ message ที่ได้รับจาก server
   void _handleIncomingMessage(dynamic data) {
     try {
       final raw = data is String ? data : data.toString();
@@ -154,7 +148,6 @@ class ChatService {
     }
   }
 
-  /// ส่ง message ไปยัง WebSocket server
   void _sendMessage(String type, Map<String, dynamic> payload) {
     if (!_isConnected || _channel == null) {
       print('⚠️ Cannot send message: not connected');
@@ -173,7 +166,6 @@ class ChatService {
     }
   }
 
-  /// เริ่ม ping timer
   void _startPingTimer() {
     _pingTimer?.cancel();
     _pingTimer = Timer.periodic(const Duration(seconds: 30), (_) {
@@ -185,25 +177,21 @@ class ChatService {
     });
   }
 
-  /// หยุด ping timer
   void _stopPingTimer() {
     _pingTimer?.cancel();
     _pingTimer = null;
   }
 
-  /// Join กลุ่มแชท
   void joinGroup(String groupId) {
     print('🔄 Joining group: $groupId');
     _sendMessage('join_room', {'room_id': groupId});
   }
 
-  /// ออกจากกลุ่มแชท
   void leaveGroup(String groupId) {
     print('🔄 Leaving group: $groupId');
     _sendMessage('leave_room', {'room_id': groupId});
   }
 
-  /// ส่งข้อความ
   void sendMessage(String groupId, String message) {
     if (message.trim().isEmpty) return;
 
@@ -215,7 +203,6 @@ class ChatService {
     });
   }
 
-  /// โหลดประวัติข้อความ
   void loadMessages(String groupId, {int limit = 50, int offset = 0}) {
     print('📥 Loading messages for group $groupId');
     _sendMessage('load_history', {
@@ -225,12 +212,10 @@ class ChatService {
     });
   }
 
-  /// แจ้ง typing status
   void sendTypingStatus(String groupId, bool isTyping) {
     _sendMessage('typing', {'room_id': groupId, 'is_typing': isTyping});
   }
 
-  /// ยกเลิกการเชื่อมต่อ
   void disconnect() {
     print('🔌 Disconnecting from WebSocket');
     _stopPingTimer();
@@ -240,7 +225,6 @@ class ChatService {
     _isConnected = false;
   }
 
-  /// ทำลาย Service และ close streams
   void dispose() {
     disconnect();
     _messageController.close();
