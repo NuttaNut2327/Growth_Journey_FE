@@ -1,9 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:fe/api/group/createGroup.dart';
+import 'package:fe/api/group/updateGroup.dart';
 import 'package:fe/api/location/getLocations.dart';
 import 'package:fe/interface/group/createGroupRequest.dart';
 import 'package:fe/interface/location/location.dart';
+import 'package:fe/pages/group/repository/group_repository.dart';
 import 'package:fe/widgets/appDropdownField.dart.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -32,14 +33,76 @@ class _EditGroupPageState extends State<EditGroupPage> {
   final maxParticipantsController = TextEditingController();
   List<String> selectedTags = [];
   Uint8List? imageBytes;
+  final _groupRepository = GroupRepository();
   String? selectedLocationId;
+  String? _groupId;
+  bool _hasLoadedGroup = false;
   bool _isSubmitting = false;
+  bool _isFetching = true;
   late Future<List<Location>> locationsFuture;
 
   @override
   void initState() {
     super.initState();
     locationsFuture = getLocationsByStatus('approved');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_hasLoadedGroup) {
+      return;
+    }
+
+    _hasLoadedGroup = true;
+    final groupId = ModalRoute.of(context)?.settings.arguments as String?;
+
+    if (groupId == null || groupId.isEmpty) {
+      _isFetching = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Missing group ID')),
+        );
+      });
+      return;
+    }
+
+    _groupId = groupId;
+    _loadGroupData(groupId);
+  }
+
+  Future<void> _loadGroupData(String groupId) async {
+    setState(() => _isFetching = true);
+
+    try {
+      final group = await _groupRepository.getGroup(groupId);
+      final eventDateTime = group.date.toLocal();
+
+      if (!mounted) return;
+
+      setState(() {
+        activityNameController.text = group.title;
+        descriptionController.text = group.description;
+        maxParticipantsController.text = group.targetMemberCount.toString();
+        selectedTags = List<String>.from(group.tags);
+        selectedLocationId = group.locationId;
+        selectedDate = eventDateTime;
+        dateController.text = DateFormat('dd MMM yyyy').format(eventDateTime);
+        selectedTime = TimeOfDay.fromDateTime(eventDateTime);
+        timeController.text = DateFormat('h:mm a').format(eventDateTime);
+        _isFetching = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load group data: $e')),
+      );
+
+      setState(() => _isFetching = false);
+    }
   }
 
   @override
@@ -85,242 +148,261 @@ class _EditGroupPageState extends State<EditGroupPage> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: EdgeInsetsGeometry.symmetric(
-                horizontal: 16,
-                vertical: 32,
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    AppTextField(
-                      label: 'Activity name',
-                      hintText: 'Enter activity name',
-                      controller: activityNameController,
-                      isRequired: true,
-                    ),
-                    const SizedBox(height: 16),
-                    AppTextField(
-                      label: 'Description',
-                      hintText: 'Tell people what your activity is about...',
-                      controller: descriptionController,
-                      isRequired: true,
-                    ),
-                    const SizedBox(height: 16),
-                    FutureBuilder<List<Location>>(
-                      future: locationsFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        }
-
-                        final locations = snapshot.data ?? [];
-                        final menuItems = locations.map((loc) {
-                          return DropdownMenuItem<String>(
-                            value: loc.id.toString(),
-                            child: Text(loc.name),
-                          );
-                        }).toList();
-
-                        return AppDropdownField<String>(
-                          label: 'Location',
-                          hintText: snapshot.connectionState ==
-                                  ConnectionState.waiting
-                              ? 'Loading...'
-                              : 'Where will this happen?',
-                          isRequired: true,
-                          value: selectedLocationId,
-                          prefixIcon: const Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Icon(
-                              Icons.location_on,
-                              color: Color(0xFFD8A7D9),
-                            ),
-                          ),
-                          items: menuItems,
-                          controller: locationController,
-                          onChanged: (val) {
-                            setState(() => selectedLocationId = val);
-                          },
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AppTextField(
-                            label: 'Date',
-                            hintText: 'Select Date',
-                            controller: dateController,
-                            isRequired: true,
-                            readOnly: true,
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: HugeIcon(
-                                icon: HugeIcons.strokeRoundedCalendar04,
-                                color: Color(0xFFD8A7D9),
-                              ),
-                            ),
-                            onTap: () async {
-                              DateTime? picked = await showDatePicker(
-                                context: context,
-                                initialDate: selectedDate ?? DateTime.now(),
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100),
-                              );
-
-                              if (picked != null) {
-                                selectedDate = picked;
-                                dateController.text = DateFormat(
-                                  'dd MMM yyyy',
-                                ).format(picked);
-                              }
-                            },
-                          ),
+        child: _isFetching
+            ? const Center(child: CircularProgressIndicator())
+            : _groupId == null
+                ? const Center(child: Text('Unable to load group'))
+                : SingleChildScrollView(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsetsGeometry.symmetric(
+                          horizontal: 16,
+                          vertical: 32,
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: AppTextField(
-                            label: 'Time',
-                            hintText: 'Select Time',
-                            controller: timeController,
-                            isRequired: true,
-                            readOnly: true,
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: HugeIcon(
-                                icon: HugeIcons.strokeRoundedClock01,
-                                color: const Color(0xFFD8A7D9),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              AppTextField(
+                                label: 'Activity name',
+                                hintText: 'Enter activity name',
+                                controller: activityNameController,
+                                isRequired: true,
                               ),
-                            ),
-                            onTap: () async {
-                              TimeOfDay? picked = await showTimePicker(
-                                context: context,
-                                initialTime: selectedTime ?? TimeOfDay.now(),
-                              );
+                              const SizedBox(height: 16),
+                              AppTextField(
+                                label: 'Description',
+                                hintText:
+                                    'Tell people what your activity is about...',
+                                controller: descriptionController,
+                                isRequired: true,
+                              ),
+                              const SizedBox(height: 16),
+                              FutureBuilder<List<Location>>(
+                                future: locationsFuture,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  }
 
-                              if (picked != null) {
-                                selectedTime = picked;
+                                  final locations = snapshot.data ?? [];
+                                  final menuItems = locations.map((loc) {
+                                    return DropdownMenuItem<String>(
+                                      value: loc.id,
+                                      child: Text(loc.name),
+                                    );
+                                  }).toList();
 
-                                final now = DateTime.now();
-                                final dateTime = DateTime(
-                                  now.year,
-                                  now.month,
-                                  now.day,
-                                  picked.hour,
-                                  picked.minute,
-                                );
+                                  final hasSelectedLocation =
+                                      selectedLocationId != null &&
+                                          locations.any(
+                                            (loc) =>
+                                                loc.id == selectedLocationId,
+                                          );
 
-                                timeController.text = DateFormat(
-                                  'h:mm a',
-                                ).format(dateTime);
-                              }
-                            },
+                                  return AppDropdownField<String>(
+                                    label: 'Location',
+                                    hintText: snapshot.connectionState ==
+                                            ConnectionState.waiting
+                                        ? 'Loading...'
+                                        : 'Where will this happen?',
+                                    isRequired: true,
+                                    value: hasSelectedLocation
+                                        ? selectedLocationId
+                                        : null,
+                                    prefixIcon: const Padding(
+                                      padding: EdgeInsets.all(16),
+                                      child: Icon(
+                                        Icons.location_on,
+                                        color: Color(0xFFD8A7D9),
+                                      ),
+                                    ),
+                                    items: menuItems,
+                                    controller: locationController,
+                                    onChanged: (val) {
+                                      setState(() => selectedLocationId = val);
+                                    },
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: AppTextField(
+                                      label: 'Date',
+                                      hintText: 'Select Date',
+                                      controller: dateController,
+                                      isRequired: true,
+                                      readOnly: true,
+                                      prefixIcon: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: HugeIcon(
+                                          icon:
+                                              HugeIcons.strokeRoundedCalendar04,
+                                          color: Color(0xFFD8A7D9),
+                                        ),
+                                      ),
+                                      onTap: () async {
+                                        DateTime? picked = await showDatePicker(
+                                          context: context,
+                                          initialDate:
+                                              selectedDate ?? DateTime.now(),
+                                          firstDate: DateTime(2000),
+                                          lastDate: DateTime(2100),
+                                        );
+
+                                        if (picked != null) {
+                                          selectedDate = picked;
+                                          dateController.text = DateFormat(
+                                            'dd MMM yyyy',
+                                          ).format(picked);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: AppTextField(
+                                      label: 'Time',
+                                      hintText: 'Select Time',
+                                      controller: timeController,
+                                      isRequired: true,
+                                      readOnly: true,
+                                      prefixIcon: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: HugeIcon(
+                                          icon: HugeIcons.strokeRoundedClock01,
+                                          color: const Color(0xFFD8A7D9),
+                                        ),
+                                      ),
+                                      onTap: () async {
+                                        TimeOfDay? picked =
+                                            await showTimePicker(
+                                          context: context,
+                                          initialTime:
+                                              selectedTime ?? TimeOfDay.now(),
+                                        );
+
+                                        if (picked != null) {
+                                          selectedTime = picked;
+
+                                          final now = DateTime.now();
+                                          final dateTime = DateTime(
+                                            now.year,
+                                            now.month,
+                                            now.day,
+                                            picked.hour,
+                                            picked.minute,
+                                          );
+
+                                          timeController.text = DateFormat(
+                                            'h:mm a',
+                                          ).format(dateTime);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              AppTextField(
+                                label: 'Max participants',
+                                hintText: 'How many people can join?',
+                                controller: maxParticipantsController,
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: HugeIcon(
+                                    icon: HugeIcons.strokeRoundedUserMultiple02,
+                                    color: const Color(0xFFD8A7D9),
+                                  ),
+                                ),
+                                isRequired: true,
+                              ),
+                              const SizedBox(height: 16),
+                              Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      HugeIcon(
+                                        icon: HugeIcons.strokeRoundedTag01,
+                                        size: 18,
+                                        strokeWidth: 2,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Categories',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: tags.map((tag) {
+                                      final isSelected =
+                                          selectedTags.contains(tag);
+
+                                      return TagField(
+                                        label: tag,
+                                        isSelected: isSelected,
+                                        onTap: () {
+                                          setState(() {
+                                            if (isSelected) {
+                                              selectedTags.remove(tag);
+                                            } else {
+                                              selectedTags.add(tag);
+                                            }
+                                          });
+                                        },
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      HugeIcon(
+                                        icon: HugeIcons.strokeRoundedImage02,
+                                        size: 18,
+                                        strokeWidth: 2,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Cover photo',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  UploadImageButton(
+                                    mode: UploadImageMode.gallery,
+                                    onImageSelected: (bytes) {
+                                      imageBytes = bytes;
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    AppTextField(
-                      label: 'Max participants',
-                      hintText: 'How many people can join?',
-                      controller: maxParticipantsController,
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: HugeIcon(
-                          icon: HugeIcons.strokeRoundedUserMultiple02,
-                          color: const Color(0xFFD8A7D9),
                         ),
                       ),
-                      isRequired: true,
                     ),
-                    const SizedBox(height: 16),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            HugeIcon(
-                              icon: HugeIcons.strokeRoundedTag01,
-                              size: 18,
-                              strokeWidth: 2,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Categories',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: tags.map((tag) {
-                            final isSelected = selectedTags.contains(tag);
-
-                            return TagField(
-                              label: tag,
-                              isSelected: isSelected,
-                              onTap: () {
-                                setState(() {
-                                  if (isSelected) {
-                                    selectedTags.remove(tag);
-                                  } else {
-                                    selectedTags.add(tag);
-                                  }
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            HugeIcon(
-                              icon: HugeIcons.strokeRoundedImage02,
-                              size: 18,
-                              strokeWidth: 2,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Cover photo',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        UploadImageButton(
-                          mode: UploadImageMode.gallery,
-                          onImageSelected: (bytes) {
-                            imageBytes = bytes;
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
+                  ),
       ),
       bottomNavigationBar: BottomActionButton(
-        text: "Create group",
+        text: "Update group",
         onPressed: _isSubmitting
             ? null
             : () async {
@@ -337,6 +419,13 @@ class _EditGroupPageState extends State<EditGroupPage> {
                       selectedLocationId!.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Please select location")),
+                    );
+                    return;
+                  }
+
+                  if (_groupId == null || _groupId!.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Group not found")),
                     );
                     return;
                   }
@@ -364,21 +453,19 @@ class _EditGroupPageState extends State<EditGroupPage> {
                       imageBytes: imageBytes,
                     );
 
-                    await createGroup(group);
+                    await updateGroup(group, _groupId!);
 
                     if (!mounted) return;
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text("Group created successfully 🎉"),
+                        content: Text("Group updated successfully"),
                         backgroundColor: Colors.green,
-                        duration: Duration(seconds: 3),
+                        duration: Duration(seconds: 1),
                       ),
                     );
 
-                    await Future.delayed(const Duration(seconds: 3));
-
-                    Navigator.pop(context);
+                    Navigator.pop(context, true);
                   } catch (e) {
                     ScaffoldMessenger.of(
                       context,
