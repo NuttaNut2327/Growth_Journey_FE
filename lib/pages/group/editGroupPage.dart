@@ -375,7 +375,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text("Group created successfully 🎉"),
+                        content: Text("Group edited successfully"),
                         backgroundColor: Colors.green,
                         duration: Duration(seconds: 3),
                       ),

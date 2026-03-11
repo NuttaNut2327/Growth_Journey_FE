@@ -133,7 +133,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully')),
+        const SnackBar(
+          content: Text('Profile updated successfully'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),),
       );
       Navigator.pop(context);
     } catch (e) {

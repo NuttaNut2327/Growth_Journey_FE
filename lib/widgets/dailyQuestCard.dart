@@ -195,9 +195,9 @@ class DailyQuestCard extends StatelessWidget {
                                                           context,
                                                         ).showSnackBar(
                                                           const SnackBar(
-                                                            content: Text(
-                                                              'Quest completed successfully',
-                                                            ),
+                                                            content: Text('Quest completed successfully'),
+                                                            backgroundColor: Colors.green,
+                                                            duration: Duration(seconds: 3),
                                                           ),
                                                         );
                                                       }

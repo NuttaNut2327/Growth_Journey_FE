@@ -375,7 +375,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text("Group created successfully 🎉"),
+                        content: Text("Group created successfully"),
                         backgroundColor: Colors.green,
                         duration: Duration(seconds: 3),
                       ),

@@ -38,7 +38,11 @@ class _GroupPageState extends State<GroupPage> {
         return false;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Joined group successfully')),
+        const SnackBar(
+          content: Text('Joined group successfully'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),
+        ),
       );
       return true;
     } catch (e) {

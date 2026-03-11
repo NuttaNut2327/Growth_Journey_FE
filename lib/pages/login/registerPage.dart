@@ -434,7 +434,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           ).showSnackBar(
                                             const SnackBar(
                                               content: Text(
-                                                "Account created successfully 🎉",
+                                                "Account created successfully",
                                               ),
                                               backgroundColor: Colors.green,
                                               duration: Duration(seconds: 2),

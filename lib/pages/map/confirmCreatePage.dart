@@ -256,6 +256,7 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
                 const SnackBar(
                   content: Text('Location request submitted successfully'),
                   backgroundColor: Colors.green,
+                  duration: Duration(seconds: 3),
                 ),
               );
               Navigator.pop(context);

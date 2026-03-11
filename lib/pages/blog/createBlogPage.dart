@@ -87,7 +87,11 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
                 return;
               }
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Blog posted successfully')),
+                const SnackBar(
+                  content: Text('Blog posted successfully'), 
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 3),
+                ),
               );
               Navigator.pop(context, true);
             } catch (e) {

@@ -248,7 +248,11 @@ class _HomePageState extends State<HomePage> {
                 await _loadTodayMood();
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Mood recorded successfully')),
+                  const SnackBar(
+                    content: Text('Mood recorded successfully'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 3),
+                  ),
                 );
               } catch (e) {
                 if (!mounted) return;

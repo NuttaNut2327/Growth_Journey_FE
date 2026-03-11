@@ -75,6 +75,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Joined group successfully'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),
         ),
       );
       await _refreshPage();
