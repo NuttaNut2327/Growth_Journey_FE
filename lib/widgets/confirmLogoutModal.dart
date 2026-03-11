@@ -52,11 +52,18 @@ class _ConfirmLogoutModalState extends State<ConfirmLogoutModal> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const Text(
+              'Log out',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
             Text(
               "Are you sure you want to log out?",
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
             ),
             const SizedBox(height: 24),
