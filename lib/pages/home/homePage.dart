@@ -7,6 +7,7 @@ import 'package:fe/widgets/moodLevelModal.dart';
 import 'package:fe/pages/home/enum/emotions.dart';
 import 'package:fe/api/mood/recordMood.dart';
 import 'package:fe/api/mood/getMoodByDate.dart';
+import 'package:fe/widgets/moodCard.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -131,7 +132,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 SizedBox(height: 24),
-                _buildMoodSection(),
+                Center(
+                  child: MoodSection(
+                    isCheckingTodayMood: _isCheckingTodayMood,
+                    todayMood: _todayMood,
+                    emotionButton: emotionButton,
+                  ),
+                ),
                 const SizedBox(height: 8),
               ],
             ),
@@ -272,60 +279,6 @@ class _HomePageState extends State<HomePage> {
             fontWeight: FontWeight.w500,
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildMoodSection() {
-    if (_isCheckingTodayMood) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_todayMood != null) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFEEDFF1), width: 1.5),
-        ),
-        child: Row(
-          children: [
-            Image.asset(
-              'assets/images/${_todayMood!.emotion.name.toLowerCase()}_level_1.png',
-              width: 56,
-              errorBuilder: (context, error, stackTrace) =>
-                  const SizedBox(width: 56, height: 56),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Today\'s mood: ${_todayMood!.emotion.label[0].toUpperCase()}${_todayMood!.emotion.label.substring(1)} (level ${_todayMood!.intensity})',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF4C4456),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Wrap(
-      spacing: 16,
-      runSpacing: 24,
-      crossAxisAlignment: WrapCrossAlignment.end,
-      alignment: WrapAlignment.center,
-      children: [
-        emotionButton(Emotions.CALM, 96),
-        emotionButton(Emotions.HAPPY, 110),
-        emotionButton(Emotions.TIRED, 95),
-        emotionButton(Emotions.ANXIOUS, 99),
-        emotionButton(Emotions.SAD, 100),
-        emotionButton(Emotions.ANGRY, 100),
       ],
     );
   }
