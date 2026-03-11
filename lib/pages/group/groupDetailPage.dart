@@ -14,6 +14,9 @@ import 'package:fe/widgets/bottomActionButton.dart';
 import 'package:fe/widgets/mainButton.dart';
 import 'package:fe/widgets/secondButton.dart';
 import 'package:fe/widgets/participantCard.dart';
+import 'package:fe/pages/group/editGroupPage.dart';
+import 'package:fe/routes/app_routes.dart';
+import 'package:fe/pages/group/enum/group_status.dart';
 
 class GroupDetailPage extends StatefulWidget {
   const GroupDetailPage({super.key});
@@ -212,7 +215,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                             ),
                           ),
                           if (isJoined)
-                            _joinedBadge(isOwner ? 'Owner' : 'Joined'),
+                            _joinedBadge(isOwner ? GroupStatus.OWNER.label : GroupStatus.JOINED.label),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -345,21 +348,81 @@ Widget _buildBottomActionBar({
     return BottomActionButton(
       text: '',
       onPressed: null,
-      child: SizedBox(
-        width: double.infinity,
-        height: 48,
-        child: MainButton(
-          text: 'Open group chat',
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatGroupPage(group: group),
+      child: Row(
+        children: [
+          Expanded(
+            child: SecondButton(
+              text: 'Manage group',
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context, 
+                  builder: (context) {
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(40),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: MainButton(
+                              text: 'Edit group', 
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.editGroup,
+                                );
+                              }
+                            ),
+                          ),                          
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: SecondButton(
+                              text: 'Delete group', 
+                              onPressed: () {
+                                print('Delete group');
+                              }
+                            ),
+                          ),                          
+                        ]
+                      )
+                    );
+                  }
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 12),
+          SizedBox(
+            width: 44,
+            height: 44,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatGroupPage(group: group),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFD8A7D9),
+                shape: const CircleBorder(),
+                padding: EdgeInsets.zero,
               ),
-            );
-          },
-        ),
-      ),
+              child: const HugeIcon(
+                icon: HugeIcons.strokeRoundedMessageMultiple02,
+                color: Colors.white,
+                size: 18,
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+        ],
+      )
     );
   }
 

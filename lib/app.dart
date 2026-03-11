@@ -9,6 +9,7 @@ import 'package:fe/widgets/bottomNavBar.dart';
 import 'package:fe/pages/assessment/assessmentPage.dart';
 import 'package:fe/pages/group/groupDetailPage.dart';
 import 'package:fe/pages/group/createGroupPage.dart';
+import 'package:fe/pages/group/editGroupPage.dart';
 import 'package:fe/pages/profile/profilePage.dart';
 import 'package:fe/pages/profile/editProfilePage.dart';
 import 'package:fe/pages/blog/createBlogPage.dart';
@@ -69,6 +70,7 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.bottomnavbar: (context) => const Bottomnavbar(),
 
         AppRoutes.createGroup: (context) => const CreateGroupPage(),
+        AppRoutes.editGroup: (context) => const EditGroupPage(),
         AppRoutes.groupDetail: (_) => const GroupDetailPage(),
         AppRoutes.assessment: (context) => const AssessmentPage(),
         AppRoutes.profile: (context) => const ProfilePage(),
