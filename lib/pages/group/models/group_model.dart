@@ -64,6 +64,7 @@ class Group {
       if (parsed != null) {
         final thaiDate = parsed.add(const Duration(hours: 7));
         return thaiDate.toString().split(' ')[0];
+      }
     }
     return '';
   }
