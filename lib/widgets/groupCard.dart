@@ -127,7 +127,6 @@ class _GroupCardState extends State<GroupCard> {
                 _joinedBadge(GroupStatus.OWNER.label),
               if (_isJoined && _role == RoleParticipant.MEMBER)
                 _joinedBadge(GroupStatus.JOINED.label),
-              if (!_isJoined) _joinedBadge(GroupStatus.NOT_JOINED.label),
             ],
           ),
           const SizedBox(height: 16),
@@ -289,7 +288,7 @@ Widget _joinedButton(
 Widget _chatOnlyButton(BuildContext context, Group group) {
   return SizedBox(
     width: double.infinity,
-    child: MainButton(
+    child: SecondButton(
       text: 'Chat group', 
       onPressed: () {
         Navigator.push(
