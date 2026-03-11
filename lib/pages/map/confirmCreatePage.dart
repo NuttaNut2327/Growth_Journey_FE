@@ -255,9 +255,11 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Location request submitted successfully'),
+                  backgroundColor: Colors.green,
                 ),
               );
-              Navigator.pushNamed(context,AppRoutes.map);
+              Navigator.pop(context);
+              Navigator.pop(context);
             } catch (e) {
               if (!context.mounted) {
                 return;

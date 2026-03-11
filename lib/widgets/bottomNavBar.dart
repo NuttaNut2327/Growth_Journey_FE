@@ -6,6 +6,8 @@ import 'package:fe/pages/group/groupPage.dart';
 import 'package:fe/pages/map/mapPage.dart';
 import 'package:fe/pages/heal/healPage.dart';
 
+final GlobalKey<_BottomnavbarState> bottomNavKey = GlobalKey<_BottomnavbarState>();
+
 class Bottomnavbar extends StatefulWidget {
   const Bottomnavbar({super.key});
 
@@ -17,6 +19,12 @@ class _BottomnavbarState extends State<Bottomnavbar> {
   int _currentIndex = 0;
 
   final List<Widget?> _pages = List<Widget?>.filled(5, null);
+
+  void changePage(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   Widget _buildPage(int index) {
     switch (index) {
