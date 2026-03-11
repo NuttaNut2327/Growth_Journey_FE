@@ -4,6 +4,7 @@ class AppRoutes {
   static const register = '/register';
   static const bottomnavbar = '/bottomnavbar';
   static const createGroup = '/group/create';
+  static const editGroup = '/group/edit';
   static const groupDetail = '/group/detail';
   static const assessment = '/assessment';
   static const createBlog = '/blog/create';

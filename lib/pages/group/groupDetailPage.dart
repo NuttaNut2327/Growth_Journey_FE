@@ -14,6 +14,9 @@ import 'package:fe/widgets/bottomActionButton.dart';
 import 'package:fe/widgets/mainButton.dart';
 import 'package:fe/widgets/secondButton.dart';
 import 'package:fe/widgets/participantCard.dart';
+import 'package:fe/pages/group/editGroupPage.dart';
+import 'package:fe/routes/app_routes.dart';
+import 'package:fe/pages/group/enum/group_status.dart';
 
 class GroupDetailPage extends StatefulWidget {
   const GroupDetailPage({super.key});
@@ -212,7 +215,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                             ),
                           ),
                           if (isJoined)
-                            _joinedBadge(isOwner ? 'Owner' : 'Joined'),
+                            _joinedBadge(isOwner ? GroupStatus.OWNER.label : GroupStatus.JOINED.label),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -366,7 +369,10 @@ Widget _buildBottomActionBar({
                             child: MainButton(
                               text: 'Edit group', 
                               onPressed: () {
-                                print('Edit group');
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.editGroup,
+                                );
                               }
                             ),
                           ),                          
