@@ -137,7 +137,7 @@ class MoodCalendarCard extends StatelessWidget {
               ),
               SizedBox(width: 8),
               Text(
-                "30 Day Mood Calendar",
+                "Mood calendar",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
