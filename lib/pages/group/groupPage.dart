@@ -176,12 +176,16 @@ class _GroupPageState extends State<GroupPage> {
                           padding: const EdgeInsets.only(bottom: 16),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(16),
-                            onTap: () {
-                              Navigator.pushNamed(
+                            onTap: () async {
+                              final result = await Navigator.pushNamed(
                                 context,
                                 AppRoutes.groupDetail,
                                 arguments: group,
                               );
+
+                              if (result == true) {
+                                await _handleRefresh();
+                              }
                             },
                             child: GroupCard(
                               group: group,

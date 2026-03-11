@@ -14,7 +14,6 @@ import 'package:fe/widgets/bottomActionButton.dart';
 import 'package:fe/widgets/mainButton.dart';
 import 'package:fe/widgets/secondButton.dart';
 import 'package:fe/widgets/participantCard.dart';
-import 'package:fe/pages/group/editGroupPage.dart';
 import 'package:fe/routes/app_routes.dart';
 import 'package:fe/pages/group/enum/group_status.dart';
 
@@ -64,6 +63,18 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       _groupFuture = _loadData(_group.id);
     });
     await _groupFuture;
+  }
+
+  Future<void> _refreshGroupDetailData() async {
+    final refreshedGroup = await _groupRepository.getGroup(_group.id);
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _group = refreshedGroup;
+      _groupFuture = _loadData(_group.id);
+    });
   }
 
   Future<void> _handleJoin() async {
@@ -215,7 +226,9 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                             ),
                           ),
                           if (isJoined)
-                            _joinedBadge(isOwner ? GroupStatus.OWNER.label : GroupStatus.JOINED.label),
+                            _joinedBadge(isOwner
+                                ? GroupStatus.OWNER.label
+                                : GroupStatus.JOINED.label),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -311,6 +324,17 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             isJoined: isJoined,
             onJoin: _handleJoin,
             onLeave: _handleLeave,
+            onEditGroup: () async {
+              final result = await Navigator.pushNamed(
+                context,
+                AppRoutes.editGroup,
+                arguments: group.id,
+              );
+
+              if (result == true) {
+                await _refreshGroupDetailData();
+              }
+            },
           ),
         );
       },
@@ -343,87 +367,135 @@ Widget _buildBottomActionBar({
   required bool isJoined,
   required Future<void> Function() onJoin,
   required Future<void> Function() onLeave,
+  required Future<void> Function() onEditGroup,
 }) {
   if (isOwner) {
     return BottomActionButton(
-      text: '',
-      onPressed: null,
-      child: Row(
-        children: [
-          Expanded(
-            child: SecondButton(
-              text: 'Manage group',
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context, 
-                  builder: (context) {
-                    return Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(40),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
+        text: '',
+        onPressed: null,
+        child: Row(
+          children: [
+            Expanded(
+              child: SecondButton(
+                text: 'Manage group',
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (sheetContext) {
+                        return Container(
                             width: double.infinity,
-                            height: 48,
-                            child: MainButton(
-                              text: 'Edit group', 
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.editGroup,
-                                );
-                              }
-                            ),
-                          ),                          
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: SecondButton(
-                              text: 'Delete group', 
-                              onPressed: () {
-                                print('Delete group');
-                              }
-                            ),
-                          ),                          
-                        ]
-                      )
-                    );
-                  }
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 44,
-            height: 44,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatGroupPage(group: group),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD8A7D9),
-                shape: const CircleBorder(),
-                padding: EdgeInsets.zero,
+                            padding: const EdgeInsets.all(40),
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: MainButton(
+                                      text: 'Edit group',
+                                      onPressed: () async {
+                                        Navigator.pop(sheetContext);
+                                        await onEditGroup();
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: SecondButton(
+                                      text: 'Delete group',
+                                      onPressed: () async {
+                                        Navigator.pop(sheetContext);
+                                        final confirmed =
+                                            await showDialog<bool>(
+                                          context: context,
+                                          builder: (ctx) => AlertDialog(
+                                            title: const Text('Delete group'),
+                                            content: const Text(
+                                              'Are you sure you want to delete this group? This action cannot be undone.',
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(ctx, false),
+                                                child: const Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(ctx, true),
+                                                child: const Text(
+                                                  'Delete',
+                                                  style: TextStyle(
+                                                      color: Colors.red),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+
+                                        if (confirmed != true) return;
+
+                                        try {
+                                          final repo = GroupRepository();
+                                          await repo.deleteGroup(group.id);
+
+                                          if (!context.mounted) return;
+
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'Group deleted successfully'),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+
+                                          Navigator.pop(context, true);
+                                        } catch (e) {
+                                          if (!context.mounted) return;
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(e.toString())),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ]));
+                      });
+                },
               ),
-              child: const HugeIcon(
-                icon: HugeIcons.strokeRoundedMessageMultiple02,
-                color: Colors.white,
-                size: 18,
-                strokeWidth: 2,
+            ),
+            const SizedBox(width: 12),
+            SizedBox(
+              width: 44,
+              height: 44,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatGroupPage(group: group),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFD8A7D9),
+                  shape: const CircleBorder(),
+                  padding: EdgeInsets.zero,
+                ),
+                child: const HugeIcon(
+                  icon: HugeIcons.strokeRoundedMessageMultiple02,
+                  color: Colors.white,
+                  size: 18,
+                  strokeWidth: 2,
+                ),
               ),
             ),
-          ),
-        ],
-      )
-    );
+          ],
+        ));
   }
 
   if (isJoined) {
