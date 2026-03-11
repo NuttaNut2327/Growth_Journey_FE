@@ -74,12 +74,14 @@ class ActivityCard extends StatelessWidget {
                       strokeWidth: 2,
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      activity.location,
-                      style: const TextStyle(fontSize: 12),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    Expanded(
+                      child: Text(
+                        activity.location,
+                        style: const TextStyle(fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ), 
                   ],
                 ),
                 const SizedBox(height: 4),

@@ -69,6 +69,10 @@ class _BlogCardState extends State<BlogCard> {
 
   @override
   Widget build(BuildContext context) {
+    final avatarUrl = (widget.blog.imagePath == null || widget.blog.imagePath!.isEmpty)
+    ? 'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg'
+    : widget.blog.imagePath!;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -91,10 +95,7 @@ class _BlogCardState extends State<BlogCard> {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundImage: NetworkImage(
-                  widget.blog.imagePath ??
-                      'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg',
-                ),
+                backgroundImage: NetworkImage(avatarUrl),
               ),
               const SizedBox(width: 12),
               Expanded(

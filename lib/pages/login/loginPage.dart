@@ -302,13 +302,20 @@ class _LoginPageState extends State<LoginPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('Don\'t have an account yet?'),
+                            Flexible(
+                              child: Text(
+                                "Don't have an account yet?",
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                             TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                minimumSize: Size(0, 0),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
                               onPressed: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.register,
-                                );
+                                Navigator.pushNamed(context, AppRoutes.register);
                               },
                               child: const Text(
                                 'Create account',

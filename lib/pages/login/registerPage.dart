@@ -461,21 +461,30 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                           const SizedBox(height: 32),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text('Already have an account?'),
-                              TextButton(
-                                onPressed: () => Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.login,
-                                ),
-                                child: const Text(
-                                  'Log in',
-                                  style: TextStyle(color: Color(0xFFD8A7D9)),
-                                ),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                "Already have an account?",
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            ],
-                          ),
+                            ),
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.symmetric(horizontal: 8),
+                                minimumSize: Size(0, 0),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              onPressed: () {
+                                Navigator.pushNamed(context, AppRoutes.login);
+                              },
+                              child: const Text(
+                                'Log in',
+                                style: TextStyle(color: Color(0xFFD8A7D9)),
+                              ),
+                            ),
+                          ],
+                        ),
                         ],
                       ),
                     ),

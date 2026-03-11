@@ -16,6 +16,10 @@ class UserLevelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final avatarUrl = (user.imageUrl == null || user.imageUrl!.isEmpty)
+    ? 'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg'
+    : user.imageUrl!;
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
@@ -59,14 +63,7 @@ class UserLevelCard extends StatelessWidget {
                         ),
                       ],
                       image: DecorationImage(
-                        image: ResizeImage(
-                          NetworkImage(
-                            user.imageUrl ??
-                                'https://jkfenner.com/wp-content/uploads/2019/11/default.jpg',
-                          ),
-                          width: 150,
-                          height: 150,
-                        ),
+                        image: NetworkImage(avatarUrl),
                         fit: BoxFit.cover,
                       ),
                     ),
