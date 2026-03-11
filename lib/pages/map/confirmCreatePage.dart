@@ -260,7 +260,7 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
                 ),
               );
               Navigator.pop(context);
-              Navigator.pop(context);
+              Navigator.pop(context, true);
             } catch (e) {
               if (!context.mounted) {
                 return;
