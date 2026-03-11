@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:fe/pages/group/models/group_model.dart';
 import 'package:fe/pages/group/enum/group_status.dart';
 import 'package:fe/pages/group/chatGroupPage.dart';
-import 'package:fe/routes/app_routes.dart';
 
 class GroupCard extends StatefulWidget {
   final Group group;
@@ -218,9 +217,7 @@ class _GroupCardState extends State<GroupCard> {
             children: group.tags.map((tag) => TagGroup(label: tag)).toList(),
           ),
           const SizedBox(height: 16),
-          if (_role == RoleParticipant.CREATOR)
-            _editGroupButton(context, group)
-          else if (_isJoined)
+          if (_isJoined && _role != RoleParticipant.CREATOR)
             _joinedButton(
               context,
               group,
@@ -295,51 +292,6 @@ Widget _joinedButton(
       ),
     ],
   );
-}
-
-Widget _editGroupButton(BuildContext context, Group group) {
-  return Row(
-    children: [
-      Expanded(
-        child: SecondButton(
-          text: 'Edit group',
-          onPressed: () {
-            Navigator.pushNamed(
-              context,
-              AppRoutes.editGroup,
-              arguments: group,
-            );
-          },
-        ),
-      ),
-      const SizedBox(width: 12),
-      SizedBox(
-        width: 44,
-        height: 44,
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatGroupPage(group: group),
-              ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFD8A7D9),
-            shape: const CircleBorder(),
-            padding: EdgeInsets.zero,
-          ),
-          child: const HugeIcon(
-            icon: HugeIcons.strokeRoundedMessageMultiple02,
-            color: Colors.white,
-            size: 18,
-            strokeWidth: 2,
-          ),
-        ),
-      ),
-    ],
-  ); 
 }
 
 Widget _joinButton(Future<void> Function()? onJoin) {
