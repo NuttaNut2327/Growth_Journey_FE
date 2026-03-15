@@ -1,3 +1,4 @@
+import 'package:cote_network_logger/interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:fe/services/navigation_service.dart';
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
@@ -20,6 +21,7 @@ class ApiClient {
     dio.options.receiveTimeout = const Duration(seconds: 60);
     dio.options.sendTimeout = const Duration(seconds: 30);
 
+    dio.interceptors.add(CoteNetworkLogger());
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {

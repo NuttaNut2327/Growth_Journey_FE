@@ -58,14 +58,4 @@ class Group {
     return DateTime.now().add(const Duration(hours: 7));
   }
 
-  static String _formatThaiDate(dynamic value) {
-    if (value is String && value.isNotEmpty) {
-      final parsed = DateTime.tryParse(value);
-      if (parsed != null) {
-        final thaiDate = parsed.add(const Duration(hours: 7));
-        return thaiDate.toString().split(' ')[0];
-      }
-    }
-    return '';
-  }
 }

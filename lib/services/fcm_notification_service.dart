@@ -120,7 +120,6 @@ class FCMNotificationService {
     }
   }
 
-  /// Get and Save FCM Token
   Future<void> _getFCMToken() async {
     try {
       if (Platform.isIOS) {
@@ -138,7 +137,6 @@ class FCMNotificationService {
         await _storage.write(key: 'fcm_token', value: _fcmToken);
         _tokenController.add(_fcmToken!);
 
-        // Send token to backend
         await _sendTokenToBackend(_fcmToken!);
       }
     } catch (e) {
@@ -149,7 +147,6 @@ class FCMNotificationService {
     }
   }
 
-  /// Force sync current token to backend (use after login)
   Future<void> syncTokenWithBackend() async {
     try {
       if (Platform.isIOS) {
