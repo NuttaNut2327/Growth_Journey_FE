@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fe/pages/blog/models/blog_model.dart';
 import 'package:fe/pages/blog/repository/blog_repository.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:fe/pages/blog/enum/report_type.dart';
 
 class BlogCard extends StatefulWidget {
   final Blog blog;
@@ -114,6 +116,45 @@ class _BlogCardState extends State<BlogCard> {
                   ],
                 ),
               ),
+              Spacer(),
+              PopupMenuButton<ReportType>(
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedFlag02,
+                  size: 16,
+                  strokeWidth: 2,
+                  color: const Color(0xFF8B7A99),
+                ),
+                onSelected: (ReportType type) {
+                  print(widget.blog.blogId);
+                  print(type.name);
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: ReportType.SEXUAL_CONTENT,
+                    child: Text(ReportType.SEXUAL_CONTENT.label),
+                  ),
+                  PopupMenuItem(
+                    value: ReportType.VIOLENT_CONTENT,
+                    child: Text(ReportType.VIOLENT_CONTENT.label),
+                  ),
+                  PopupMenuItem(
+                    value: ReportType.HARASSMENT,
+                    child: Text(ReportType.HARASSMENT.label),
+                  ),
+                  PopupMenuItem(
+                    value: ReportType.SPAM,
+                    child: Text(ReportType.SPAM.label),
+                  ),
+                  PopupMenuItem(
+                    value: ReportType.MISINFORMATION,
+                    child: Text(ReportType.MISINFORMATION.label),
+                  ),
+                  PopupMenuItem(
+                    value: ReportType.SELF_HARM,
+                    child: Text(ReportType.SELF_HARM.label),
+                  ),
+                ],
+              )
             ],
           ),
           const SizedBox(height: 24),
