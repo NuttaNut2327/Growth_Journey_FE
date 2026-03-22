@@ -1,8 +1,10 @@
 import 'package:fe/api/blog/getBlogs.dart' as blog_api;
 import 'package:fe/api/blog/createBlog.dart' as blog_api;
 import 'package:fe/api/blog/likeBlog.dart' as blog_api;
+import 'package:fe/api/blog/reportBlog.dart' as blog_api;
 import 'package:fe/api/blog/unlikeBlog.dart' as blog_api;
 import 'package:fe/pages/blog/models/blog_model.dart';
+import 'package:fe/pages/blog/models/report_model.dart';
 
 class BlogRepository {
   Future<List<Blog>> getBlogs() async {
@@ -20,5 +22,9 @@ class BlogRepository {
 
   Future<void> unlikeBlog(String blogId) async {
     await blog_api.unlikeBlogApi(blogId);
+  }
+
+  Future<void> reportBlog(Report report) async {
+    await blog_api.reportBlog(report);
   }
 }

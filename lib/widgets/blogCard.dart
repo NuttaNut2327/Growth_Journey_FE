@@ -1,3 +1,4 @@
+import 'package:fe/pages/blog/models/report_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fe/pages/blog/models/blog_model.dart';
 import 'package:fe/pages/blog/repository/blog_repository.dart';
@@ -49,9 +50,8 @@ class _BlogCardState extends State<BlogCard> {
 
       setState(() {
         isLiked = !isLiked;
-        totalLikes = isLiked
-            ? totalLikes + 1
-            : (totalLikes - 1).clamp(0, 1 << 31);
+        totalLikes =
+            isLiked ? totalLikes + 1 : (totalLikes - 1).clamp(0, 1 << 31);
       });
     } catch (e) {
       if (!mounted) {
@@ -69,11 +69,44 @@ class _BlogCardState extends State<BlogCard> {
     }
   }
 
+  Future<void> _reportBlog(ReportType type) async {
+    final report = Report(blogId: widget.blog.blogId, reason: type);
+    try {
+      await _blogRepository.reportBlog(report);
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Color(0xFF2E7D32),
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white, size: 18),
+                SizedBox(width: 8),
+                Expanded(child: Text('Reported successfully')),
+              ],
+            ),
+          ),
+        );
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to report blog: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final avatarUrl = (widget.blog.imagePath == null || widget.blog.imagePath!.isEmpty)
-    ? 'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg'
-    : widget.blog.imagePath!;
+    final avatarUrl = (widget.blog.imagePath == null ||
+            widget.blog.imagePath!.isEmpty)
+        ? 'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg'
+        : widget.blog.imagePath!;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -125,8 +158,7 @@ class _BlogCardState extends State<BlogCard> {
                   color: const Color(0xFF8B7A99),
                 ),
                 onSelected: (ReportType type) {
-                  print(widget.blog.blogId);
-                  print(type.name);
+                  _reportBlog(type);
                 },
                 itemBuilder: (context) => [
                   PopupMenuItem(
