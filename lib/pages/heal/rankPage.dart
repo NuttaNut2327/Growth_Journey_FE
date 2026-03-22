@@ -87,8 +87,6 @@ class _RankPageState extends State<RankPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                       decoration: BoxDecoration(
                         color: const Color(0x4DC8E5D8),
-                        // border: Border.all(color: const Color(0x80C8E5D8), width: 2),
-                        // borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
                         children: [
