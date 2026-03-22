@@ -10,6 +10,8 @@ class User {
   final int level;
   final int points;
   final String? imageUrl;
+  final int? ranking;
+  final DateTime? updatedAt;
 
   User({
     required this.id,
@@ -23,6 +25,8 @@ class User {
     required this.level,
     required this.points,
     this.imageUrl,
+    this.ranking,
+    this.updatedAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -38,6 +42,8 @@ class User {
       level: json['level'],
       points: json['points'],
       imageUrl: json['image_url'],
+      ranking: json['ranking'],
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
     );
   }
 }

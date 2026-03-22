@@ -41,7 +41,7 @@ class MainUpperNavBar extends StatelessWidget {
               icon: HugeIcon(
                 icon:  HugeIcons.strokeRoundedUser, 
                 size: 18,
-                strokeWidth: 2,
+                strokeWidth: 2.5,
               ),
             )
           ],
