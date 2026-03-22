@@ -64,30 +64,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  String getRiveAsset() {
-    if (selectedEmotion == null) return '';
-
-    switch (selectedEmotion!) {
-      case Emotions.CALM:
-        return 'assets/animations/calm_level_$selectedLevel.riv';
-
-      case Emotions.HAPPY:
-        return 'assets/animations/happy_level_$selectedLevel.riv';
-
-      case Emotions.TIRED:
-        return 'assets/animations/tired_level_$selectedLevel.riv';
-
-      case Emotions.ANXIOUS:
-        return 'assets/animations/anxious_level_$selectedLevel.riv';
-
-      case Emotions.SAD:
-        return 'assets/animations/sad_level_$selectedLevel.riv';
-
-      case Emotions.ANGRY:
-        return 'assets/animations/angry_level_$selectedLevel.riv';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

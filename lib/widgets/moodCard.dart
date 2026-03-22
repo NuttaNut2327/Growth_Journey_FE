@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fe/pages/home/enum/emotions.dart';
 import 'package:fe/api/mood/getMoodByDate.dart';
+import 'package:fe/widgets/riveCard.dart';
 
 class MoodSection extends StatelessWidget {
   final bool isCheckingTodayMood;
@@ -50,11 +51,9 @@ class MoodSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Image.asset(
-            'assets/images/${todayMood!.emotion.name.toLowerCase()}_level_${todayMood!.intensity}.png',
-            width: 250,
-            errorBuilder: (context, error, stackTrace) =>
-                const SizedBox(width: 250, height: 250),
+          AspectRatio(
+            aspectRatio: 1.25,
+            child: ExampleRiveBuilder(mood: todayMood!.emotion.name.toLowerCase(), level: todayMood!.intensity),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -78,7 +77,7 @@ class MoodSection extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.end,
       alignment: WrapAlignment.center,
       children: [
-        emotionButton(Emotions.CALM, 96),
+        emotionButton(Emotions.CALM, 97),
         emotionButton(Emotions.HAPPY, 110),
         emotionButton(Emotions.TIRED, 95),
         emotionButton(Emotions.ANXIOUS, 99),
