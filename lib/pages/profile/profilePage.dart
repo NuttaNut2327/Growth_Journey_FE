@@ -146,9 +146,13 @@ class _ProfilePageState extends State<ProfilePage> {
                             );
                           } else if (snapshot.hasData) {
                             return UserLevelCard(
-                              user: snapshot.data!,
-                              showEditIcon: true,
-                              onEdit: () async {
+                                user: snapshot.data!,
+                                actionIcon: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedPencilEdit02,
+                                  strokeWidth: 2,
+                                  size: 24,
+                                ),
+                                onIconTap: () async {
                                 final result = await Navigator.pushNamed(
                                   context,
                                   AppRoutes.editProfile,

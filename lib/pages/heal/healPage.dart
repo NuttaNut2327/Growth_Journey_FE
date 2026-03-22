@@ -9,6 +9,8 @@ import 'package:fe/widgets/mainUpperNavBar.dart';
 import 'package:fe/widgets/userLevelCard.dart';
 import 'package:fe/widgets/dailyQuestCard.dart';
 import 'package:fe/pages/heal/models/quest_model.dart';
+import 'package:hugeicons/hugeicons.dart';
+import '/routes/app_routes.dart';
 
 class HealPage extends StatefulWidget {
   const HealPage({super.key});
@@ -129,7 +131,23 @@ class _HealPageState extends State<HealPage> {
                               child: Text('Error: ${snapshot.error}'),
                             );
                           } else if (snapshot.hasData) {
-                            return UserLevelCard(user: snapshot.data!);
+                            return UserLevelCard(
+                                user: snapshot.data!,
+                                actionIcon: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedRanking,
+                                  strokeWidth: 2,
+                                  size: 24,
+                                ),
+                                onIconTap: () async {
+                                final result = await Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.rank,
+                                );
+                                if (result == true) {
+                                  await _initPageData();
+                                }
+                              },
+                            );
                           }
                           return const SizedBox.shrink();
                         },

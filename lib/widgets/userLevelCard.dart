@@ -1,24 +1,23 @@
 import 'package:fe/interface/auth/user.dart';
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 
 class UserLevelCard extends StatelessWidget {
   final User user;
-  final bool showEditIcon;  
-  final VoidCallback? onEdit; 
+  final Widget? actionIcon;          
+  final VoidCallback? onIconTap;    
 
   const UserLevelCard({
     super.key,
     required this.user,
-    this.showEditIcon = false,
-    this.onEdit,
+    this.actionIcon,
+    this.onIconTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final avatarUrl = (user.imageUrl == null || user.imageUrl!.isEmpty)
-    ? 'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg'
-    : user.imageUrl!;
+        ? 'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg'
+        : user.imageUrl!;
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -73,7 +72,7 @@ class UserLevelCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
                           color: Color(0x80D8A7D9),
                           borderRadius: BorderRadius.circular(999),
@@ -81,34 +80,20 @@ class UserLevelCard extends StatelessWidget {
                         child: Text(
                           'Level ${user.level}',
                           style: TextStyle(
-                            fontSize: 12, 
-                            fontWeight: FontWeight.w500
-                          )
+                              fontSize: 12, fontWeight: FontWeight.w500),
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        user.username, 
-                        style: TextStyle(
-                          fontSize: 18, 
-                          fontWeight: FontWeight.w700
-                        )
-                      )
+                      Text(user.username,
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w700))
                     ],
                   ),
                   const Spacer(),
-                  if (showEditIcon)
+                  if (actionIcon != null)
                     IconButton(
-                      onPressed: () {
-                        if (onEdit != null) {
-                          onEdit!();
-                        }
-                      },
-                      icon: HugeIcon(
-                        icon: HugeIcons.strokeRoundedPencilEdit02,
-                        strokeWidth: 2,
-                        size: 24,
-                      ),
+                      onPressed: onIconTap,
+                      icon: actionIcon!,
                     )
                 ],
               ),
@@ -116,18 +101,12 @@ class UserLevelCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Progress to Level ${user.level+1}', 
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF8B7A99)
-                    )
-                  ),
-                  Text('${user.points} / 100 XP', 
-                    style: TextStyle(
-                      fontSize: 14, 
-                      fontWeight: FontWeight.w500
-                    )
-                  )
+                  Text('Progress to Level ${user.level + 1}',
+                      style:
+                          TextStyle(fontSize: 14, color: Color(0xFF8B7A99))),
+                  Text('${user.points} / 100 XP',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w500))
                 ],
               ),
               SizedBox(height: 8),
@@ -137,7 +116,8 @@ class UserLevelCard extends StatelessWidget {
                   value: user.points / 100,
                   minHeight: 12,
                   backgroundColor: Color(0x33D8A7D9),
-                  valueColor: AlwaysStoppedAnimation(Color(0xFFD8A7D9)),
+                  valueColor:
+                      AlwaysStoppedAnimation(Color(0xFFD8A7D9)),
                 ),
               ),
             ],
@@ -146,5 +126,4 @@ class UserLevelCard extends StatelessWidget {
       ),
     );
   }
-
 }
