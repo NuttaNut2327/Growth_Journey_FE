@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fe/widgets/PodiumCard.dart';
 import 'package:fe/pages/heal/repository/rank_repository.dart';
-import 'package:fe/pages/heal/models/rank_model.dart';
 import 'package:fe/widgets/userRankCard.dart';
 import 'package:fe/api/auth/getUserByID.dart';
 import 'package:fe/interface/auth/user.dart';
@@ -22,7 +21,7 @@ class _RankPageState extends State<RankPage> {
   int? _myRank;
   String? _myUserId;
 
-  late Future<List<UserRank>> _rankFuture;
+  late Future<List<User>> _rankFuture;
   late Future<User> _meFuture;
 
   final GlobalKey _myRankKey = GlobalKey();
@@ -55,7 +54,7 @@ class _RankPageState extends State<RankPage> {
         centerTitle: true,
       ),
 
-      body: FutureBuilder<List<UserRank>>(
+      body: FutureBuilder<List<User>>(
         future: _rankFuture,
         builder: (context, rankSnap) {
           if (!rankSnap.hasData) {
@@ -163,7 +162,7 @@ class _RankPageState extends State<RankPage> {
   }
 }
 
-List<UserRank> getTop3Unique(List<UserRank> users) {
+List<User> getTop3Unique(List<User> users) {
   final sorted = [...users]
     ..sort((a, b) {
       final rankA = a.ranking ?? 999999;
@@ -180,7 +179,7 @@ List<UserRank> getTop3Unique(List<UserRank> users) {
     });
 
   final usedRanks = <int>{};
-  final result = <UserRank>[];
+  final result = <User>[];
 
   for (final user in sorted) {
     final rank = user.ranking;

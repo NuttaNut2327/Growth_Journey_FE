@@ -1,9 +1,9 @@
+import 'package:fe/interface/auth/user.dart';
 import 'package:flutter/material.dart';
-import 'package:fe/pages/heal/models/rank_model.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class PodiumCard extends StatelessWidget {
-  final List<UserRank> topUsers;
+  final List<User> topUsers;
 
   const PodiumCard({super.key, required this.topUsers});
 
@@ -42,7 +42,7 @@ class PodiumCard extends StatelessWidget {
     );
   }
 
-  Widget _podiumItem(UserRank user, int rank, double height,
+  Widget _podiumItem(User user, int rank, double height,
       {bool isChampion = false}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,

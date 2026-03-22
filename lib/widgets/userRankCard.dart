@@ -1,8 +1,9 @@
+import 'package:fe/interface/auth/user.dart';
 import 'package:flutter/material.dart';
 import 'package:fe/pages/heal/models/rank_model.dart';
 
 class UserRankCard extends StatelessWidget {
-  final UserRank userRank;
+  final User userRank;
   final bool isMe;
   const UserRankCard({super.key, required this.userRank,this.isMe = false});
 
