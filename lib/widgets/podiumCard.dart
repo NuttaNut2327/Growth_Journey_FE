@@ -48,7 +48,11 @@ class PodiumCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         if (isChampion)
-          const HugeIcon(icon:  HugeIcons.strokeRoundedCrown, size: 24, color: Color(0xFFFFD700)),
+          Image.asset(
+            'assets/images/crown.png',
+            width: 34,
+            height: 34,
+          ),
         CircleAvatar(
           radius: isChampion ? 40 : 32,
           backgroundImage: NetworkImage(user.imageUrl ?? 'https://i.pinimg.com/736x/dd/8b/a9/dd8ba98ba0b06489ac96f76b74fe7fc6.jpg'),

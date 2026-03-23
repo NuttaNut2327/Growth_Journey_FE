@@ -49,9 +49,24 @@ class _RankPageState extends State<RankPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Leaderboard',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+        title: const Text(
+          'Leaderboard',
+          style: TextStyle(
+            fontSize: 16, 
+            fontWeight: FontWeight.w500
+          )
+        ),
         centerTitle: true,
+        leading: IconButton(
+          icon: HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            size: 24,
+            strokeWidth: 2,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
 
       body: FutureBuilder<List<User>>(

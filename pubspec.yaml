@@ -114,7 +114,7 @@ flutter:
     - assets/animations/angry_level_2.riv
     - assets/animations/angry_level_3.riv
     - .env
-    - assets/markers/garden_marker.png
+    - assets/images/crown.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
