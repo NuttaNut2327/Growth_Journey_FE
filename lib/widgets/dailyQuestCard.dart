@@ -82,7 +82,7 @@ class DailyQuestCard extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0x80F6DDE4),
+                            color:Color(0xFFF6DDE4),
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Row(

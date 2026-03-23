@@ -12,4 +12,5 @@ class AppRoutes {
   static const editProfile = '/profile/edit';
   static const createLocation = '/location/create';
   static const map = '/map';
+  static const rank = '/rank';
 }
