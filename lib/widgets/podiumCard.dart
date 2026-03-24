@@ -1,6 +1,5 @@
 import 'package:fe/interface/auth/user.dart';
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart';
 
 class PodiumCard extends StatelessWidget {
   final List<User> topUsers;

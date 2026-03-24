@@ -19,6 +19,12 @@ class MainUpperNavBar extends StatelessWidget {
       child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'assets/images/logo_app.png',
+              width: 40,
+              height: 40,
+            ),
+            const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

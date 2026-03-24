@@ -79,6 +79,12 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Image.asset(
+                'assets/images/logo_app.png',
+                width: 80,
+                height: 80,
+              ),
+              const SizedBox(height: 8),
               const Text(
                 'Start your Growth Journey',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),

@@ -1,6 +1,5 @@
 import 'package:fe/interface/auth/user.dart';
 import 'package:flutter/material.dart';
-import 'package:fe/pages/heal/models/rank_model.dart';
 
 class UserRankCard extends StatelessWidget {
   final User userRank;
