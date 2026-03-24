@@ -15,21 +15,33 @@ class MoodCalendarCard extends StatelessWidget {
     this.errorMessage,
   });
 
-  Color getMoodColor(Emotions mood) {
+  Color getMoodColor(Emotions mood, int level) {
+    Color baseColor;
+
     switch (mood) {
       case Emotions.HAPPY:
-        return const Color(0xFFF7E4A6);
+        baseColor = const Color(0xFFF7E4A6);
+        break;
       case Emotions.CALM:
-        return const Color(0xFFBFE5C9);
+        baseColor = const Color(0xFFBFE5C9);
+        break;
       case Emotions.SAD:
-        return const Color(0xFFBFE3F7);
+        baseColor = const Color(0xFFBFE3F7);
+        break;
       case Emotions.ANXIOUS:
-        return const Color(0xFFFFC88A);
+        baseColor = const Color(0xFFFFC88A);
+        break;
       case Emotions.ANGRY:
-        return const Color(0xFFF4A8A8);
+        baseColor = const Color(0xFFF4A8A8);
+        break;
       case Emotions.TIRED:
-        return const Color(0xFFDCC9F5);
+        baseColor = const Color(0xFFDCC9F5);
+        break;
     }
+
+    final opacity = (level / 3).clamp(0.5, 1.0);
+
+    return baseColor.withValues(alpha: opacity);
   }
 
   Widget buildCalendar() {
@@ -61,8 +73,9 @@ class MoodCalendarCard extends StatelessWidget {
         return Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color:
-                mood != null ? getMoodColor(mood.moodType) : Colors.transparent,
+            color: mood != null
+                ? getMoodColor(mood.moodType, mood.intensity)
+                : Colors.transparent,
             shape: BoxShape.circle,
             border: Border.all(
               color:
