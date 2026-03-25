@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.map: (context) => const MapPage(),
         AppRoutes.rank: (context) => const RankPage(),
         AppRoutes.groupsHistory: (context) => const GroupHistoryPage(),
-        AppRoutes.likedBlogs: (context) => const LikedBlogsPage(),
+        AppRoutes.likedBlogs: (context) => const LikedBlogPage(),
       },
     );
   }

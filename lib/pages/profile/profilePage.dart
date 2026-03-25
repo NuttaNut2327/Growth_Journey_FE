@@ -9,6 +9,7 @@ import 'package:fe/widgets/profileActivityCard.dart';
 import 'package:fe/api/auth/getUserByID.dart';
 import 'package:fe/interface/auth/user.dart';
 import 'package:fe/widgets/confirmLogoutModal.dart';
+import 'package:fe/widgets/likedBlogsCard.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -172,6 +173,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       isLoading: isLoading,
                       errorMessage: moodError,
                     ),
+                    const SizedBox(height: 24),
+                    LikedBlogsCard(),
                     const SizedBox(height: 24),
                     ProfileActivitiesCard(
                       key: ValueKey(_activitiesRefreshKey),
