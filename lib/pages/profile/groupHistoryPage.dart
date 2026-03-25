@@ -120,7 +120,7 @@ class _GroupHistoryPageState extends State<GroupHistoryPage> {
     }
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       children: activities.map((Activity activity) {
         final group = Group(
           id: activity.groupId,

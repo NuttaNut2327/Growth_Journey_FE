@@ -53,8 +53,9 @@ class _LikedBlogPageState extends State<LikedBlogPage> {
           physics: const AlwaysScrollableScrollPhysics(),
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: FutureBuilder<List<Blog>>(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              child: 
+              FutureBuilder<List<Blog>>(
                 future: _likedBlogsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState ==
