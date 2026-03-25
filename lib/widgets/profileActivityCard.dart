@@ -143,7 +143,7 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
           createdBy: activity.createdBy,
         );
         return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.only(bottom: 8),
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: () {
@@ -247,7 +247,7 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
             ],
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
           buildActivities(),
         ],
       ),
