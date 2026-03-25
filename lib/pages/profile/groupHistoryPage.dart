@@ -78,42 +78,55 @@ class _GroupHistoryPageState extends State<GroupHistoryPage> {
           },
         ),
       ),
-      body: _buildBody(),
+      body: RefreshIndicator(
+        onRefresh: loadActivities,
+        color: const Color(0xFFD8A7D9),
+        child: _buildBody(),
+      ),
     );
   }
 
   Widget _buildBody() {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: const Center(child: CircularProgressIndicator()),
+      );
     }
 
     if (errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              errorMessage!,
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
-            TextButton(
-              onPressed: loadActivities,
-              child: const Text('Try again'),
-            ),
-          ],
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                errorMessage!,
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: loadActivities,
+                child: const Text('Try again'),
+              ),
+            ],
+          ),
         ),
       );
     }
 
     if (activities.isEmpty) {
-      return const Center(
-        child: Text(
-          "No groups",
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: const Center(
+          child: Text(
+            "No groups",
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
           ),
         ),
       );
