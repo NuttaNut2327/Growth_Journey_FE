@@ -207,9 +207,9 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Groups Participated",
-                style: TextStyle(
+              Text(
+                'Groups ${selectedTab == 0 ? 'participated' : 'created'}',
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF4C4456),
@@ -217,8 +217,8 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
               ),
               Row(
                 children: [
-                  const Text(
-                    "Your recent group history",
+                  Text(
+                    '${selectedTab == 0 ? 'Your recent activity history' : 'Events you\'ve organized'}',
                     style: TextStyle(
                       fontSize: 13,
                       color: Color(0xFF8F839C),
