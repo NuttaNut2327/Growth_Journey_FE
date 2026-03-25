@@ -1,3 +1,5 @@
+import 'package:fe/pages/blog/models/blog_model.dart';
+import 'package:fe/pages/blog/repository/blog_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:fe/widgets/userLevelCard.dart';
@@ -9,6 +11,7 @@ import 'package:fe/widgets/profileActivityCard.dart';
 import 'package:fe/api/auth/getUserByID.dart';
 import 'package:fe/interface/auth/user.dart';
 import 'package:fe/widgets/confirmLogoutModal.dart';
+import 'package:fe/widgets/likedBlogsCard.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -19,18 +22,23 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final MoodRepository repo = MoodRepository();
+  final BlogRepository repoBlog = BlogRepository();
 
   Future<User>? _userFuture;
   int _activitiesRefreshKey = 0;
   List<Mood> moods = [];
   bool isLoading = true;
   String? moodError;
+  String? errorMessage;
+  Blog? recentBlog;
+  bool isLikedBlogsLoading = true;
 
   @override
   void initState() {
     super.initState();
     _initPageData();
     loadMoods();
+    loadRecentBlog();
   }
 
   Future<void> _initPageData() async {
@@ -49,8 +57,40 @@ class _ProfilePageState extends State<ProfilePage> {
       _activitiesRefreshKey++;
     });
     await loadMoods();
+    await loadRecentBlog();
     if (_userFuture != null) {
       await _userFuture!;
+    }
+  }
+
+  Future<void> loadRecentBlog() async {
+    setState(() {
+      isLikedBlogsLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      final blogs = await repoBlog.getLikedBlogs();
+      if (!mounted) return;
+
+      setState(() {
+        recentBlog = blogs.isNotEmpty ? blogs.first : null;
+        isLikedBlogsLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        recentBlog = null;
+        isLikedBlogsLoading = false;
+        errorMessage = e.toString().replaceFirst('Exception: ', e.toString());
+      });
+    }finally {
+      if (!mounted) return;
+
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -146,13 +186,13 @@ class _ProfilePageState extends State<ProfilePage> {
                             );
                           } else if (snapshot.hasData) {
                             return UserLevelCard(
-                                user: snapshot.data!,
-                                actionIcon: HugeIcon(
-                                  icon: HugeIcons.strokeRoundedPencilEdit02,
-                                  strokeWidth: 2,
-                                  size: 24,
-                                ),
-                                onIconTap: () async {
+                              user: snapshot.data!,
+                              actionIcon: HugeIcon(
+                                icon: HugeIcons.strokeRoundedPencilEdit02,
+                                strokeWidth: 2,
+                                size: 24,
+                              ),
+                              onIconTap: () async {
                                 final result = await Navigator.pushNamed(
                                   context,
                                   AppRoutes.editProfile,
@@ -171,6 +211,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       moods: moods,
                       isLoading: isLoading,
                       errorMessage: moodError,
+                    ),
+                    const SizedBox(height: 24),
+                    LikedBlogsCard(
+                      recentBlog: recentBlog,
+                      isLoading: isLikedBlogsLoading,
+                      errorMessage: errorMessage,
                     ),
                     const SizedBox(height: 24),
                     ProfileActivitiesCard(
