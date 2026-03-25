@@ -89,58 +89,122 @@ class ResultPage extends StatelessWidget {
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Your total score',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16, 
-                fontWeight: FontWeight.w500,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: Container(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Your total score',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16, 
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      '$totalScore',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    Text(
+                      resultMessage,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 24, 
+                        fontWeight: FontWeight.w700
+                      ),
+                    ),
+                    SizedBox(height: 32),
+                    Text(
+                      detailResult,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    SizedBox(height: 32),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color(0x4DC8E5D8),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [ 
+                            Text(
+                              'Mental Health Helpline',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 8),                                                 
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                HugeIcon(
+                                  icon: HugeIcons.strokeRoundedCalling02,
+                                  size: 20,
+                                  strokeWidth: 2,
+                                  color: Color(0xFF5FA17B),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '1323',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                            'We\’re always here for you. \nGently listening, support your well-being, \nand helping you feel a little lighter every day.',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),                                                        
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 48),
+                    SizedBox(
+                      width: double.infinity,
+                      child: MainButton(
+                        text: 'Back Home',
+                        onPressed: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            AppRoutes.bottomnavbar,
+                            (route) => false,
+                          );
+                        },
+                      ),
+                    ), 
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              '$totalScore',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            SizedBox(height: 24),
-            Text(
-              resultMessage,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24, 
-                fontWeight: FontWeight.w700
-              ),
-            ),
-            SizedBox(height: 32),
-            Text(
-              detailResult,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14),
-            ),
-            SizedBox(height: 48),
-            MainButton(
-              text: 'Back Home',
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.bottomnavbar,
-                  (route) => false,
-                );
-              },
-            ),
-          ],
+            );
+          },
         ),
-      ),
+      ), 
     );
   }
 }

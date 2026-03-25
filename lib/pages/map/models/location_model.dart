@@ -4,7 +4,7 @@ class Location {
   final String id;
   final String name;
   final String address;
-  final String description;
+  final String? description;
   final double latitude;
   final double longitude;
   final LocationType type;
@@ -13,7 +13,7 @@ class Location {
     required this.id,
     required this.name,
     required this.address,
-    required this.description,
+    this.description,
     required this.latitude,
     required this.longitude,
     required this.type,

@@ -72,8 +72,12 @@ class LocationDetailcard extends StatelessWidget {
               color: Color(0xFF8B7A99),
             ),
           ),
-          const SizedBox(height: 12),
-          Text(place.description),
+          if (place.description != null && place.description != "null") ...[
+            const SizedBox(height: 12),
+            Text( place.description!),
+          ] else if (place.description == null || place.description == "null") ...[
+            const Text(""),
+          ],
         ],
       ),
     );
