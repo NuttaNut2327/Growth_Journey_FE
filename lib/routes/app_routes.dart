@@ -13,4 +13,6 @@ class AppRoutes {
   static const createLocation = '/location/create';
   static const map = '/map';
   static const rank = '/rank';
+  static const groupsHistory = '/groups/history';
+  static const likedBlogs = '/blog/liked';
 }

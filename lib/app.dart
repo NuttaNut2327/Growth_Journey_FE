@@ -16,6 +16,8 @@ import 'package:fe/pages/blog/createBlogPage.dart';
 import 'package:fe/pages/map/createLocationPage.dart';
 import 'package:fe/services/navigation_service.dart';
 import 'package:fe/pages/heal/rankPage.dart';
+import 'package:fe/pages/profile/groupHistoryPage.dart';
+import 'package:fe/pages/profile/likedBlogsPage.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -80,6 +82,8 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.createLocation: (context) => const CreateLocationPage(),
         AppRoutes.map: (context) => const MapPage(),
         AppRoutes.rank: (context) => const RankPage(),
+        AppRoutes.groupsHistory: (context) => const GroupHistoryPage(),
+        AppRoutes.likedBlogs: (context) => const LikedBlogsPage(),
       },
     );
   }

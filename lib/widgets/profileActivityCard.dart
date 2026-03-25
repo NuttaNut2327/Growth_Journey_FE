@@ -112,8 +112,9 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
     }
 
     final list = selectedTab == 0 ? joinedActivities : createdActivities;
+    final displayList = list.take(3).toList();
 
-    if (list.isEmpty) {
+    if (displayList.isEmpty) {
       return const Center(
         child: Text(
           "No groups",
@@ -126,7 +127,7 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
     }
 
     return Column(
-      children: list.map((Activity activity) {
+      children: displayList.map((Activity activity) {
         final group = Group(
           id: activity.groupId,
           title: activity.title,
@@ -203,10 +204,10 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
           const SizedBox(height: 24),
 
           /// Title
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 "Groups Participated",
                 style: TextStyle(
                   fontSize: 16,
@@ -214,13 +215,34 @@ class _ProfileActivitiesCardState extends State<ProfileActivitiesCard> {
                   color: Color(0xFF4C4456),
                 ),
               ),
-              SizedBox(height: 2),
-              Text(
-                "Your recent group history",
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Color(0xFF8F839C),
-                ),
+              Row(
+                children: [
+                  const Text(
+                    "Your recent group history",
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF8F839C),
+                    ),
+                  ),
+                  Spacer(),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.groupsHistory,
+                        arguments: selectedTab == 0 ? 'joined' : 'created',
+                      );
+                    },
+                    child: const Text(
+                      'View all',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFD8A7D9),
+                      ),
+                    )
+                  )
+                ],
               ),
             ],
           ),
