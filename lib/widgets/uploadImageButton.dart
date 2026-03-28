@@ -11,10 +11,12 @@ class UploadImageButton extends StatefulWidget {
     super.key,
     this.onImageSelected,
     this.mode = UploadImageMode.gallery,
+    this.initialImageUrl,
   });
 
   final Function(Uint8List?)? onImageSelected;
   final UploadImageMode mode;
+  final String? initialImageUrl;
 
   @override
   State<UploadImageButton> createState() => _UploadImageState();
@@ -24,6 +26,27 @@ class _UploadImageState extends State<UploadImageButton> {
   XFile? pickedFile;
   Uint8List? imageBytes;
   double? imageSizeMB;
+  String? existingImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialUrl = widget.initialImageUrl;
+    existingImageUrl =
+        (initialUrl != null && initialUrl.isNotEmpty) ? initialUrl : null;
+  }
+
+  @override
+  void didUpdateWidget(covariant UploadImageButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialImageUrl != widget.initialImageUrl &&
+        pickedFile == null &&
+        imageBytes == null) {
+      final initialUrl = widget.initialImageUrl;
+      existingImageUrl =
+          (initialUrl != null && initialUrl.isNotEmpty) ? initialUrl : null;
+    }
+  }
 
   Future<void> pickImage() async {
     final source = widget.mode == UploadImageMode.camera
@@ -94,11 +117,14 @@ class _UploadImageState extends State<UploadImageButton> {
                 ),
                 Text("${imageSizeMB!.toStringAsFixed(1)} MB"),
                 const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: removeImage,
-                  child: const HugeIcon(
-                    icon: HugeIcons.strokeRoundedCancel01,
-                    color: Color(0x804A4458),
+                Tooltip(
+                  message: 'Remove selected image',
+                  child: GestureDetector(
+                    onTap: removeImage,
+                    child: const HugeIcon(
+                      icon: HugeIcons.strokeRoundedCancel01,
+                      color: Color(0x804A4458),
+                    ),
                   ),
                 ),
               ],
@@ -130,6 +156,21 @@ class _UploadImageState extends State<UploadImageButton> {
                         height: double.infinity,
                       ),
                     )
+                  : existingImageUrl != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(
+                            existingImageUrl!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            errorBuilder: (_, __, ___) {
+                              return const Center(
+                                child: Text('Unable to load image'),
+                              );
+                            },
+                          ),
+                        )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -174,6 +215,17 @@ class _UploadImageState extends State<UploadImageButton> {
             ),
           ),
         ),
+        if (pickedFile != null)
+          const Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Text(
+              'Tip: Tap X to remove selected image.',
+              style: TextStyle(
+                color: Color(0xFF8F839C),
+                fontSize: 12,
+              ),
+            ),
+          ),
       ],
     );
   }

@@ -34,6 +34,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
   final maxParticipantsController = TextEditingController();
   List<String> selectedTags = [];
   Uint8List? imageBytes;
+  String? existingImageUrl;
   final _groupRepository = GroupRepository();
   String? selectedLocationId;
   String? _groupId;
@@ -127,6 +128,8 @@ class _EditGroupPageState extends State<EditGroupPage> {
         descriptionController.text = group.description;
         maxParticipantsController.text = group.targetMemberCount.toString();
         selectedTags = List<String>.from(group.tags);
+        existingImageUrl = group.image;
+        imageBytes = null;
         isOnlineGroup = group.locationId == onlineLocationId;
         selectedLocationId = isOnlineGroup ? null : group.locationId;
         selectedDate = eventDateTime;
@@ -455,8 +458,11 @@ class _EditGroupPageState extends State<EditGroupPage> {
                                   const SizedBox(height: 8),
                                   UploadImageButton(
                                     mode: UploadImageMode.gallery,
+                                    initialImageUrl: existingImageUrl,
                                     onImageSelected: (bytes) {
-                                      imageBytes = bytes;
+                                      setState(() {
+                                        imageBytes = bytes;
+                                      });
                                     },
                                   ),
                                 ],
