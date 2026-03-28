@@ -4,6 +4,7 @@ class Blog {
   final String name;
   final String? imagePath;
   final String creatTime;
+  final String updatedAt;
   final String content;
   final int totalLikes;
   final bool isLikedByCurrentUser;
@@ -14,6 +15,7 @@ class Blog {
     required this.name,
     this.imagePath,
     required this.creatTime,
+    required this.updatedAt,
     required this.content,
     this.totalLikes = 0,
     this.isLikedByCurrentUser = false,
@@ -26,6 +28,7 @@ class Blog {
       name: map['name'],
       imagePath: map['imagePath'],
       creatTime: map['creatTime'],
+      updatedAt: map['updatedAt'],
       content: map['content'],
       totalLikes: map['totalLikes'] ?? 0,
       isLikedByCurrentUser: map['isLikedByCurrentUser'] ?? false,
