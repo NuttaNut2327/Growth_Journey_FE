@@ -1,4 +1,5 @@
 import 'package:fe/api/blog/getBlogs.dart' as blog_api;
+import 'package:fe/api/blog/getBlogsByUserID.dart' as blog_api;
 import 'package:fe/api/blog/getLikedBlog.dart' as blog_api;
 import 'package:fe/api/blog/createBlog.dart' as blog_api;
 import 'package:fe/api/blog/editBlog.dart' as blog_api;
@@ -17,6 +18,11 @@ class BlogRepository {
 
   Future<List<Blog>> getLikedBlogs() async {
     final blogs = await blog_api.getLikedBlogs();
+    return blogs;
+  }
+
+  Future<List<Blog>> getBlogsByUserID() async {
+    final blogs = await blog_api.getBlogsByUserID();
     return blogs;
   }
 
