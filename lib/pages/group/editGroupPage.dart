@@ -175,7 +175,8 @@ class _EditGroupPageState extends State<EditGroupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit group', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+        title: const Text('Edit group',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(
@@ -227,10 +228,11 @@ class _EditGroupPageState extends State<EditGroupPage> {
                                   builder: (context) {
                                     final hasSelectedLocation =
                                         !isOnlineGroup &&
-                                        selectedLocationId != null &&
-                                        _locations.any(
-                                          (loc) => loc.id == selectedLocationId,
-                                        );
+                                            selectedLocationId != null &&
+                                            _locations.any(
+                                              (loc) =>
+                                                  loc.id == selectedLocationId,
+                                            );
 
                                     return Opacity(
                                       opacity: isOnlineGroup ? 0.45 : 1,
@@ -255,8 +257,8 @@ class _EditGroupPageState extends State<EditGroupPage> {
                                               color: Color(0xFFD8A7D9),
                                             ),
                                           ),
-                                          items:
-                                              isOnlineGroup || _isLoadingLocations
+                                          items: isOnlineGroup ||
+                                                  _isLoadingLocations
                                               ? const []
                                               : _locationMenuItems,
                                           controller: locationController,
@@ -264,9 +266,8 @@ class _EditGroupPageState extends State<EditGroupPage> {
                                               ? null
                                               : (val) {
                                                   setState(
-                                                    () =>
-                                                        selectedLocationId =
-                                                            val,
+                                                    () => selectedLocationId =
+                                                        val,
                                                   );
                                                 },
                                         ),
