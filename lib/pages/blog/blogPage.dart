@@ -155,7 +155,10 @@ class _BlogPageState extends State<BlogPage> {
                             children: blogs.map((blog) {
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
-                                child: BlogCard(blog: blog),
+                                child: BlogCard(
+                                  blog: blog,
+                                  onChanged: _handleRefresh,
+                                ),
                               );
                             }).toList(),
                           );

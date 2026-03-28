@@ -1,6 +1,8 @@
 import 'package:fe/api/blog/getBlogs.dart' as blog_api;
 import 'package:fe/api/blog/getLikedBlog.dart' as blog_api;
 import 'package:fe/api/blog/createBlog.dart' as blog_api;
+import 'package:fe/api/blog/editBlog.dart' as blog_api;
+import 'package:fe/api/blog/deleteBlog.dart' as blog_api;
 import 'package:fe/api/blog/likeBlog.dart' as blog_api;
 import 'package:fe/api/blog/reportBlog.dart' as blog_api;
 import 'package:fe/api/blog/unlikeBlog.dart' as blog_api;
@@ -20,6 +22,14 @@ class BlogRepository {
 
   Future<void> createBlog(String content) async {
     await blog_api.createBlogApi(content);
+  }
+
+  Future<void> editBlog(String blogId, String content) async {
+    await blog_api.editBlogApi(blogId, content);
+  }
+
+  Future<void> deleteBlog(String blogId) async {
+    await blog_api.deleteBlogApi(blogId);
   }
 
   Future<void> likeBlog(String blogId) async {

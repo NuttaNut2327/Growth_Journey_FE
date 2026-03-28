@@ -1,15 +1,18 @@
+import 'package:fe/pages/blog/editBlogPage.dart';
 import 'package:fe/pages/blog/models/report_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fe/pages/blog/models/blog_model.dart';
 import 'package:fe/pages/blog/repository/blog_repository.dart';
+import 'package:fe/services/auth_service.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:fe/pages/blog/enum/report_type.dart';
 
 class BlogCard extends StatefulWidget {
   final Blog blog;
+  final Future<void> Function()? onChanged;
 
-  const BlogCard({super.key, required this.blog});
+  const BlogCard({super.key, required this.blog, this.onChanged});
 
   @override
   State<BlogCard> createState() => _BlogCardState();
@@ -19,19 +22,51 @@ class _BlogCardState extends State<BlogCard> {
   late bool isLiked;
   late int totalLikes;
   bool isSubmitting = false;
+  String? _currentUserId;
   final _blogRepository = BlogRepository();
+
+  bool get _isOwner =>
+      _currentUserId != null && _currentUserId == widget.blog.userId;
+
+  DateTime? get _createdAt => DateTime.tryParse(widget.blog.creatTime);
+  DateTime? get _updatedAt => DateTime.tryParse(widget.blog.updatedAt);
+
+  bool get _isEdited {
+    if (_createdAt == null || _updatedAt == null) return false;
+    return _updatedAt!.difference(_createdAt!).inSeconds.abs() > 1;
+  }
+
+  String get _displayTime {
+    if (_createdAt == null) return widget.blog.creatTime;
+    
+    final createdTimeFormatted = timeago.format(_createdAt!);
+    
+    if (_isEdited && _updatedAt != null) {
+      final updatedTimeFormatted = timeago.format(_updatedAt!);
+      return '$createdTimeFormatted • Edited $updatedTimeFormatted';
+    }
+    
+    return createdTimeFormatted;
+  }
 
   @override
   void initState() {
     super.initState();
     isLiked = widget.blog.isLikedByCurrentUser;
     totalLikes = widget.blog.totalLikes;
+    _loadCurrentUserId();
+  }
+
+  Future<void> _loadCurrentUserId() async {
+    final userId = await getUserId();
+    if (!mounted) return;
+    setState(() {
+      _currentUserId = userId;
+    });
   }
 
   Future<void> _toggleLike() async {
-    if (isSubmitting) {
-      return;
-    }
+    if (isSubmitting) return;
 
     setState(() {
       isSubmitting = true;
@@ -44,9 +79,7 @@ class _BlogCardState extends State<BlogCard> {
         await _blogRepository.likeBlog(widget.blog.blogId);
       }
 
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
       setState(() {
         isLiked = !isLiked;
@@ -54,12 +87,10 @@ class _BlogCardState extends State<BlogCard> {
             isLiked ? totalLikes + 1 : (totalLikes - 1).clamp(0, 1 << 31);
       });
     } catch (e) {
-      if (!mounted) {
-        return;
-      }
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to update like: $e')));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update like: $e')),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -73,9 +104,7 @@ class _BlogCardState extends State<BlogCard> {
     final report = Report(blogId: widget.blog.blogId, reason: type);
     try {
       await _blogRepository.reportBlog(report);
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
@@ -92,11 +121,68 @@ class _BlogCardState extends State<BlogCard> {
           ),
         );
     } catch (e) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to report blog: $e')),
+      );
+    }
+  }
+
+Future<void> _navigateToEditPage() async {
+    final isUpdated = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditBlogPage(
+          blogId: widget.blog.blogId,
+          initialContent: widget.blog.content,
+        ),
+      ),
+    );
+
+    if (isUpdated == true && widget.onChanged != null) {
+      await widget.onChanged!.call();
+    }
+  }
+
+  Future<void> _deleteBlog() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete blog'),
+          content: const Text('Are you sure you want to delete this blog?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await _blogRepository.deleteBlog(widget.blog.blogId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Blog deleted successfully')),
+      );
+      if (widget.onChanged != null) {
+        await widget.onChanged!.call();
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete blog: $e')),
       );
     }
   }
@@ -139,23 +225,44 @@ class _BlogCardState extends State<BlogCard> {
                   children: [
                     Text(
                       widget.blog.name,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      timeago.format(DateTime.parse(widget.blog.creatTime)),
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                      _displayTime,
+                      style: const TextStyle(color: Colors.grey, fontSize: 14),
                     ),
                   ],
                 ),
               ),
-              Spacer(),
+              const Spacer(),
+              if (_isOwner)
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert, color: Color(0xFF8B7A99)),
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      _navigateToEditPage();
+                    } else if (value == 'delete') {
+                      _deleteBlog();
+                    }
+                  },
+                  itemBuilder: (context) => const [
+                    PopupMenuItem<String>(
+                      value: 'edit',
+                      child: Text('Edit'),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Text('Delete'),
+                    ),
+                  ],
+                ),
               PopupMenuButton<ReportType>(
-                icon: HugeIcon(
+                icon: const HugeIcon(
                   icon: HugeIcons.strokeRoundedFlag02,
                   size: 16,
                   strokeWidth: 2,
-                  color: const Color(0xFF8B7A99),
+                  color: Color(0xFF8B7A99),
                 ),
                 onSelected: (ReportType type) {
                   _reportBlog(type);
@@ -212,6 +319,57 @@ class _BlogCardState extends State<BlogCard> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _EditBlogDialog extends StatefulWidget {
+  final String initialContent;
+
+  const _EditBlogDialog({required this.initialContent});
+
+  @override
+  State<_EditBlogDialog> createState() => _EditBlogDialogState();
+}
+
+class _EditBlogDialogState extends State<_EditBlogDialog> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialContent);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit blog'),
+      content: TextField(
+        controller: _controller,
+        maxLines: 5,
+        minLines: 3,
+        decoration: const InputDecoration(
+          hintText: 'Write your story...',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, null),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, _controller.text.trim()),
+          child: const Text('Save'),
+        ),
+      ],
     );
   }
 }
