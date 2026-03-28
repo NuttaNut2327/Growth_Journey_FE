@@ -22,6 +22,7 @@ class EditGroupPage extends StatefulWidget {
 }
 
 class _EditGroupPageState extends State<EditGroupPage> {
+  static const String onlineLocationId = '00000000-0000-0000-0000-000000000000';
   final _formKey = GlobalKey<FormState>();
   final activityNameController = TextEditingController();
   final descriptionController = TextEditingController();
@@ -36,15 +37,54 @@ class _EditGroupPageState extends State<EditGroupPage> {
   final _groupRepository = GroupRepository();
   String? selectedLocationId;
   String? _groupId;
+  bool isOnlineGroup = false;
   bool _hasLoadedGroup = false;
   bool _isSubmitting = false;
   bool _isFetching = true;
-  late Future<List<Location>> locationsFuture;
+  bool _isLoadingLocations = true;
+  String? _locationsError;
+  List<Location> _locations = const [];
+  List<DropdownMenuItem<String>> _locationMenuItems = const [];
 
   @override
   void initState() {
     super.initState();
-    locationsFuture = getLocationsByStatus('approved');
+    _loadLocations();
+  }
+
+  Future<void> _loadLocations() async {
+    setState(() {
+      _isLoadingLocations = true;
+      _locationsError = null;
+    });
+
+    try {
+      final locations = await getLocationsByStatus('approved');
+      if (!mounted) return;
+
+      setState(() {
+        _locations = locations;
+        _locationMenuItems = locations
+            .map(
+              (loc) => DropdownMenuItem<String>(
+                value: loc.id.toString(),
+                child: Text(
+                  loc.name,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            )
+            .toList(growable: false);
+        _isLoadingLocations = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _locationsError = e.toString();
+        _isLoadingLocations = false;
+      });
+    }
   }
 
   @override
@@ -87,7 +127,8 @@ class _EditGroupPageState extends State<EditGroupPage> {
         descriptionController.text = group.description;
         maxParticipantsController.text = group.targetMemberCount.toString();
         selectedTags = List<String>.from(group.tags);
-        selectedLocationId = group.locationId;
+        isOnlineGroup = group.locationId == onlineLocationId;
+        selectedLocationId = isOnlineGroup ? null : group.locationId;
         selectedDate = eventDateTime;
         dateController.text = DateFormat('dd MMM yyyy').format(eventDateTime);
         selectedTime = TimeOfDay.fromDateTime(eventDateTime);
@@ -134,7 +175,8 @@ class _EditGroupPageState extends State<EditGroupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit group', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+        title: const Text('Edit group',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
         leading: IconButton(
           icon: HugeIcon(
@@ -179,57 +221,77 @@ class _EditGroupPageState extends State<EditGroupPage> {
                                 isRequired: true,
                               ),
                               const SizedBox(height: 16),
-                              FutureBuilder<List<Location>>(
-                                future: locationsFuture,
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasError) {
-                                    return Text('Error: ${snapshot.error}');
-                                  }
+                              if (_locationsError != null)
+                                Text('Error: $_locationsError')
+                              else
+                                Builder(
+                                  builder: (context) {
+                                    final hasSelectedLocation =
+                                        !isOnlineGroup &&
+                                            selectedLocationId != null &&
+                                            _locations.any(
+                                              (loc) =>
+                                                  loc.id == selectedLocationId,
+                                            );
 
-                        final locations = snapshot.data ?? [];
-                        final menuItems = locations.map((loc) {
-                          return DropdownMenuItem<String>(
-                            value: loc.id.toString(),
-                            child: Expanded(
-                              child: Text(loc.name, 
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              )
-                            ),
-                          );
-                        }).toList();
-
-                                  final hasSelectedLocation =
-                                      selectedLocationId != null &&
-                                          locations.any(
-                                            (loc) =>
-                                                loc.id == selectedLocationId,
-                                          );
-
-                                  return AppDropdownField<String>(
-                                    label: 'Location',
-                                    hintText: snapshot.connectionState ==
-                                            ConnectionState.waiting
-                                        ? 'Loading...'
-                                        : 'Where will this happen?',
-                                    isRequired: true,
-                                    value: hasSelectedLocation
-                                        ? selectedLocationId
-                                        : null,
-                                    prefixIcon: Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      child: HugeIcon(
-                                        icon: HugeIcons.strokeRoundedLocation01,
-                                        color: Color(0xFFD8A7D9),
+                                    return Opacity(
+                                      opacity: isOnlineGroup ? 0.45 : 1,
+                                      child: IgnorePointer(
+                                        ignoring: isOnlineGroup,
+                                        child: AppDropdownField<String>(
+                                          label: 'Location',
+                                          hintText: isOnlineGroup
+                                              ? 'Online group selected'
+                                              : _isLoadingLocations
+                                                  ? 'Loading...'
+                                                  : 'Where will this happen?',
+                                          isRequired: !isOnlineGroup,
+                                          value: hasSelectedLocation
+                                              ? selectedLocationId
+                                              : null,
+                                          prefixIcon: Padding(
+                                            padding: const EdgeInsets.all(16),
+                                            child: HugeIcon(
+                                              icon: HugeIcons
+                                                  .strokeRoundedLocation01,
+                                              color: Color(0xFFD8A7D9),
+                                            ),
+                                          ),
+                                          items: isOnlineGroup ||
+                                                  _isLoadingLocations
+                                              ? const []
+                                              : _locationMenuItems,
+                                          controller: locationController,
+                                          onChanged: isOnlineGroup
+                                              ? null
+                                              : (val) {
+                                                  setState(
+                                                    () => selectedLocationId =
+                                                        val,
+                                                  );
+                                                },
+                                        ),
                                       ),
-                                    ),
-                                    items: menuItems,
-                                    controller: locationController,
-                                    onChanged: (val) {
-                                      setState(() => selectedLocationId = val);
+                                    );
+                                  },
+                                ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    value: isOnlineGroup,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isOnlineGroup = value ?? false;
+                                        if (isOnlineGroup) {
+                                          selectedLocationId = null;
+                                          locationController.clear();
+                                        }
+                                      });
                                     },
-                                  );
-                                },
+                                  ),
+                                  const Text('Online group'),
+                                ],
                               ),
                               const SizedBox(height: 16),
                               Row(
@@ -420,8 +482,9 @@ class _EditGroupPageState extends State<EditGroupPage> {
                     return;
                   }
 
-                  if (selectedLocationId == null ||
-                      selectedLocationId!.isEmpty) {
+                  if (!isOnlineGroup &&
+                      (selectedLocationId == null ||
+                          selectedLocationId!.isEmpty)) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Please select location")),
                     );
@@ -453,7 +516,9 @@ class _EditGroupPageState extends State<EditGroupPage> {
                       targetMemberCount:
                           int.parse(maxParticipantsController.text),
                       eventDate: formattedDate,
-                      location: selectedLocationId!,
+                      location: isOnlineGroup
+                          ? onlineLocationId
+                          : selectedLocationId!,
                       tags: selectedTags,
                       imageBytes: imageBytes,
                     );
