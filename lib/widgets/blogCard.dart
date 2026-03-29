@@ -7,6 +7,8 @@ import 'package:fe/services/auth_service.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:fe/pages/blog/enum/report_type.dart';
+import 'package:fe/widgets/mainButton.dart';
+import 'package:fe/widgets/secondButton.dart';
 
 class BlogCard extends StatefulWidget {
   final Blog blog;
@@ -147,25 +149,54 @@ Future<void> _navigateToEditPage() async {
   Future<void> _deleteBlog() async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Delete blog'),
-          content: const Text('Are you sure you want to delete this blog?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text(
-                'Delete',
-                style: TextStyle(color: Colors.red),
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Delete blog',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-          ],
-        );
-      },
+              const SizedBox(height: 16),
+              const Text(
+                'Are you sure you want to delete this blog? \nThis action cannot be undone.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SecondButton(
+                    text: "Cancel",
+                    onPressed: () {
+                      Navigator.pop(ctx, false);
+                    },
+                  ),
+                  const SizedBox(width: 32),
+                  MainButton(
+                    text: "Delete",
+                    onPressed: () {
+                      Navigator.pop(ctx, true);
+                    },
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
     );
 
     if (confirmed != true) return;
@@ -257,6 +288,7 @@ Future<void> _navigateToEditPage() async {
                     ),
                   ],
                 ),
+              if (!_isOwner)
               PopupMenuButton<ReportType>(
                 icon: const HugeIcon(
                   icon: HugeIcons.strokeRoundedFlag02,
