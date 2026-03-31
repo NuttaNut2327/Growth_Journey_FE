@@ -99,6 +99,16 @@ class _ConfirmcreatepageState extends State<Confirmcreatepage> {
       appBar: AppBar(
         title: const Text('Confirm location details', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
         centerTitle: true,
+        leading: IconButton(
+          icon: HugeIcon(
+            icon: HugeIcons.strokeRoundedArrowLeft01,
+            size: 24,
+            strokeWidth: 2,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
